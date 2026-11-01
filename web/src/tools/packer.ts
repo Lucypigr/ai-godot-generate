@@ -2,7 +2,7 @@
 // with MaxRects (soimy/maxrects-packer, MIT). Exports PNG + JSON + Godot SpriteFrames.
 import { MaxRectsPacker } from 'maxrects-packer';
 import { h, field, select, numberInput, status, createPreview } from '../lib/ui';
-import { type Rgba, decodeImageFile, paint, pngBytes, downloadZip, safeName, blit } from '../lib/image';
+import { type Rgba, decodeImageFile, decodeGifFrames, paint, pngBytes, downloadZip, safeName, blit } from '../lib/image';
 import { atlasJSON, godotSpriteFrames, type Atlas, type Clip } from '../lib/atlas';
 
 interface Sprite { name: string; image: Rgba }
@@ -26,25 +26,6 @@ function slice(image: Rgba, cols: number, rows: number): Rgba[] {
     out.push({ width: w, height: hgt, data });
   }
   return out;
-}
-
-async function decodeGifFrames(file: File): Promise<Rgba[] | null> {
-  // ImageDecoder (WebCodecs) decodes every frame of an animated GIF/WebP where the browser supports it.
-  const Decoder = (globalThis as any).ImageDecoder;
-  if (!Decoder) return null;
-  const decoder = new Decoder({ data: await file.arrayBuffer(), type: file.type });
-  await decoder.tracks.ready;
-  const count = decoder.tracks.selectedTrack?.frameCount ?? 1;
-  const frames: Rgba[] = [];
-  for (let i = 0; i < count; i++) {
-    const { image } = await decoder.decode({ frameIndex: i });
-    const canvas = new OffscreenCanvas(image.displayWidth, image.displayHeight);
-    const ctx = canvas.getContext('2d')!;
-    ctx.drawImage(image, 0, 0);
-    frames.push({ width: canvas.width, height: canvas.height, data: new Uint8Array(ctx.getImageData(0, 0, canvas.width, canvas.height).data.buffer) });
-    image.close();
-  }
-  return frames;
 }
 
 export function packerTool(): HTMLElement {

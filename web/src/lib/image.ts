@@ -68,6 +68,42 @@ export async function decodeImageFile(file: Blob): Promise<Rgba> {
   return { width: bitmap.width, height: bitmap.height, data: new Uint8Array(data.buffer) };
 }
 
+/** Every frame of an animated GIF / WebP (WebCodecs ImageDecoder), or null where unsupported. */
+export async function decodeGifFrames(file: File): Promise<Rgba[] | null> {
+  // ImageDecoder (WebCodecs) decodes every frame of an animated GIF/WebP where the browser supports it.
+  const Decoder = (globalThis as any).ImageDecoder;
+  if (!Decoder) return null;
+  const decoder = new Decoder({ data: await file.arrayBuffer(), type: file.type });
+  await decoder.tracks.ready;
+  const count = decoder.tracks.selectedTrack?.frameCount ?? 1;
+  const frames: Rgba[] = [];
+  for (let i = 0; i < count; i++) {
+    const { image } = await decoder.decode({ frameIndex: i });
+    const canvas = new OffscreenCanvas(image.displayWidth, image.displayHeight);
+    const ctx = canvas.getContext('2d')!;
+    ctx.drawImage(image, 0, 0);
+    frames.push({ width: canvas.width, height: canvas.height, data: new Uint8Array(ctx.getImageData(0, 0, canvas.width, canvas.height).data.buffer) });
+    image.close();
+  }
+  return frames;
+}
+
+/** Image file to frames: animated GIF/WebP frames, else the image sliced into `count` equal columns. */
+export async function decodeFrames(file: File, count = 1): Promise<Rgba[]> {
+  if (file.type === 'image/gif' || file.type === 'image/webp') {
+    try { const frames = await decodeGifFrames(file); if (frames && frames.length > 1) return frames; } catch { /* fall back to a still */ }
+  }
+  const img = await decodeImageFile(file);
+  const n = Math.max(1, Math.min(count, img.width));
+  if (n === 1) return [img];
+  const w = Math.floor(img.width / n);
+  return Array.from({ length: n }, (_, k) => {
+    const data = new Uint8Array(w * img.height * 4);
+    for (let y = 0; y < img.height; y++) data.set(img.data.subarray((y * img.width + k * w) * 4, (y * img.width + k * w + w) * 4) as Uint8Array, y * w * 4);
+    return { width: w, height: img.height, data };
+  });
+}
+
 /** Lays equal-sized frames out on a grid. */
 export function gridSheet(frames: Rgba[], columns: number, padding = 0): Rgba & { cells: { x: number; y: number; w: number; h: number }[] } {
   const w = Math.max(...frames.map(f => f.width));
