@@ -115,3 +115,5 @@ figcaption { color: var(--muted); font-size: .82rem; margin-bottom: 6px; }
 fieldset > *, .field, .range { min-width: 0; }
 .range input { min-width: 0; width: 100%; }
 .upload-thumb { image-rendering: pixelated; background: var(--bg); border: 1px solid var(--line); border-radius: 6px; max-width: 120px; }
+.slot-row { display: flex; align-items: center; gap: 6px; flex-wrap: wrap; }
+.slot-row .upload-thumb { max-height: 64px; }
