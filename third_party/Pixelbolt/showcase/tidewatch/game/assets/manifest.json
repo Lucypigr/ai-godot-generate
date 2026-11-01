@@ -1,0 +1,327 @@
+{
+  "water": {
+    "width": 16,
+    "height": 16,
+    "frames": 12,
+    "animations": [
+      "shimmer-a",
+      "shimmer-b",
+      "shimmer-c"
+    ]
+  },
+  "shore": {
+    "width": 16,
+    "height": 16,
+    "frames": 188,
+    "animations": [
+      "surf-0",
+      "surf-1",
+      "surf-4",
+      "surf-5",
+      "surf-7",
+      "surf-16",
+      "surf-17",
+      "surf-20",
+      "surf-21",
+      "surf-23",
+      "surf-28",
+      "surf-29",
+      "surf-31",
+      "surf-64",
+      "surf-65",
+      "surf-68",
+      "surf-69",
+      "surf-71",
+      "surf-80",
+      "surf-81",
+      "surf-84",
+      "surf-85",
+      "surf-87",
+      "surf-92",
+      "surf-93",
+      "surf-95",
+      "surf-112",
+      "surf-113",
+      "surf-116",
+      "surf-117",
+      "surf-119",
+      "surf-124",
+      "surf-125",
+      "surf-127",
+      "surf-193",
+      "surf-197",
+      "surf-199",
+      "surf-209",
+      "surf-213",
+      "surf-215",
+      "surf-221",
+      "surf-223",
+      "surf-241",
+      "surf-245",
+      "surf-247",
+      "surf-253",
+      "surf-255"
+    ]
+  },
+  "grass": {
+    "width": 16,
+    "height": 16,
+    "frames": 47,
+    "animations": [
+      "default"
+    ]
+  },
+  "dock": {
+    "width": 16,
+    "height": 16,
+    "frames": 6,
+    "animations": [
+      "default"
+    ]
+  },
+  "props": {
+    "width": 16,
+    "height": 16,
+    "frames": 16,
+    "animations": [
+      "grass-sway",
+      "bush"
+    ]
+  },
+  "flora": {
+    "width": 48,
+    "height": 64,
+    "frames": 4,
+    "animations": [
+      "palm",
+      "oak"
+    ]
+  },
+  "rocks": {
+    "width": 32,
+    "height": 32,
+    "frames": 2,
+    "animations": [
+      "default"
+    ]
+  },
+  "lighthouse": {
+    "width": 64,
+    "height": 128,
+    "frames": 5,
+    "animations": [
+      "day",
+      "night"
+    ]
+  },
+  "lighthouse-normal": {
+    "width": 64,
+    "height": 128,
+    "frames": 5,
+    "animations": [
+      "day",
+      "night"
+    ]
+  },
+  "lighthouse-emissive": {
+    "width": 64,
+    "height": 128,
+    "frames": 5,
+    "animations": [
+      "day",
+      "night"
+    ]
+  },
+  "cottage": {
+    "width": 64,
+    "height": 64,
+    "frames": 2,
+    "animations": [
+      "day",
+      "night"
+    ]
+  },
+  "cottage-normal": {
+    "width": 64,
+    "height": 64,
+    "frames": 2,
+    "animations": [
+      "day",
+      "night"
+    ]
+  },
+  "cottage-emissive": {
+    "width": 64,
+    "height": 64,
+    "frames": 2,
+    "animations": [
+      "day",
+      "night"
+    ]
+  },
+  "lamp": {
+    "width": 16,
+    "height": 32,
+    "frames": 3,
+    "animations": [
+      "off",
+      "on"
+    ]
+  },
+  "lamp-normal": {
+    "width": 16,
+    "height": 32,
+    "frames": 3,
+    "animations": [
+      "off",
+      "on"
+    ]
+  },
+  "lamp-emissive": {
+    "width": 16,
+    "height": 32,
+    "frames": 3,
+    "animations": [
+      "off",
+      "on"
+    ]
+  },
+  "boat": {
+    "width": 48,
+    "height": 32,
+    "frames": 2,
+    "animations": [
+      "bob"
+    ]
+  },
+  "keeper": {
+    "width": 40,
+    "height": 40,
+    "frames": 40,
+    "animations": [
+      "idle-d",
+      "walk-d",
+      "idle-u",
+      "walk-u",
+      "idle-r",
+      "walk-r",
+      "idle-l",
+      "walk-l",
+      "attack-d",
+      "attack-u",
+      "attack-r",
+      "attack-l",
+      "hurt-d",
+      "hold-up"
+    ]
+  },
+  "crab": {
+    "width": 32,
+    "height": 24,
+    "frames": 11,
+    "animations": [
+      "idle",
+      "walk",
+      "snap",
+      "hurt"
+    ]
+  },
+  "jelly": {
+    "width": 16,
+    "height": 16,
+    "frames": 7,
+    "animations": [
+      "idle",
+      "hop",
+      "hurt"
+    ]
+  },
+  "gull": {
+    "width": 16,
+    "height": 16,
+    "frames": 5,
+    "animations": [
+      "flap",
+      "glide"
+    ]
+  },
+  "fisher": {
+    "width": 32,
+    "height": 32,
+    "frames": 4,
+    "animations": [
+      "idle"
+    ]
+  },
+  "fx": {
+    "width": 32,
+    "height": 32,
+    "frames": 34,
+    "animations": [
+      "leaves",
+      "shards",
+      "splash",
+      "poof",
+      "hit",
+      "sparkle",
+      "dust"
+    ]
+  },
+  "slash": {
+    "width": 48,
+    "height": 48,
+    "frames": 12,
+    "animations": [
+      "slash-d",
+      "slash-u",
+      "slash-r",
+      "slash-l"
+    ]
+  },
+  "pickups": {
+    "width": 16,
+    "height": 16,
+    "frames": 8,
+    "animations": [
+      "heart",
+      "glass",
+      "key",
+      "flint"
+    ]
+  },
+  "pickups-emissive": {
+    "width": 16,
+    "height": 16,
+    "frames": 8,
+    "animations": [
+      "heart",
+      "glass",
+      "key",
+      "flint"
+    ]
+  },
+  "ui": {
+    "width": 12,
+    "height": 10,
+    "frames": 6,
+    "animations": [
+      "default"
+    ]
+  },
+  "dialog": {
+    "width": 8,
+    "height": 8,
+    "frames": 9,
+    "animations": [
+      "default"
+    ]
+  },
+  "font": {
+    "width": 6,
+    "height": 9,
+    "frames": 76,
+    "animations": [
+      "default"
+    ]
+  }
+}

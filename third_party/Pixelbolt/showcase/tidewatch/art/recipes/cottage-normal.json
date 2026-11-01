@@ -1,0 +1,191 @@
+{
+  "version": 1,
+  "width": 64,
+  "height": 64,
+  "anchor": [
+    32,
+    59
+  ],
+  "animations": {
+    "day": {
+      "frames": [
+        "day"
+      ]
+    },
+    "night": {
+      "frames": [
+        "night"
+      ]
+    }
+  },
+  "sheet": {
+    "columns": 2
+  },
+  "name": "cottage-normal",
+  "palette": {
+    "f": "#8080ff",
+    "r": "#8039ea",
+    "R": "#4640de",
+    "L": "#b940de",
+    "u": "#800db7",
+    "d": "#80dada",
+    "l": "#1980cc",
+    "e": "#e680cc"
+  },
+  "frames": [
+    {
+      "name": "day",
+      "duration": 1000,
+      "ops": [
+        {
+          "op": "grid",
+          "x": 0,
+          "y": 0,
+          "rows": [
+            "................................................................",
+            "................................................................",
+            "..........................................llleeee...............",
+            "..........................................llleeee...............",
+            "..........................................llleeee...............",
+            "..........................................llleeee...............",
+            "..........................................llleeee...............",
+            "..........................................llleeee...............",
+            "..........................................llleeee...............",
+            ".............fffffffffffffffffffffffffffffllleeeeff.............",
+            "...........RRRRuuuuuuuuuuuuuuuuuuuuuuuuuuullleeeeLLLL...........",
+            "...........RRRRrrrrrrrrrrrrrrrrrrrrrrrrrrrllleeeeLLLL...........",
+            "...........RRRRrrrrrrrrrrrrrrrrrrrrrrrrrrrllleeeeLLLL...........",
+            "..........RRRRrrrrrrrrrrrrrrrrrrrrrrrrrrrrllleeeerLLLL..........",
+            "..........RRRRrrrrrrrrrrrrrrrrrrrrrrrrrrrrllleeeerLLLL..........",
+            "..........RRRRrrrrrrrrrrrrrrrrrrrrrrrrrrrrllleeeerLLLL..........",
+            "..........RRRRrrrrrrrrrrrrrrrrrrrrrrrrrrrrllleeeerLLLL..........",
+            ".........RRRRrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrLLLL.........",
+            ".........RRRRrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrLLLL.........",
+            ".........RRRRrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrLLLL.........",
+            ".........RRRRrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrLLLL.........",
+            "........RRRRrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrLLLL........",
+            "........RRRRrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrLLLL........",
+            "........RRRRrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrLLLL........",
+            "........RRRRrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrLLLL........",
+            ".......RRRRrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrLLLL.......",
+            ".......RRRRrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrLLLL.......",
+            ".......RRRRrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrLLLL.......",
+            ".......RRRRrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrLLLL.......",
+            "......RRRRrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrLLLL......",
+            "......RRRRrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrLLLL......",
+            "......RRRRrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrLLLL......",
+            "......RRRRrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrLLLL......",
+            ".....RRRRrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrLLLL.....",
+            ".....RRRRrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrLLLL.....",
+            "..........llllfffffffffffffffffffffffffffffffffffffeee..........",
+            "..........llllfffffffffffffffffffffffffffffffffffffeee..........",
+            "..........llllfffffffffffffffffffffffffffffffffffffeee..........",
+            "..........llllfffffffffffffffffffffffffffffffffffffeee..........",
+            "..........llllfffffffffffffffffffffffffffffffffffffeee..........",
+            "..........llllfffffffffffffffffffffffffffffffffffffeee..........",
+            "..........llllfffffffffffffffffffffffffffffffffffffeee..........",
+            "..........llllfffffffffffffffffffffffffffffffffffffeee..........",
+            "..........llllfffffffffffffffffffffffffffffffffffffeee..........",
+            "..........llllfffffffffffffffffffffffffffffffffffffeee..........",
+            "..........lllluuuuuuuuuuuffffffffffffffuuuuuuuuuuufeee..........",
+            "..........llllfffffffffffffffffffffffffffffffffffffeee..........",
+            "..........llllfffffffffffffffffffffffffffffffffffffeee..........",
+            "..........llllfffffffffffffffffffffffffffffffffffffeee..........",
+            "..........llllfffffffffffffffffffffffffffffffffffffeee..........",
+            "..........llllfffffffffffffffffffffffffffffffffffffeee..........",
+            "..........llllfffffffffffffffffffffffffffffffffffffeee..........",
+            "..........llllfffffffffffffffffffffffffffffffffffffeee..........",
+            "..........llllfffffffffffffffffffffffffffffffffffffeee..........",
+            "..........llllfffffffffffffffffffffffffffffffffffffeee..........",
+            "..........llllfffffffffffffffffffffffffffffffffffffeee..........",
+            "..........llllfffffffffffffffffffffffffffffffffffffeee..........",
+            "..........llllfffffffffffffffffffffffffffffffffffffeee..........",
+            "..........llllfffffffffffffffffffffffffffffffffffffeee..........",
+            "..........llllfffffffffffffffffffffffffffffffffffffeee..........",
+            "................................................................",
+            "................................................................",
+            "................................................................",
+            "................................................................"
+          ]
+        }
+      ]
+    },
+    {
+      "name": "night",
+      "duration": 1000,
+      "ops": [
+        {
+          "op": "grid",
+          "x": 0,
+          "y": 0,
+          "rows": [
+            "................................................................",
+            "................................................................",
+            "..........................................llleeee...............",
+            "..........................................llleeee...............",
+            "..........................................llleeee...............",
+            "..........................................llleeee...............",
+            "..........................................llleeee...............",
+            "..........................................llleeee...............",
+            "..........................................llleeee...............",
+            ".............fffffffffffffffffffffffffffffllleeeeff.............",
+            "...........RRRRuuuuuuuuuuuuuuuuuuuuuuuuuuullleeeeLLLL...........",
+            "...........RRRRrrrrrrrrrrrrrrrrrrrrrrrrrrrllleeeeLLLL...........",
+            "...........RRRRrrrrrrrrrrrrrrrrrrrrrrrrrrrllleeeeLLLL...........",
+            "..........RRRRrrrrrrrrrrrrrrrrrrrrrrrrrrrrllleeeerLLLL..........",
+            "..........RRRRrrrrrrrrrrrrrrrrrrrrrrrrrrrrllleeeerLLLL..........",
+            "..........RRRRrrrrrrrrrrrrrrrrrrrrrrrrrrrrllleeeerLLLL..........",
+            "..........RRRRrrrrrrrrrrrrrrrrrrrrrrrrrrrrllleeeerLLLL..........",
+            ".........RRRRrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrLLLL.........",
+            ".........RRRRrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrLLLL.........",
+            ".........RRRRrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrLLLL.........",
+            ".........RRRRrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrLLLL.........",
+            "........RRRRrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrLLLL........",
+            "........RRRRrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrLLLL........",
+            "........RRRRrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrLLLL........",
+            "........RRRRrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrLLLL........",
+            ".......RRRRrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrLLLL.......",
+            ".......RRRRrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrLLLL.......",
+            ".......RRRRrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrLLLL.......",
+            ".......RRRRrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrLLLL.......",
+            "......RRRRrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrLLLL......",
+            "......RRRRrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrLLLL......",
+            "......RRRRrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrLLLL......",
+            "......RRRRrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrLLLL......",
+            ".....RRRRrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrLLLL.....",
+            ".....RRRRrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrLLLL.....",
+            "..........llllfffffffffffffffffffffffffffffffffffffeee..........",
+            "..........llllfffffffffffffffffffffffffffffffffffffeee..........",
+            "..........llllfffffffffffffffffffffffffffffffffffffeee..........",
+            "..........llllfffffffffffffffffffffffffffffffffffffeee..........",
+            "..........llllfffffffffffffffffffffffffffffffffffffeee..........",
+            "..........llllfffffffffffffffffffffffffffffffffffffeee..........",
+            "..........llllfffffffffffffffffffffffffffffffffffffeee..........",
+            "..........llllfffffffffffffffffffffffffffffffffffffeee..........",
+            "..........llllfffffffffffffffffffffffffffffffffffffeee..........",
+            "..........llllfffffffffffffffffffffffffffffffffffffeee..........",
+            "..........lllluuuuuuuuuuuffffffffffffffuuuuuuuuuuufeee..........",
+            "..........llllfffffffffffffffffffffffffffffffffffffeee..........",
+            "..........llllfffffffffffffffffffffffffffffffffffffeee..........",
+            "..........llllfffffffffffffffffffffffffffffffffffffeee..........",
+            "..........llllfffffffffffffffffffffffffffffffffffffeee..........",
+            "..........llllfffffffffffffffffffffffffffffffffffffeee..........",
+            "..........llllfffffffffffffffffffffffffffffffffffffeee..........",
+            "..........llllfffffffffffffffffffffffffffffffffffffeee..........",
+            "..........llllfffffffffffffffffffffffffffffffffffffeee..........",
+            "..........llllfffffffffffffffffffffffffffffffffffffeee..........",
+            "..........llllfffffffffffffffffffffffffffffffffffffeee..........",
+            "..........llllfffffffffffffffffffffffffffffffffffffeee..........",
+            "..........llllfffffffffffffffffffffffffffffffffffffeee..........",
+            "..........llllfffffffffffffffffffffffffffffffffffffeee..........",
+            "..........llllfffffffffffffffffffffffffffffffffffffeee..........",
+            "................................................................",
+            "................................................................",
+            "................................................................",
+            "................................................................"
+          ]
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,9 @@
+{
+  "version": 1,
+  "name": "shadow",
+  "width": 8,
+  "height": 3,
+  "palette": { "$ref": "palette.json" },
+  "anchor": [4, 1],
+  "frames": [{ "name": "feet", "ops": [{ "op": "ellipse", "w": 8, "h": 3, "color": "k" }] }]
+}

@@ -1,0 +1,104 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ci-${{ github.ref }}
+  # every commit on main gets a full run (macOS runners can wait long); PR branches cancel stale runs
+  cancel-in-progress: ${{ github.ref != 'refs/heads/main' }}
+
+jobs:
+  lint:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - run: python -m pip install ruff "reuse[charset-normalizer]"
+      - run: ruff check .
+      - run: ruff format --check .
+      - name: Licensing (REUSE)
+        run: reuse lint
+
+  test:
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-latest, windows-latest, macos-latest]
+        python: ['3.10', '3.11', '3.12', '3.13', '3.14', '3.15']
+    runs-on: ${{ matrix.os }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: ${{ matrix.python }}
+          cache: pip
+      - run: python -m pip install -e ".[dev]"
+      - name: Unit and golden tests
+        run: python -m pytest
+      - name: Small render
+        run: spritekiln render tests/fixtures/minimal/minimal.yaml --jobs 2 -o render-out/minimal
+      - name: Keep golden diffs and the render on failure
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: failure-${{ matrix.os }}-py${{ matrix.python }}
+          path: |
+            render-out/
+            ${{ runner.temp }}/pytest-of-*/**/*_diff.png
+          if-no-files-found: ignore
+
+  package:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - run: python -m pip install build pipx
+      - run: python -m build
+      - name: Install the wheel with pipx and use it from an empty folder
+        run: |
+          pipx install dist/*.whl
+          cd "$RUNNER_TEMP"
+          spritekiln --version
+          spritekiln new hero --dir specs
+          # a new character says how its head looks before it validates strictly (`validate` warns until then)
+          sed -i 's/^brief:$/brief:\n  head: the template head and hair/' specs/hero/hero.yaml
+          spritekiln validate specs/hero/hero.yaml --strict
+          spritekiln render specs/hero/hero.yaml --anims idle --dirs s,e --jobs 2
+          test -f specs/hero/out/hero/hero.json
+          pxforge validate specs/hero/hero.yaml
+      - uses: actions/upload-artifact@v4
+        with:
+          name: dist
+          path: dist/
+
+  godot:
+    # the Godot addon and the example project, run headless inside Godot (tests/test_godot_runtime.py)
+    runs-on: ubuntu-latest
+    env:
+      GODOT_VERSION: 4.7.2
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+          cache: pip
+      - run: python -m pip install -e ".[dev]"
+      - name: Download Godot
+        run: |
+          curl -sSLo godot.zip "https://github.com/godotengine/godot/releases/download/${GODOT_VERSION}-stable/Godot_v${GODOT_VERSION}-stable_linux.x86_64.zip"
+          unzip -q godot.zip -d "$RUNNER_TEMP/godot"
+          bin="$RUNNER_TEMP/godot/Godot_v${GODOT_VERSION}-stable_linux.x86_64"
+          "$bin" --headless --version   # fails here rather than skipping the tests below
+          echo "SPRITEKILN_GODOT_BIN=$bin" >> "$GITHUB_ENV"
+      - run: python -m pytest tests/test_godot_runtime.py tests/test_godot.py -rs

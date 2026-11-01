@@ -1,0 +1,23 @@
+Third-party notices for Pixelbolt Studio (portable build)
+===========================================================
+
+Pixelbolt itself has no third-party dependencies. Everything in the "app"
+and "launcher" folders, and the scripts beside this file, is Pixelbolt code
+and original Pixelbolt artwork under the MIT license (LICENSE in the "app"
+folder).
+
+This build includes one third-party program so that nothing has to be
+installed:
+
+Node.js
+-------
+The "runtime" folder holds the official Node.js runtime for this system,
+downloaded from https://nodejs.org and included unmodified. BUILD-INFO.txt
+names the exact version, the address it was downloaded from and its SHA-256.
+
+Node.js is distributed under the MIT license and contains further
+third-party components of its own (among them V8, libuv, OpenSSL, ICU and
+zlib). The complete license text for Node.js and for those components is
+NODE-LICENSE.txt in the "runtime" folder.
+
+Copyright Node.js contributors. All rights reserved.

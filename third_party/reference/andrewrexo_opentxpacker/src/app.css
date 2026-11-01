@@ -1,0 +1,24 @@
+@import 'tailwindcss/base';
+@import 'tailwindcss/components';
+@import 'tailwindcss/utilities';
+
+.panel-header {
+	@apply text-xl font-bold;
+}
+
+.bigger-button {
+	font-size: 1rem;
+}
+
+.code-snippet {
+	@apply rounded-sm bg-base-300 px-1;
+}
+
+.grid-lines {
+	@apply pointer-events-none absolute inset-0 z-[15] h-full w-full bg-[linear-gradient(to_right,#80808012_1px,transparent_1px),linear-gradient(to_bottom,#80808012_1px,transparent_1px)] bg-[size:24px_24px];
+}
+
+canvas {
+	@apply relative z-10 bg-base-300;
+	pointer-events: auto !important;
+}

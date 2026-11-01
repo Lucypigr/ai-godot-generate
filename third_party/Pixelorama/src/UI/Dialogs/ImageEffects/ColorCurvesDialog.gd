@@ -1,0 +1,52 @@
+extends ImageEffect
+
+enum Channel { RGB, RED, GREEN, BLUE, ALPHA, HUE, SATURATION, VALUE }
+
+var shader_inc := load("res://src/Shaders/Effects/ColorCurves.gdshaderinc")
+var shader: Shader
+
+var curves: Array[Curve]
+@onready var channel_option_button := %ChannelOptionButton as OptionButton
+@onready var curve_edit := $VBoxContainer/CurveEdit as CurveEdit
+
+
+func _ready() -> void:
+	shader = ShaderLoader.generate_texture_blit_shader(shader_inc)
+	super()
+	var sm := ShaderMaterial.new()
+	sm.shader = ShaderLoader.generate_canvas_item_shader(shader_inc)
+	preview.set_material(sm)
+	for i in channel_option_button.item_count:
+		var curve := Curve.new()
+		CurveEdit.set_curve_preset(curve, 0)
+		curves.append(curve)
+	curve_edit.curve = curves[Channel.RGB]
+
+
+func commit_action(cel: Image, project := Global.current_project) -> void:
+	var selection_tex: ImageTexture
+	if selection_checkbox.button_pressed and project.has_selection:
+		var selection := project.selection_map.return_cropped_copy(project, project.size)
+		selection_tex = ImageTexture.create_from_image(selection)
+
+	var params := {
+		"curve_rgb": CurveEdit.to_texture(curves[Channel.RGB]),
+		"curve_red": CurveEdit.to_texture(curves[Channel.RED]),
+		"curve_green": CurveEdit.to_texture(curves[Channel.GREEN]),
+		"curve_blue": CurveEdit.to_texture(curves[Channel.BLUE]),
+		"curve_alpha": CurveEdit.to_texture(curves[Channel.ALPHA]),
+		"curve_hue": CurveEdit.to_texture(curves[Channel.HUE]),
+		"curve_sat": CurveEdit.to_texture(curves[Channel.SATURATION]),
+		"curve_value": CurveEdit.to_texture(curves[Channel.VALUE]),
+		"selection": selection_tex
+	}
+	if !has_been_confirmed:
+		for param in params:
+			preview.material.set_shader_parameter(param, params[param])
+	else:
+		var gen := ShaderImageEffect.new()
+		gen.generate_image(cel, shader, params, project.size)
+
+
+func _on_channel_option_button_item_selected(index: int) -> void:
+	curve_edit.curve = curves[index]

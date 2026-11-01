@@ -1,0 +1,57 @@
+{
+  "version": 1,
+  "name": "falls",
+  "width": 8,
+  "height": 8,
+  "palette": { "$ref": "palette.json" },
+  "frames": [
+    {
+      "name": "fall-l-0",
+      "duration": 90,
+      "ops": [
+        {
+          "op": "grid",
+          "rows": [
+            "kdcedcdc",
+            "kcdecdec",
+            "kedcdced",
+            "kcedcdcc",
+            "kdcdedcd",
+            "kecdcedc",
+            "kcdedcce",
+            "kdecdced"
+          ]
+        }
+      ]
+    },
+    { "name": "fall-l-1", "duration": 90, "from": "fall-l-0", "translate": [0, 2], "wrap": true },
+    { "name": "fall-l-2", "duration": 90, "from": "fall-l-0", "translate": [0, 4], "wrap": true },
+    { "name": "fall-l-3", "duration": 90, "from": "fall-l-0", "translate": [0, 6], "wrap": true },
+    {
+      "name": "fall-r-0",
+      "duration": 90,
+      "ops": [
+        {
+          "op": "grid",
+          "rows": [
+            "dcedcdck",
+            "cdecdcek",
+            "ecdcedck",
+            "dcedcdek",
+            "cdcedcck",
+            "edcdcedk",
+            "cdedccek",
+            "dcecdcek"
+          ]
+        }
+      ]
+    },
+    { "name": "fall-r-1", "duration": 90, "from": "fall-r-0", "translate": [0, 2], "wrap": true },
+    { "name": "fall-r-2", "duration": 90, "from": "fall-r-0", "translate": [0, 4], "wrap": true },
+    { "name": "fall-r-3", "duration": 90, "from": "fall-r-0", "translate": [0, 6], "wrap": true }
+  ],
+  "animations": {
+    "fall-l": { "frames": ["fall-l-0", "fall-l-1", "fall-l-2", "fall-l-3"] },
+    "fall-r": { "frames": ["fall-r-0", "fall-r-1", "fall-r-2", "fall-r-3"] }
+  }
+}

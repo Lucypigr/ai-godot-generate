@@ -1,0 +1,194 @@
+{
+  "version": 1,
+  "name": "dialog",
+  "width": 8,
+  "height": 8,
+  "palette": {
+    "$ref": "../palette.json"
+  },
+  "frames": [
+    {
+      "name": "box-tl",
+      "ops": [
+        {
+          "op": "grid",
+          "x": 0,
+          "y": 0,
+          "rows": [
+            "..kkkkkk",
+            ".kMMMMMM",
+            "kMvvvvvv",
+            "kMvVVVVV",
+            "kMvVVVVV",
+            "kMvVVVVV",
+            "kMvVVVVV",
+            "kMvVVVVV"
+          ]
+        }
+      ]
+    },
+    {
+      "name": "box-t",
+      "ops": [
+        {
+          "op": "grid",
+          "x": 0,
+          "y": 0,
+          "rows": [
+            "kkkkkkkk",
+            "MMMMMMMM",
+            "vvvvvvvv",
+            "VVVVVVVV",
+            "VVVVVVVV",
+            "VVVVVVVV",
+            "VVVVVVVV",
+            "VVVVVVVV"
+          ]
+        }
+      ]
+    },
+    {
+      "name": "box-tr",
+      "ops": [
+        {
+          "op": "grid",
+          "x": 0,
+          "y": 0,
+          "rows": [
+            "kkkkkk..",
+            "MMMMMMk.",
+            "vvvvvvMk",
+            "VVVVVvMk",
+            "VVVVVvMk",
+            "VVVVVvMk",
+            "VVVVVvMk",
+            "VVVVVvMk"
+          ]
+        }
+      ]
+    },
+    {
+      "name": "box-r",
+      "ops": [
+        {
+          "op": "grid",
+          "x": 0,
+          "y": 0,
+          "rows": [
+            "VVVVVvMk",
+            "VVVVVvMk",
+            "VVVVVvMk",
+            "VVVVVvMk",
+            "VVVVVvMk",
+            "VVVVVvMk",
+            "VVVVVvMk",
+            "VVVVVvMk"
+          ]
+        }
+      ]
+    },
+    {
+      "name": "box-br",
+      "ops": [
+        {
+          "op": "grid",
+          "x": 0,
+          "y": 0,
+          "rows": [
+            "VVVVVvMk",
+            "VVVVVvMk",
+            "VVVVVvMk",
+            "VVVVVvMk",
+            "VVVVVvMk",
+            "vvvvvvMk",
+            "MMMMMMk.",
+            "kkkkkk.."
+          ]
+        }
+      ]
+    },
+    {
+      "name": "box-b",
+      "ops": [
+        {
+          "op": "grid",
+          "x": 0,
+          "y": 0,
+          "rows": [
+            "VVVVVVVV",
+            "VVVVVVVV",
+            "VVVVVVVV",
+            "VVVVVVVV",
+            "VVVVVVVV",
+            "vvvvvvvv",
+            "MMMMMMMM",
+            "kkkkkkkk"
+          ]
+        }
+      ]
+    },
+    {
+      "name": "box-bl",
+      "ops": [
+        {
+          "op": "grid",
+          "x": 0,
+          "y": 0,
+          "rows": [
+            "kMvVVVVV",
+            "kMvVVVVV",
+            "kMvVVVVV",
+            "kMvVVVVV",
+            "kMvVVVVV",
+            "kMvvvvvv",
+            ".kMMMMMM",
+            "..kkkkkk"
+          ]
+        }
+      ]
+    },
+    {
+      "name": "box-l",
+      "ops": [
+        {
+          "op": "grid",
+          "x": 0,
+          "y": 0,
+          "rows": [
+            "kMvVVVVV",
+            "kMvVVVVV",
+            "kMvVVVVV",
+            "kMvVVVVV",
+            "kMvVVVVV",
+            "kMvVVVVV",
+            "kMvVVVVV",
+            "kMvVVVVV"
+          ]
+        }
+      ]
+    },
+    {
+      "name": "box-c",
+      "ops": [
+        {
+          "op": "grid",
+          "x": 0,
+          "y": 0,
+          "rows": [
+            "VVVVVVVV",
+            "VVVVVVVV",
+            "VVVVVVVV",
+            "VVVVVVVV",
+            "VVVVVVVV",
+            "VVVVVVVV",
+            "VVVVVVVV",
+            "VVVVVVVV"
+          ]
+        }
+      ]
+    }
+  ],
+  "sheet": {
+    "columns": 9
+  }
+}

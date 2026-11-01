@@ -1,0 +1,81 @@
+import { paletteFor, writeJSON } from '../../tools/common.mjs';
+const idleD = [
+  '.....kkkkkk.....',
+  '...kkeeeeEEkk...',
+  '..keeeeEEEEEEk..',
+  '.keeEEEEEEEEEfk.',
+  '.kEEEEEEEEEEEfk.',
+  'kEEEEEEEEEEEEEfk',
+  'kfEffffffffffEfk',
+  'kfEkzAaaaaAzkEfk',
+  'kfEkApppppPAkEfk',
+  'kffkpkppppkPkffk',
+  'kFfkpkppppkqkfFk',
+  '.kFkqPppppPqkFk.',
+  '..kkkqqqqqqkkk..',
+  '..kfEekkkkeEfk..',
+  '.kEkEeEEEEEfkfk.',
+  '.kEkeEEEEEEfkfk.',
+  '.kPkEEEEEEEfkqk.',
+  '.kPkUUUMMUUUkqk.',
+  '..kEEEEEEEEEEk..',
+  '..kfffffffffFk..',
+  '....kBBkkBBk....',
+  '...kUUUkkUUUk...'
+];
+const idleU = [
+  '.....kkkkkk.....',
+  '...kkeeeeEEkk...',
+  '..keeeeEEEEEEk..',
+  '.keeEEEEEEEEEfk.',
+  '.kEEEEEEEEEEEfk.',
+  'kEEEEEEEEEEEEEfk',
+  'keEEEEEEEEEEEEfk',
+  'kfEEEEEEEEEEEEfk',
+  'kfEEEEEEEEEEEffk',
+  'kffEEEEEEEEEfffk',
+  'kFffffffffffffFk',
+  '.kFFffffffffFFk.',
+  '..kkkkkkkkkkkk..',
+  '..kfzAAAAAAzfk..',
+  '.kEkEeEEEEEfkfk.',
+  '.kEkeEEEEEEfkfk.',
+  '.kPkEEEEEEEfkqk.',
+  '.kPkUUUUUUUUkqk.',
+  '..kEEEEEEEEEEk..',
+  '..kfffffffffFk..',
+  '....kBBkkBBk....',
+  '...kUUUkkUUUk...'
+];
+const idleR = [
+  '.....kkkkkkk......',
+  '...kkeeeeEEEkk....',
+  '..keeeEEEEEEEEk...',
+  '.keeEEEEEEEEEEEk..',
+  '.kEEEEEEEEEEEEEfk.',
+  'kEEEEEEEEEEEEEEEfk',
+  'kfEEEEffffffffffFk',
+  'kfEEEkzAaaappppkk.',
+  'kfEEEkzAapppkpPk..',
+  'kffEEkzAappppPPk..',
+  'kFffEkzzApppqqk...',
+  '.kFFfkkzzqqqkk....',
+  '..kkkkkkkkkkk.....',
+  '...kfEEeEEfk......',
+  '...kEEeEEEEfk.....',
+  '...kEeEEEEEfk.....',
+  '...kEEPPEEEfk.....',
+  '...kkUUPPUUkk.....',
+  '...kEEEEEEEEk.....',
+  '...kfffffffFk.....',
+  '....kBBkBBk.......',
+  '...kUUUkUUUk......'
+];
+const shadow = { op: 'ellipse', x: 10, y: 27, w: 12, h: 4, color: '_' };
+const recipe = { version: 1, name: 'keeper-draft', width: 32, height: 32, palette: paletteFor(idleD, idleU, idleR, ['_']), frames: [
+  { name: 'idle-d', ops: [shadow, { op: 'grid', x: 8, y: 8, rows: idleD }] },
+  { name: 'idle-u', ops: [shadow, { op: 'grid', x: 8, y: 8, rows: idleU }] },
+  { name: 'idle-r', ops: [shadow, { op: 'grid', x: 7, y: 8, rows: idleR }] },
+  { name: 'idle-l', from: 'idle-r', flipX: true }
+] };
+writeJSON('art/review/keeper-draft.json', recipe, { force: true });

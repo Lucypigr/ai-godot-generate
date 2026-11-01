@@ -1,0 +1,10 @@
+#!/bin/sh
+# The pixelbolt command line, run with the Node.js runtime in this folder.
+self=$0
+# Follow symbolic links, so the command also works when it is linked into a folder on PATH.
+while [ -L "$self" ]; do
+  target=$(readlink "$self")
+  case $target in /*) self=$target ;; *) self=$(dirname "$self")/$target ;; esac
+done
+here=$(CDPATH= cd -- "$(dirname "$self")" && pwd -P) || exit 1
+exec "$here/runtime/node" "$here/app/bin/pixelbolt.js" "$@"

@@ -1,0 +1,303 @@
+# Deferred work
+
+Work that was found and deliberately **not** done yet, so the findings survive instead of living only
+in review comments. Each item is a decision with its own PR — nothing here is a mechanical fix.
+
+**This ledger lives at `docs/plans/deferred-work.md`, with the rest of the repository's plans.** Designs
+and specifications go to `docs/spec/`, named `YYYY-MM-DD-<topic>.md`. Neither directory is part of the
+published site (`srcExclude` in `docs/.vitepress/config.mts`), and both are tracked source that
+`npm run docs:clean` must never touch — `npm run verify:docs` fails when it does.
+
+## `place()` recurses without bound when `padding` is not a number
+
+**Verified resolved on 2026-10-13** — both constructors throw for numeric `NaN`, `Infinity` and
+`-Infinity` padding, while other JavaScript values keep their original coercion behaviour. Omitted or
+`undefined` padding still defaults to `0`. `updateBinSize()` reports failure before changing dimensions
+or free space when its result is non-finite, instead of "growing" the bin to `NaN`, which is the state
+`place()` retried forever. The misplaced `{ padding: 1 }` object still constructs successfully, but
+placement now returns immediately: oversized through the packer, `undefined` from a bin. After correcting
+padding, resetting the bin rebuilds its initial free space and makes it usable again. A `NaN` rect is also
+refused without changing free space or dimensions, and the bin can accept the next valid rect.
+
+Compared with the pre-PR implementation, `null`, booleans, `[]` and objects with numeric `valueOf()`
+still pack the measured 100×100 rect into a 128×128 bin; `"2"` and `[2]` still refuse that input, because
+the probe concatenates instead of adding. No up-front number conversion or options-object detection is
+introduced. An unconditional "dimensions did not change" guard in `updateBinSize()` would break valid
+placements: with padding 2 and `pot: false`, adding 100×100, 150×50 and 150×48 places the last rect in
+the existing 252×100 bin even though its padded node extends past the reported width. The existing
+finite-result guard is retained. The measurements below are kept as the record of what the fix is
+measured against. Tracked in
+[issue #43](https://github.com/soimy/maxrects-packer/issues/43).
+
+Found while triaging the untracked issues on 2026-10-11: [issue #43](https://github.com/soimy/maxrects-packer/issues/43)
+had been open since 2022 with no reproduction, and it is still live on `master`.
+
+- **A non-numeric `padding` makes `place()` re-enter itself forever** (`src/maxrects-bin.ts:225`, `:246`).
+  The report passes the options object into the padding slot —
+  `new MaxRectsPacker(512, 512, { padding: 1 })`, where the signature is `(width, height, padding,
+  options)` — and a plain `NaN` does the same. Every size in the bin arithmetic is then `NaN`, so
+  `updateBinSize()`'s bounds check `!(tmpWidth > this.maxWidth || tmpHeight > this.maxHeight)` reads as
+  "fits" (`src/maxrects-bin.ts:403`, `:427`), the bin "grows" and the method reports success, and
+  `place()` recurses to try the same placement again. Measured on the bundle built from `45cb7ce`:
+  numeric padding places a 512×512 rect into a 512×512 packer, while `{padding: 1}` and `NaN` never
+  return — at recursion depth 300 the bin is `NaN×NaN` holding 599 free rects (two are added per
+  round) and every round runs the O(n²) `pruneFreeList()`, so the process hangs and dies with
+  `RangeError: Maximum call stack size exceeded` after 113 s rather than failing fast. Nothing
+  validates the constructor's numbers (`src/maxrects-packer.ts:57`), and the growth retry has no
+  bound. Decide between rejecting a non-finite `padding` at construction, bounding the retry in
+  `place()`, or both: the first is the clearer error but is a new throw for JavaScript callers, the
+  second is the general guard against any other `NaN` source. TypeScript callers already get a compile
+  error for the call above; JavaScript callers get the hang. Tracked in
+  [issue #43](https://github.com/soimy/maxrects-packer/issues/43).
+
+## Clone re-decides rotation
+
+**Verified resolved on 2026-10-11** — `clone()` reproduces its source for rotated rects. The bin records
+which placements turned their rect, and `clone()` undoes those turns before replaying, so the replay is
+handed the orientation the caller gave — which the stored state alone cannot say, because a rect this bin
+turned and one handed over already rotated look alike. The record is per placement and lives on the bin: a
+rect the caller sealed rejects a new property, and such a rect packed fine before the record existed. The
+reproducers below and seeded sweeps over tight bins of plain and already-rotated rects are pinned in
+`test/clone.spec.js`. The replay runs under the bin's current `options`, so a rect the caller edits after
+placement, or `options` changed after it, are outside the guarantee: the first can land elsewhere or be
+refused, the second falls back to the stored orientation. Tracked in
+[issue #117](https://github.com/soimy/maxrects-packer/issues/117). Kept for the record.
+
+Found while auditing the JSDoc against the code; a behaviour decision of its own, so it was not fixed
+on the spot.
+
+- **`MaxRectsBin.clone()` re-packed the copies, and a rotated rect arrived with its footprint already
+  swapped** (`src/maxrects-bin.ts:132`, `:196`). The replay therefore scored a different rect than the
+  source did. Measured on the bundle with `allowRotation: true`:
+
+  | Case | Source | `clone()` |
+  | --- | --- | --- |
+  | 18×18 packer, border 2, 10×11 + 3×1 + 13×13 + 11×2 | 17×15, `1×3 @12,2` and `2×11 @13,2` rotated | 15×18, all three unrotated, different placements |
+  | 16×19 holding `11×15 @2,2` and `1×15 @13,2` rotated, untouched since | 16×19 | **throws** "the bin holds a rect it can no longer place" |
+
+  The rotated fixture and the 80-bin sweep in `test/clone.spec.js` reached neither case; a seeded sweep
+  over tight bins with rotation on hits them in roughly 2% of trials.
+
+  What landed: the bin records, per placement, whether it turned its rect, because the state alone cannot
+  say (a rect this bin turned and one the caller handed over already rotated are both `rot` true with the
+  dimensions swapped). `clone()` undoes those turns before replaying, so the replay is handed the
+  orientation the caller gave. The record lives on the bin rather than on the rect — writing a field onto
+  the caller's rect is what a sealed rect rejects, and it packed fine before the record existed. Measured on the bundle over seeded tight bins: the
+  documented input went from 55 mismatches and 20 throws in 1302 rotated bins to 0 and 0, the
+  already-rotated inputs from 43/19 in 1670 and 30/16 in 1432 to 0/0, and the mixed input from 29/30 in
+  1475 to 0/0. Restoring the orientation unconditionally instead — without the mark — trades the documented
+  input for the already-rotated one (30 mismatches became 367 in 1432 bins). A `WeakMap` keyed by rect
+  would have been the alternative to the mark, and is out of reach: the bundles promise ES5, and
+  `scripts/verify-es5.mjs` fails the build on it.
+
+## `addArray()` rejects the plain objects the guides use
+
+Found while checking the untracked issues on 2026-10-15: [issue #46](https://github.com/soimy/maxrects-packer/issues/46)
+has been open since 2022, and it was still live on `master` — with a worse error than the report shows.
+Fixed in the same PR that recorded it; the measurements below are what the fix is measured against.
+
+- **The default type parameter was the `Rectangle` class, so the input the guides advertise did not
+  compile.** `MaxRectsPacker<T extends IRectangle = Rectangle>` made `new MaxRectsPacker(64, 64)` a
+  `MaxRectsPacker<Rectangle>`, and `addArray(input: readonly T[])` then demanded the class:
+  `packer.addArray([{ width: 1, height: 1 }])` failed with `TS2740: … is missing the following
+  properties from type 'Rectangle': oversized, area, collide, contain, and 15 more`. The 2022 report
+  quotes "missing `x`, `y`" instead — that is what an explicit `MaxRectsPacker<IRectangle>` gives, and
+  it still reproduced as `TS2739: … is missing the following properties from type 'IRectangle': x, y`.
+  `IRectangle` requires the two coordinates the packer itself writes, so neither form accepted what
+  `README.md` and `docs/user/getting-started.md` pass. Copied into a TypeScript project, both guides
+  fail to compile — the issue's title read literally: `TS2345: Argument of type … is not assignable to
+  parameter of type 'readonly Rectangle[]'`, and `TS2353: 'name' does not exist in type 'Rectangle'`.
+
+  Nothing caught it because `npm run verify:package` runs the `docs-example` blocks as **`.mjs`
+  JavaScript**: they execute, and no compiler ever reads them. The specs do not either — they are
+  `.spec.js` and import `../src` directly.
+
+  What landed: `IRectangleInput` (`width`, `height` and an index signature) is what `add()`/`addArray()`
+  accept, `IRectangle` extends it with the `x`/`y` the packer writes, and every generic is constrained
+  to and defaulted at `IRectangleInput`. Both guides compile unchanged, a caller who wants the class
+  back writes `new MaxRectsPacker<Rectangle>(…)`, and `IRectangle` still gives a placed rect its
+  `number` coordinates. This is a breaking change to the type surface, so it belongs to 3.0.0:
+  `bins[0].rects[0]` is `IRectangleInput` unless the caller names a narrower `T`.
+
+  Still open: the `docs-example` gate runs its snippets without a compiler, so a guide can keep shipping
+  code that does not type-check. Teaching `verify:package` to compile the TypeScript-looking examples,
+  or adding one type-checked example per guide, is a follow-up of its own.
+
+## `Rectangle` has no `toJSON()`
+
+**Verified resolved on 2026-10-15** — `Rectangle.toJSON()` now writes the public shape, so a
+`Rectangle` and the equivalent plain object serialize alike. The measurements below are kept as the
+record of what the fix is measured against. Tracked in
+[issue #53](https://github.com/soimy/maxrects-packer/issues/53).
+
+Found while checking the untracked issues on 2026-10-15: [issue #53](https://github.com/soimy/maxrects-packer/issues/53)
+had been open since 2023 and was still live on `master`. It grew out of
+[discussion #52](https://github.com/soimy/maxrects-packer/discussions/52), which is still open too.
+
+- **`JSON.stringify()` on a `Rectangle` emitted the private backing fields.** There was no `toJSON()`
+  in `src/` or `test/`, so `JSON.stringify(new Rectangle(10, 20))` returned
+  `{"oversized":false,"_rot":false,"_dirty":1,"_width":10,"_height":20,"_x":0,"_y":0,"_data":{}}` —
+  `_width` where the public API reads `width`, with the internal dirty counter leaking alongside. The
+  maintainer's answer in #52 was "you can simply use `JSON.stringify()` to serialize as json"; the
+  reporter's counter-example is what became the issue.
+
+  The trigger was narrower than the report implies, which is part of why it survived: `addArray()` keeps
+  the caller's own object, so a rect that arrived as a plain `{ width, height, name }` stringified to
+  `{"width":10,"height":20,"name":"plain","x":0,"y":0,"rot":false}` and looked right. Only a `Rectangle`
+  instance — a public export the guides mention — serialized to the underscore form.
+
+  What landed: `toJSON()` writes `width`, `height`, `x`, `y` and `rot`, plus `oversized` only when set,
+  `allowRotation` only when the rect carries an override, `data` only when it holds something other than
+  the constructor's `{}` placeholder (an explicit `null` is a caller value and travels), and any other
+  own field, so a subclass or a rect with custom state still serializes whole. The underscore-prefixed
+  backing fields and the dirty counter are dropped. Measured: the output is byte-identical to the plain
+  object the packer accepts for the same rect, and it satisfies `IRectangleInput`, so it round-trips
+  through `addArray()`. `save()` is untouched — it already rebuilds its entries field by field, so the
+  persisted snapshot keeps its documented shape.
+
+  Six traps worth keeping, all of them found by review or by the fixture rather than by the specs.
+  `JSON.stringify()`'s argument is typed `any`, so the package fixture has to call `toJSON()` directly
+  and assign the result to the published types — a `JSON.stringify()` line compiles whether or not the
+  method exists, and the first version of the fixture assertion was toothless for exactly that reason.
+  `allowRotation` is a prototype accessor rather than an own key, so it has to be written back out by
+  hand, or a `Rectangle` carrying an override would not match a plain object with the field. Reading the
+  backing fields instead of the public getters broke a subclass that overrides `data` or `allowRotation`
+  — the first draft did that while reading the geometry through getters, which was inconsistent as well
+  as wrong. And an "empty payload" test of "no own keys" silently dropped a `Date`, a class instance
+  whose state is on its prototype, and any payload that serializes itself through `toJSON()`; the test
+  now requires a plain empty object. The return type is `IRectangleJSON`, not `Record<string, any>`,
+  because the latter cannot be assigned to `IRectangleInput` or passed to `addArray()` without a cast.
+  Dropping every key that starts with `_` also discarded a caller's own `_assetId` or a subclass's
+  `_meta`, which the contract promises to keep; the class's backing fields are listed by name instead.
+  And "empty payload" still could not tell the constructor's `{}` from a `{}` the caller assigned, so the
+  placeholder is now tracked as the object itself rather than inferred from its shape. A flag the setter
+  clears cannot do that job: a subclass may assign the protected `_data` field directly, which never
+  reaches the setter. Identity and shape are both tested, because each covers a case the other misses, and
+  identity goes first — it is the only thing that sees a fresh `{}` the caller wrote, and testing it first
+  also keeps the key scan off every payload the caller supplied, which a 50,000-property payload measured
+  at one wasted `getOwnPropertyNames` call per serialization. Shape then catches what identity cannot: a
+  placeholder mutated where it stands, by an added key or a prototype replaced with one that serializes
+  itself. "Every other own field" needed the same care: copying all own keys emitted a field the caller
+  had hidden and, worse, read a hidden getter, so that loop reads `Object.keys()` — the enumerable
+  boundary JSON itself draws. The payload test keeps counting every own key, hidden ones included,
+  because "was the placeholder touched at all" is a different question from "can JSON see the field". The
+  geometry keys are written first so the order is fixed rather than following assignment order.
+
+## `rects` is a public array with the bin's bookkeeping beside it
+
+Noticed while reviewing #121. Sound for the library's own paths — `add()`, `repack()` and `reset(true)` all
+maintain the record — so this records the exposure rather than a bug.
+
+- **`MaxRectsBin.rects` is a public mutable array, and `turnedByPlacement` is positional beside it**
+  (`src/maxrects-bin.ts`). Each record names the rect it was made for, so a consumer that splices, sorts or
+  assigns into `rects` leaves records that no longer line up, and those are ignored: the affected rect is
+  replayed in the orientation it is stored in, which is what `clone()` did before the record existed. What
+  the record cannot do is make a reshaped bin reproduce: the copy comes from the replay, not from the array,
+  so a consumer who restructures `rects` and then clones gets the placements the stored rects pack into, not
+  the reshaped list. Saying so in the types (`readonly T[]`) is breaking for anyone who pushes to the array,
+  so it belongs to 3.0.0 if it is wanted at all.
+
+## `load()` can drop the placeholder it appends
+
+**Verified resolved on 2026-10-10** — the placeholder now lands at its own index and carries the saved
+`options`, `tag` and `maxWidth`/`maxHeight` over, so a `save()`/`load()` round trip no longer loses
+that bin; tracked in [issue #89](https://github.com/soimy/maxrects-packer/issues/89). Kept for the
+record.
+
+Found while documenting what `load()` does with a saved bin the current packer could not hold; the
+guide then stated the append, and this is the part of it that looked like a bug rather than a design.
+
+- **A saved bin whose `maxWidth`/`maxHeight` exceeds the packer's is appended as an
+  `OversizedElementBin`, and a later entry can overwrite it** (`src/maxrects-packer.ts:272`). The
+  oversized branch calls `this.bins.push(...)` and ignores the `index` the callback already has, while
+  the normal branch assigns `this.bins[index] = newBin`. Measured on the sources: a 1024×1024 packer
+  holding one bin that loads `[saved 2048-wide bin, saved 512-wide bin]` ends with two `MaxRectsBin`s
+  and **no placeholder** — the second entry wrote over index 1, where the first had just been appended
+  — while a fresh packer loading the same array keeps both, because the append landed at index 0 and
+  the second entry at index 1. The placeholder is also built as
+  `new OversizedElementBin(bin.width, bin.height, {})`, so it carries none of the saved bin's
+  `options` or `tag`: the round trip does not preserve the gate for that bin either.
+  Decide between giving the oversized entry its own index — the callback already receives it — and
+  pushing it past the packer's existing bins, and whether the placeholder should inherit the saved
+  `options`/`tag`. A `save()`/`load()` round trip that silently loses a bin is why this is recorded
+  rather than left to the guide's prose.
+
+## Custom heading anchors read out with their braces
+
+**Verified resolved on 2026-10-13** — the eight `{#custom-id}` heading attributes that nothing in the
+repository links to are gone from `docs/contributor/behavior-contracts.md`, so those permalink
+`aria-label`s no longer read the braces out and VitePress derives the `_N-` slugs (`_2-tag-grouping`).
+`{#clone-isolates-the-two-bins}` stays, because `docs/user/troubleshooting.md` links to it, so its label
+still carries the braces. Verified on the rebuilt `dist/contributor/behavior-contracts.html`: every
+heading keeps an id and the kept anchor resolves. Tracked in
+[issue #101](https://github.com/soimy/maxrects-packer/issues/101).
+
+## Documentation structure
+
+**Done** — the layout this section used to plan is superseded by
+[issue #81](https://github.com/soimy/maxrects-packer/issues/81) and its integration spike
+(`docs/spec/2026-09-30-docs-migration-spike.md`). The site is VitePress with TypeDoc generating the API
+markdown, so the tree is tracked source and the build products are the ignored part:
+
+| Path | Holds | Git |
+| --- | --- | --- |
+| `docs/*.md`, `docs/user/`, `docs/contributor/`, `docs/releases/` | Handwritten site pages | tracked |
+| `docs/spec/`, `docs/plans/` | Designs, specifications and this ledger | tracked, excluded from the site |
+| `docs/.vitepress/` | Site configuration | tracked, except `cache/` and `dist/` |
+| `docs/api/` | API markdown generated from JSDoc by `npm run docs:api` | ignored, never edited by hand |
+| `docs/.vitepress/dist/` | Built site | ignored |
+
+`npm run docs:clean` deletes exactly `docs/api/`, `docs/.vitepress/cache/` and
+`docs/.vitepress/dist/`; `npm run verify:docs` asserts both that boundary and the ignore rules, and
+runs in CI. The `doc*` script names remain as aliases so existing habits keep working.
+
+Done with the content migration: the README is an entry point again, its detail moved into
+`docs/user/`, `CONTRIBUTING.md` points at `docs/contributor/` for development, testing, architecture,
+behaviour contracts, compatibility and releasing, and `AGENTS.md` carries the documentation map and the
+routing rules.
+
+The documentation workflow (`.github/workflows/docs.yml`) builds on pull requests, uploads the site as
+an artifact and deploys it from `master`, and the build writes the legacy-URL redirects for the pages
+the old TypeDoc site published. The repository's Pages source was switched to **GitHub Actions** and
+the first deployment went live on 2026-10-01; root, the API pages and all 11 legacy redirect URLs were
+checked on the published site after it.
+
+The old theme is retired: `typedoc-unhoax-theme`, `assets/custom.css` and `assets/custom.js` are gone
+from `devDependencies`, the repository and the `files` allowlist, which takes the published tarball from
+30 files to 28 (`assets/favicon.ico` stays).
+
+Done with that switch: `gh-pages` and the `doc:publish` alias that used it are gone from
+`package.json` and `devDependencies`, and the `gh-pages` branch is deleted — with the Pages source on
+GitHub Actions it was the old publishing path rather than a fallback. `cz-conventional-changelog`
+is unrelated stale tooling (interactive commitizen commits only). The published tarball is otherwise
+unaffected: `docs/` is not in the `files` allowlist.
+
+## Workflow and packaging follow-ups
+
+Noticed while auditing the stack before its first deployment. None of these is broken today — every run
+on the three pull requests is green — so each waits for a commit of its own.
+
+- **Verified resolved on 2026-10-10** — npm does not resolve a relative README image against the
+  package, so the icon stayed broken on the page even though the file is in the repository; the
+  README heading now uses an absolute URL, which renders on both sites. `assets/*.png` stays out of
+  the `files` allowlist: publishing it would have grown the tarball from ~66 kB to ~530 kB, and the
+  renderer does not look inside the package for a relative path anyway. Tracked in
+   [issue #102](https://github.com/soimy/maxrects-packer/issues/102).
+- **Verified resolved on 2026-10-13** — a `.cts` consumer could not import the package under `node16`:
+  `import { MaxRectsPacker } from "maxrects-packer"` was TS1479 and
+  `import pkg = require("maxrects-packer")` was TS1471, in TS 6.0.3 and TS 7.0.2 alike, because there
+  was no `exports` map and a CommonJS consumer resolved the ESM-flavoured `dist/index.d.ts`; `nodenext`
+  already compiled on master. `package.json` now carries an `exports` map whose `require` condition
+  pairs `dist/maxrects-packer.cjs` with the CommonJS declaration set (`dist/index.d.cts` and the
+  parallel `.d.cts` copies, written from `postbuild` by `scripts/build-cjs-declarations.mjs`), while
+  `import` keeps `dist/index.d.ts`; both modes compile the `.cts` fixture with 0 errors, and
+  `npm run verify:package` compiles it against the packed tarball under `node16` and `nodenext` with
+  `skipLibCheck: false`. The map also seals off the deep imports — the deliberate 3.0.0 breaking change.
+  Tracked in [issue #98](https://github.com/soimy/maxrects-packer/issues/98).
+- **The docs site is on a vitepress pre-release, and nothing will raise the move back to stable.**
+  `vitepress@2.0.0-alpha.20` is what cleared the four Dependabot alerts — the mechanism and the reason
+  the `1.6.4` pin could not be patched in place are recorded in
+  [AGENTS.md](../../AGENTS.md)'s pitfalls. Moving to `2.0.0` stable when it ships is a version bump
+  plus a lockfile refresh, and the site is default-theme only, so there is no theme migration to
+  schedule. With no Dependabot version-update configuration in the repository, this needs a reminder
+  or that config to surface on its own.

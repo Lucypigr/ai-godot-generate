@@ -1,0 +1,764 @@
+extends Control
+
+## Needed because it is not possible to detect if a native file dialog is open or not.
+signal save_file_dialog_opened(opened: bool)
+
+const SPLASH_DIALOG_SCENE_PATH := "res://src/UI/Dialogs/SplashDialog.tscn"
+
+var opensprite_file_selected := false
+var redone := false
+var is_quitting_on_save := false
+var is_writing_text := false
+var changed_projects_on_quit: Array[Project]
+var cursor_image := preload("res://assets/graphics/cursor.png")
+## Used to download an image when dragged and dropped directly from a browser into Pixelorama
+var url_to_download := ""
+var splash_dialog: AcceptDialog:
+	get:
+		if not is_instance_valid(splash_dialog):
+			splash_dialog = load(SPLASH_DIALOG_SCENE_PATH).instantiate()
+			add_child(splash_dialog)
+		return splash_dialog
+var _last_session_last_project := ""
+
+@onready var top_menu_container := $MenuAndUI/TopMenuContainer as Panel
+@onready var main_ui := $MenuAndUI/UI/DockableContainer as DockableContainer
+## Dialog used to open images and project (.pxo) files.
+@onready var open_sprite_dialog := $Dialogs/OpenSprite as FileDialog
+## Dialog used to save project (.pxo) files.
+@onready var save_sprite_dialog := $Dialogs/SaveSprite as FileDialog
+@onready var save_sprite_html5: ConfirmationDialog = $Dialogs/SaveSpriteHTML5
+@onready var tile_mode_offsets_dialog: ConfirmationDialog = $Dialogs/TileModeOffsetsDialog
+@onready var quit_dialog: ConfirmationDialog = $Dialogs/QuitDialog
+@onready var quit_and_save_dialog: ConfirmationDialog = $Dialogs/QuitAndSaveDialog
+@onready var restore_session_confirmation_dialog := (
+	$Dialogs/RestoreSessionConfirmationDialog as ConfirmationDialog
+)
+@onready var download_confirmation := $Dialogs/DownloadImageConfirmationDialog as ConfirmationDialog
+@onready var left_cursor: Sprite2D = $LeftCursor
+@onready var right_cursor: Sprite2D = $RightCursor
+@onready var image_request := $ImageRequest as HTTPRequest
+
+
+class CLI:
+	static var args_list := {
+		["rel-dir="]:
+		[dummy, "(Default='PWD') The directory using which relative paths are resolved."],
+		["--version", "--pixelorama-version"]:
+		[CLI.print_version, "Prints current Pixelorama version"],
+		["--size"]: [CLI.print_project_size, "Prints size of the given project"],
+		["--framecount"]: [CLI.print_frame_count, "Prints total frames in the current project"],
+		["--export", "-e"]: [CLI.enable_export, "Indicates given project should be exported"],
+		["--spritesheet", "-s"]:
+		[CLI.enable_spritesheet, "Indicates given project should be exported as spritesheet"],
+		["--output", "-o"]: [CLI.set_output, "[path] Name of output file (with extension)"],
+		["--scale"]: [CLI.set_export_scale, "[integer] Scales up the export image by a number"],
+		["--frames", "-f"]: [CLI.set_frames, "[integer-integer] Used to specify frame range"],
+		["--direction", "-d"]: [CLI.set_direction, "[0, 1, 2] Specifies direction"],
+		["--json"]: [CLI.set_json, "Export the JSON data of the project"],
+		["--split-layers"]: [CLI.set_split_layers, "Each layer exports separately"],
+		["--sheet_layers_as_separate_files"]:
+		[
+			CLI.set_sheet_layers_as_separate_files,
+			"Spritesheets in split layer mode will export multiple files for each layer."
+		],
+		["--help", "-h", "-?"]: [CLI.generate_help, "Displays this help page"],
+		["--scene"]: [CLI.dummy, "Used internally by Godot."]
+	}
+
+	static func generate_help(_project: Project, _next_arg: String):
+		# gdlint: ignore=max-line-length
+		var win_path_msg := "NOTE: If your files are using relative paths (e.g. example.pxo instead of path/to/example.pxo) it is recommended to set [color=green]rel-dir='%CD%'[/color] (for Windows).\n"
+		var help := str(
+			(
+				"""
+ =========================================================================\n
+Help for Pixelorama's CLI.
+
+Usage:
+\t[b]%s[/b] [color=orange][SYSTEM OPTIONS][/color] -- [color=green][USER OPTIONS][/color] [FILES]...
+
+Use -h in place of [SYSTEM OPTIONS] to see [SYSTEM OPTIONS].
+Or use -h in place of [USER OPTIONS] to see [USER OPTIONS].
+
+some useful [b][SYSTEM OPTIONS][/b] are:
+[color=orange]--headless[/color]     Run in headless mode.
+[color=orange]--quit[/color]         Close pixelorama after current command.
+
+
+[b][USER OPTIONS][/b]:\n
+(The terms in [ ] reflect the valid type for corresponding argument).
+%s
+"""
+				% [
+					OS.get_executable_path().get_file(),
+					win_path_msg if OS.get_name() == "Windows" else ""
+				]
+			)
+		)
+		for command_group: Array in args_list.keys():
+			help += str(
+				"[color=green][b]",
+				var_to_str(command_group).replace("[", "").replace("]", "").replace('"', ""),
+				"[/b][/color]",
+				"\t\t".c_unescape(),
+				args_list[command_group][1],
+				"\n".c_unescape()
+			)
+		help += "========================================================================="
+		print_rich(help)
+
+	## Dedicated place for command line args callables
+	static func print_version(_project: Project, _next_arg: String) -> void:
+		print(Global.current_version)
+
+	static func print_project_size(project: Project, _next_arg: String) -> void:
+		print(project.size)
+
+	static func print_frame_count(project: Project, _next_arg: String) -> void:
+		print(project.frames.size())
+
+	static func enable_export(_project: Project, _next_arg: String):
+		return true
+
+	static func enable_spritesheet(project: Project, _next_arg: String):
+		project.export_profile.current_tab = Export.ExportTab.SPRITESHEET
+		return true
+
+	static func set_output(project: Project, next_arg: String) -> void:
+		if not next_arg.is_empty():
+			project.export_profile.file_name = next_arg.get_file().get_basename()
+			var directory_path = next_arg.get_base_dir()
+			if directory_path != ".":
+				project.export_profile.directory_path = directory_path
+			var extension := next_arg.get_extension()
+			project.export_profile.file_format = Export.get_file_format_from_extension(extension)
+
+	static func set_export_scale(project: Project, next_arg: String) -> void:
+		if not next_arg.is_empty():
+			if next_arg.is_valid_float():
+				project.export_profile.resize = next_arg.to_float() * 100
+
+	static func set_frames(project: Project, next_arg: String) -> void:
+		if not next_arg.is_empty():
+			var export_profile := project.export_profile
+			if next_arg.contains("-"):
+				var frame_numbers := next_arg.split("-")
+				if frame_numbers.size() > 1:
+					project.selected_cels.clear()
+					var frame_number_1 := 0
+					if frame_numbers[0].is_valid_int():
+						frame_number_1 = frame_numbers[0].to_int() - 1
+					frame_number_1 = clampi(frame_number_1, 0, project.frames.size() - 1)
+					var frame_number_2 := project.frames.size() - 1
+					if frame_numbers[1].is_valid_int():
+						frame_number_2 = frame_numbers[1].to_int() - 1
+					frame_number_2 = clampi(frame_number_2, 0, project.frames.size() - 1)
+					for frame in range(frame_number_1, frame_number_2 + 1):
+						project.selected_cels.append([frame, project.current_layer])
+						project.change_cel(frame)
+						export_profile.frame_current_tag = Export.ExportFrames.SELECTED_FRAMES
+			elif next_arg.is_valid_int():
+				var frame_number := next_arg.to_int() - 1
+				frame_number = clampi(frame_number, 0, project.frames.size() - 1)
+				project.selected_cels = [[frame_number, project.current_layer]]
+				project.change_cel(frame_number)
+				export_profile.frame_current_tag = Export.ExportFrames.SELECTED_FRAMES
+
+	static func set_direction(project: Project, next_arg: String) -> void:
+		var export_profile := project.export_profile
+		if not next_arg.is_empty():
+			next_arg = next_arg.to_lower()
+			if next_arg == "0" or next_arg.contains("forward"):
+				export_profile.direction = Export.AnimationDirection.FORWARD
+			elif next_arg == "1" or next_arg.contains("backward"):
+				export_profile.direction = Export.AnimationDirection.BACKWARDS
+			elif next_arg == "2" or next_arg.contains("ping"):
+				export_profile.direction = Export.AnimationDirection.PING_PONG
+			else:
+				print(Export.AnimationDirection.keys()[export_profile.direction])
+		else:
+			print(Export.AnimationDirection.keys()[export_profile.direction])
+
+	static func set_json(project: Project, _next_arg: String) -> void:
+		project.export_profile.export_json = true
+
+	static func set_split_layers(project: Project, _next_arg: String) -> void:
+		project.export_profile.split_layers = true
+
+	static func set_sheet_layers_as_separate_files(project: Project, _next_arg: String) -> void:
+		project.export_profile.sheet_layers_as_separate_files = true
+
+	static func dummy(_project: Project, _next_arg: String) -> void:
+		pass
+
+
+func _init() -> void:
+	Global.project_switched.connect(_project_switched)
+	if not DirAccess.dir_exists_absolute(OpenSave.BACKUPS_DIRECTORY):
+		DirAccess.make_dir_recursive_absolute(OpenSave.BACKUPS_DIRECTORY)
+	Global.shrink = _get_auto_display_scale()
+	Global.auto_content_scale_factor = _get_auto_display_scale()
+	_handle_layout_files()
+	Applinks.data_received.connect(_on_applinks_data_received)
+	# Load dither matrix images.
+	var dither_matrices_path := "user://dither_matrices"
+	if DirAccess.dir_exists_absolute(dither_matrices_path):
+		for file_name in DirAccess.get_files_at(dither_matrices_path):
+			var file_path := dither_matrices_path.path_join(file_name)
+			ShaderLoader.load_dither_matrix_from_file(file_path)
+
+
+func _ready() -> void:
+	get_tree().set_auto_accept_quit(false)
+
+	get_window().title = tr("untitled") + " - Pixelorama " + Global.current_version
+
+	Global.current_project.layers.append(PixelLayer.new(Global.current_project))
+	Global.current_project.frames.append(Global.current_project.new_empty_frame())
+
+	Import.import_brushes(Global.path_join_array(Global.data_directories, "Brushes"))
+	Import.import_patterns(Global.path_join_array(Global.data_directories, "Patterns"))
+
+	quit_and_save_dialog.add_button("Exit without saving", false, "ExitWithoutSaving")
+	_last_session_last_project = get_last_project_path()
+	_handle_cmdline_arguments()
+	get_tree().root.files_dropped.connect(_on_files_dropped)
+	if OS.get_name() == "Android":
+		var intent_data := Applinks.get_data()
+		if not intent_data.is_empty():
+			_on_applinks_data_received(intent_data)
+	if not DisplayServer.has_feature(DisplayServer.FEATURE_NATIVE_DIALOG_FILE_EXTRA):
+		save_sprite_dialog.option_count = 0
+
+	# Detect if Pixelorama crashed last time.
+	if Global.session_crashed_last_time() and OpenSave.had_backups_on_startup:
+		restore_session_confirmation_dialog.popup_centered_clamped()
+	await get_tree().process_frame
+	if Global.open_last_project:
+		load_last_project(true)
+	_setup_application_window_size()
+	_show_splash_screen()
+	Global.pixelorama_has_loaded = true
+	Global.pixelorama_opened.emit()
+	print("Time Pixelorama took to open: %sms" % Time.get_ticks_msec())
+
+
+func _input(event: InputEvent) -> void:
+	if event.is_action_pressed(&"layer_visibility"):
+		for selected_cel in Global.current_project.selected_cels:
+			var layer := Global.current_project.layers[selected_cel[1]]
+			layer.visible = not layer.visible
+		Global.canvas.update_all_layers = true
+		Global.canvas.queue_redraw()
+	if event.is_action_pressed(&"layer_lock"):
+		for selected_cel in Global.current_project.selected_cels:
+			var layer := Global.current_project.layers[selected_cel[1]]
+			layer.locked = not layer.locked
+		Global.canvas.update_all_layers = true
+		Global.canvas.queue_redraw()
+	if is_writing_text and event is InputEventKey and is_instance_valid(Global.main_viewport):
+		Global.main_viewport.get_child(0).push_input(event)
+	left_cursor.position = get_global_mouse_position() + Vector2(-32, 32)
+	right_cursor.position = get_global_mouse_position() + Vector2(32, 32)
+
+
+func _project_switched() -> void:
+	if Global.current_project.export_profile.directory_path != "":
+		open_sprite_dialog.current_dir = Global.current_project.export_profile.directory_path
+		save_sprite_dialog.current_dir = Global.current_project.export_profile.directory_path
+
+
+# Taken from
+# https://github.com/godotengine/godot/blob/master/editor/settings/editor_settings.cpp#L1801
+func _get_auto_display_scale() -> float:
+	if OS.get_name() == "macOS" or OS.get_name() == "Android":
+		return DisplayServer.screen_get_max_scale()
+
+	var dpi := DisplayServer.screen_get_dpi()
+	var smallest_dimension := mini(
+		DisplayServer.screen_get_size().x, DisplayServer.screen_get_size().y
+	)
+	if dpi >= 192 && smallest_dimension >= 1400:
+		return 2.0  # hiDPI display.
+	elif smallest_dimension >= 1700:
+		return 1.5  # Likely a hiDPI display, but we aren't certain due to the returned DPI.
+	# TODO: Return 0.75 if smallest_dimension <= 800, once we make icons looks good
+	# when scaled to non-integer display scale values. Might need SVGs.
+	return 1.0
+
+
+func _handle_layout_files() -> void:
+	if not DirAccess.dir_exists_absolute(Global.LAYOUT_DIR):
+		DirAccess.make_dir_absolute(Global.LAYOUT_DIR)
+	var dir := DirAccess.open(Global.LAYOUT_DIR)
+	var files := dir.get_files()
+	if files.size() == 0:
+		for layout in Global.default_layouts:
+			var file_name := layout.resource_path.get_basename().get_file() + ".tres"
+			var new_layout := layout.clone()
+			new_layout.layout_reset_path = layout.resource_path
+			ResourceSaver.save(new_layout, Global.LAYOUT_DIR.path_join(file_name))
+		files = dir.get_files()
+	for file in files:
+		var layout := ResourceLoader.load(Global.LAYOUT_DIR.path_join(file))
+		if layout is DockableLayout:
+			if layout.layout_reset_path.is_empty():
+				if file == "Default.tres":
+					layout.layout_reset_path = Global.default_layouts[0].resource_path
+				elif file == "Tallscreen.tres":
+					layout.layout_reset_path = Global.default_layouts[1].resource_path
+			Global.layouts.append(layout)
+			# Save the layout every time it changes
+			layout.save_on_change = true
+
+
+func _setup_application_window_size() -> void:
+	if DisplayServer.get_name() == "headless":
+		return
+	set_display_scale()
+	if Global.font_size != theme.default_font_size:
+		theme.default_font_size = Global.font_size
+		theme.set_font_size("font_size", "HeaderSmall", Global.font_size + 2)
+
+	if OS.get_name() == "Web":
+		return
+
+	# Restore the window position/size if values are present in the configuration cache
+	if Global.config_cache.has_section_key("window", "screen"):
+		# Restore the window configuration if the screen in cache is not available
+		if (
+			DisplayServer.get_screen_count()
+			< (Global.config_cache.get_value("window", "screen") + 1)
+		):
+			return
+		get_window().current_screen = Global.config_cache.get_value("window", "screen")
+	if Global.config_cache.has_section_key("window", "maximized"):
+		get_window().mode = (
+			Window.MODE_MAXIMIZED
+			if (Global.config_cache.get_value("window", "maximized"))
+			else Window.MODE_WINDOWED
+		)
+
+	if !(get_window().mode == Window.MODE_MAXIMIZED):
+		if Global.config_cache.has_section_key("window", "position"):
+			get_window().position = Global.config_cache.get_value("window", "position")
+		if Global.config_cache.has_section_key("window", "size"):
+			get_window().size = Global.config_cache.get_value("window", "size")
+	set_mobile_fullscreen_safe_area()
+
+
+func set_display_scale() -> void:
+	var root := get_window()
+	root.content_scale_aspect = Window.CONTENT_SCALE_ASPECT_IGNORE
+	root.content_scale_mode = Window.CONTENT_SCALE_MODE_DISABLED
+	# Set a minimum window size to prevent UI elements from collapsing on each other.
+	root.min_size = Vector2(320, 200)
+	root.content_scale_factor = Global.shrink
+	set_custom_cursor()
+
+
+func set_mobile_fullscreen_safe_area() -> void:
+	if not OS.has_feature("mobile"):
+		return
+	await get_tree().process_frame
+	var is_fullscreen := (
+		(get_window().mode == Window.MODE_EXCLUSIVE_FULLSCREEN)
+		or (get_window().mode == Window.MODE_FULLSCREEN)
+	)
+	var menu_and_ui: VBoxContainer = $MenuAndUI
+	if is_fullscreen:
+		var safe_area := DisplayServer.get_display_safe_area()
+		menu_and_ui.set_anchors_preset(Control.PRESET_TOP_LEFT)
+		var pos := safe_area.position / get_window().content_scale_factor
+		menu_and_ui.position = pos
+		menu_and_ui.size = (safe_area.size / get_window().content_scale_factor)
+	else:
+		menu_and_ui.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
+
+
+func set_custom_cursor() -> void:
+	if Global.native_cursors:
+		return
+	if Global.shrink == 1.0:
+		Input.set_custom_mouse_cursor(cursor_image, Input.CURSOR_CROSS, Vector2(15, 15))
+	else:
+		var cursor_data := cursor_image.get_image()
+		var cursor_size := cursor_data.get_size() * Global.shrink
+		cursor_data.resize(cursor_size.x, cursor_size.y, Image.INTERPOLATE_NEAREST)
+		var cursor_tex := ImageTexture.create_from_image(cursor_data)
+		Input.set_custom_mouse_cursor(
+			cursor_tex, Input.CURSOR_CROSS, Vector2(15, 15) * Global.shrink
+		)
+
+
+func _show_splash_screen() -> void:
+	if not Global.config_cache.has_section_key("preferences", "startup"):
+		Global.config_cache.set_value("preferences", "startup", true)
+
+	if Global.config_cache.get_value("preferences", "startup"):
+		# Wait for the window to adjust itself, so the popup is correctly centered
+		await get_tree().process_frame
+
+		splash_dialog.popup_centered_clamped()  # Splash screen
+		modulate = Color(0.5, 0.5, 0.5)
+
+
+func _handle_cmdline_arguments() -> void:
+	var args := OS.get_cmdline_args()
+	var working_directory := ""
+	var wdir_searching := false
+	args.append_array(OS.get_cmdline_user_args())
+	if args.is_empty():
+		return
+	# Load the files first
+	for arg in args:
+		if arg.begins_with("lospec-palette://"):
+			Palettes.import_lospec_palette(arg)
+			break
+		if arg.begins_with("rel-dir=") or wdir_searching:
+			working_directory = arg.trim_prefix("rel-dir=")
+			if not DirAccess.dir_exists_absolute(working_directory):
+				wdir_searching = true
+				working_directory = ""
+			else:
+				wdir_searching = false
+			continue
+		var file_path := arg
+		# if we think the file could be a potential relative path it can mean two things:
+		# 1. The file is relative to executable
+		# 2. The file is relative to the working directory.
+		if file_path.is_relative_path():
+			# we first try to convert it to be relative to executable
+			file_path = OS.get_executable_path().get_base_dir().path_join(arg)
+			if !FileAccess.file_exists(file_path):
+				# it is not relative to executable so we have to convert it to an
+				# absolute path instead (this is when file is relative to working directory)
+				var pwd := OS.get_environment("PWD")
+				if not working_directory.is_empty():
+					pwd = working_directory
+				file_path = pwd.path_join(arg)
+		# Do one last failsafe to see everything is in order.
+		if FileAccess.file_exists(file_path):
+			# If a last session is being opened through command line then clear it
+			if _last_session_last_project == file_path:  # Pixelorama project file
+				_last_session_last_project = ""
+			OpenSave.handle_loading_file(file_path)
+
+	var project := Global.current_project
+	# True when exporting from the CLI.
+	# Exporting should be done last, this variable helps with that
+	var should_export := false
+
+	var parse_dic := {}
+	for command_group: Array in CLI.args_list.keys():
+		for command: String in command_group:
+			parse_dic[command] = CLI.args_list[command_group][0]
+	for i in args.size():  # Handle the rest of the CLI arguments
+		var arg := args[i]
+		var next_argument := ""
+		if i + 1 < args.size():
+			next_argument = args[i + 1]
+		if arg.begins_with("-") or arg.begins_with("--"):
+			if arg in parse_dic.keys():
+				var callable: Callable = parse_dic[arg]
+				var output = callable.call(project, next_argument)
+				if typeof(output) == TYPE_BOOL:
+					should_export = output
+			else:
+				print("==========")
+				print("Unknown option: %s" % arg)
+				for compare_arg in parse_dic.keys():
+					if arg.similarity(compare_arg) >= 0.4:
+						print("Similar option: %s" % compare_arg)
+				print("==========")
+				should_export = false
+				get_tree().quit()
+				break
+	if should_export:
+		Export.external_export(project)
+
+
+func _on_applinks_data_received(uri: String) -> void:
+	if uri.begins_with("lospec-palette://"):
+		Palettes.import_lospec_palette(uri)
+	elif uri.begins_with("content://"):
+		var path = Applinks.get_file_from_content_uri(uri)
+		if path:
+			OpenSave.handle_loading_file(path)
+	elif uri.begins_with("file://"):
+		var path := uri.trim_prefix("file://")
+		OpenSave.handle_loading_file(path)
+
+
+func _notification(what: int) -> void:
+	if not is_inside_tree():
+		return
+	match what:
+		NOTIFICATION_WM_CLOSE_REQUEST:
+			show_quit_dialog()
+		NOTIFICATION_WM_GO_BACK_REQUEST:
+			var subwindows := get_window().get_embedded_subwindows()
+			if subwindows.is_empty():
+				show_quit_dialog()
+			else:
+				if subwindows[-1] == save_sprite_dialog:
+					_on_save_sprite_canceled()
+				subwindows[-1].hide()
+		# If the mouse exits the window and another application has the focus,
+		# pause the application
+		NOTIFICATION_APPLICATION_FOCUS_OUT:
+			if Global.pause_when_unfocused:
+				get_tree().paused = true
+		NOTIFICATION_WM_MOUSE_EXIT:
+			# Do not pause the application if the mouse leaves the main window
+			# but there are child subwindows opened, because that makes them unresponsive.
+			var window_count := DisplayServer.get_window_list().size()
+			if not get_window().has_focus() and window_count == 1 and Global.pause_when_unfocused:
+				get_tree().paused = true
+		# Unpause it when the mouse enters the window or when it gains focus
+		NOTIFICATION_WM_MOUSE_ENTER:
+			get_tree().paused = false
+		NOTIFICATION_APPLICATION_FOCUS_IN:
+			get_tree().paused = false
+			Tools.quick_assign_tool_revert(MOUSE_BUTTON_RIGHT)
+			Tools.quick_assign_tool_revert(MOUSE_BUTTON_LEFT)
+
+
+func _on_files_dropped(files: PackedStringArray) -> void:
+	for file in files:
+		if not FileAccess.file_exists(file):
+			# If the file doesn't exist, it could be a URL. This can occur when dragging
+			# and dropping an image directly from the browser into Pixelorama.
+			# For security reasons, ask the user if they want to confirm the image download.
+			download_confirmation.dialog_text = (
+				tr("Do you want to download the image from %s?") % file
+			)
+			download_confirmation.popup_centered_clamped()
+			url_to_download = file
+		else:
+			OpenSave.handle_loading_file(file)
+	if splash_dialog.visible:
+		splash_dialog.hide()
+
+
+func get_last_project_path() -> String:
+	# Check if any project was saved or opened last time
+	if Global.config_cache.has_section_key("data", "last_project_path"):
+		# Check if file still exists on disk
+		return Global.config_cache.get_value("data", "last_project_path")
+	return ""
+
+
+func load_last_project(using_previous_session := false) -> void:
+	# NOTE: When projects are loaded through CLI, the last_project_path gets overridden, and we
+	# have to pass an override path in that scenario.
+	if OS.get_name() == "Web":
+		return
+	# Check if any project was saved or opened last time
+	var last_project_path := get_last_project_path()
+	if using_previous_session:
+		last_project_path = _last_session_last_project
+	if not last_project_path.is_empty():
+		load_recent_project_file(last_project_path)
+		(func(): Global.cel_switched.emit()).call_deferred()
+
+
+func load_recent_project_file(path: String) -> void:
+	if OS.get_name() == "Web":
+		return
+	# Check if file still exists on disk
+	if FileAccess.file_exists(path):  # If yes then load the file
+		OpenSave.handle_loading_file(path)
+	else:
+		# If file doesn't exist on disk then warn user about this
+		Global.popup_error("Cannot find project file.")
+
+
+func _on_OpenSprite_files_selected(paths: PackedStringArray) -> void:
+	# Wait for file dialog to close otherwise an "Attempting to make child window exclusive"
+	# error will appear
+	await get_tree().process_frame
+	for path in paths:
+		OpenSave.handle_loading_file(path, true)
+	save_sprite_dialog.current_dir = paths[0].get_base_dir()
+
+
+func show_save_dialog(project := Global.current_project) -> void:
+	Global.dialog_open(true, true)
+	if OS.get_name() == "Web":
+		save_sprite_html5.popup_centered_clamped()
+		var save_filename_line_edit := save_sprite_html5.get_node("%FileNameLineEdit")
+		save_filename_line_edit.text = project.name
+		var save_include_blended = save_sprite_html5.get_node("%IncludeBlended")
+		save_include_blended.button_pressed = project.include_blended_images
+	else:
+		save_sprite_dialog.current_file = project.name + ".pxo"
+		if save_sprite_dialog.option_count > 0:
+			save_sprite_dialog.set_option_default(0, project.include_blended_images)
+		save_sprite_dialog.popup_centered_clamped()
+		save_file_dialog_opened.emit(true)
+
+
+func _on_SaveSprite_file_selected(path: String) -> void:
+	if save_sprite_dialog.get_selected_options().size() > 0:
+		Global.current_project.include_blended_images = save_sprite_dialog.get_selected_options()[
+			save_sprite_dialog.get_option_name(0)
+		]
+	save_project(path)
+	save_file_dialog_opened.emit(false)
+
+
+func _on_save_sprite_canceled() -> void:
+	save_file_dialog_opened.emit(false)
+	is_quitting_on_save = false
+
+
+func _on_save_sprite_html_5_confirmed() -> void:
+	var include_blended: bool = save_sprite_html5.get_node("%IncludeBlended").button_pressed
+	Global.current_project.include_blended_images = include_blended
+	var save_filename_line_edit := save_sprite_html5.get_node("%FileNameLineEdit")
+	Global.current_project.name = save_filename_line_edit.text
+	save_project("")
+
+
+func save_project(path: String, project_to_save := Global.current_project) -> void:
+	if is_quitting_on_save:
+		project_to_save = changed_projects_on_quit[0]
+	if OS.get_name() == "Web":
+		var file_name := project_to_save.name + ".pxo"
+		path = "user://".path_join(file_name)
+	var success := OpenSave.save_pxo_file(path, false, project_to_save)
+	if success:
+		open_sprite_dialog.current_dir = path.get_base_dir()
+	if is_quitting_on_save:
+		changed_projects_on_quit.pop_front()
+		_save_on_quit_confirmation()
+
+
+func _on_open_sprite_visibility_changed() -> void:
+	if !opensprite_file_selected:
+		_can_draw_true()
+
+
+func _can_draw_true() -> void:
+	Global.dialog_open(false)
+
+
+func _on_restore_session_confirmation_dialog_confirmed() -> void:
+	$MenuAndUI/TopMenuContainer.backup_dialog.popup()
+
+
+func show_quit_dialog() -> void:
+	changed_projects_on_quit = []
+	for project in Global.projects:
+		if project.has_changed:
+			changed_projects_on_quit.append(project)
+
+	if not quit_dialog.visible:
+		if changed_projects_on_quit.size() == 0:
+			if Global.quit_confirmation:
+				quit_dialog.popup_centered_clamped()
+			else:
+				_quit()
+		else:
+			quit_and_save_dialog.dialog_text = (
+				tr("Project %s has unsaved progress. How do you wish to proceed?")
+				% changed_projects_on_quit[0].name
+			)
+			quit_and_save_dialog.popup_centered_clamped()
+
+	Global.dialog_open(true)
+
+
+func _save_on_quit_confirmation() -> void:
+	if changed_projects_on_quit.size() == 0:
+		_quit()
+	else:
+		quit_and_save_dialog.dialog_text = (
+			tr("Project %s has unsaved progress. How do you wish to proceed?")
+			% changed_projects_on_quit[0].name
+		)
+		quit_and_save_dialog.popup_centered_clamped()
+		Global.dialog_open(true)
+
+
+func _on_QuitDialog_confirmed() -> void:
+	_quit()
+
+
+func _on_QuitAndSaveDialog_custom_action(action: String) -> void:
+	if action == "ExitWithoutSaving":
+		changed_projects_on_quit.pop_front()
+		_save_on_quit_confirmation()
+
+
+func _on_QuitAndSaveDialog_confirmed() -> void:
+	is_quitting_on_save = true
+	show_save_dialog(changed_projects_on_quit[0])
+
+
+func _quit() -> void:
+	# Darken the UI to denote that the application is currently exiting
+	# (it won't respond to user input in this state).
+	modulate = Color(0.5, 0.5, 0.5)
+	get_tree().quit()
+
+
+func _exit_tree() -> void:
+	Global.pixelorama_about_to_close.emit()
+	for project in Global.projects:
+		project.remove()
+	if DisplayServer.get_name() == "headless":
+		return
+	Global.config_cache.set_value("window", "layout", Global.layouts.find(main_ui.layout))
+	Global.config_cache.set_value("window", "screen", get_window().current_screen)
+	Global.config_cache.set_value(
+		"window",
+		"maximized",
+		(
+			(get_window().mode == Window.MODE_MAXIMIZED)
+			|| (
+				(get_window().mode == Window.MODE_EXCLUSIVE_FULLSCREEN)
+				or (get_window().mode == Window.MODE_FULLSCREEN)
+			)
+		)
+	)
+	Global.config_cache.set_value("window", "position", get_window().position)
+	Global.config_cache.set_value("window", "size", get_window().size)
+	Global.config_cache.set_value("view_menu", "draw_grid", Global.draw_grid)
+	Global.config_cache.set_value("view_menu", "draw_pixel_grid", Global.draw_pixel_grid)
+	Global.config_cache.set_value("view_menu", "show_pixel_indices", Global.show_pixel_indices)
+	Global.config_cache.set_value("view_menu", "show_rulers", Global.show_rulers)
+	Global.config_cache.set_value("view_menu", "show_guides", Global.show_guides)
+	Global.config_cache.set_value("view_menu", "show_mouse_guides", Global.show_mouse_guides)
+	Global.config_cache.set_value("view_menu", "lock_guides", Global.lock_guides)
+	Global.config_cache.set_value(
+		"view_menu", "display_layer_effects", Global.display_layer_effects
+	)
+	Global.config_cache.set_value(
+		"view_menu", "snap_to_rectangular_grid_boundary", Global.snap_to_rectangular_grid_boundary
+	)
+	Global.config_cache.set_value(
+		"view_menu", "snap_to_rectangular_grid_center", Global.snap_to_rectangular_grid_center
+	)
+	Global.config_cache.set_value("view_menu", "snap_to_guides", Global.snap_to_guides)
+	Global.config_cache.set_value(
+		"view_menu", "snap_to_perspective_guides", Global.snap_to_perspective_guides
+	)
+	Global.config_cache.set_value("FileDialog", "favourite_paths", FileDialog.get_favorite_list())
+	Global.config_cache.set_value("FileDialog", "recent_paths", FileDialog.get_recent_list())
+	Global.config_cache.save(Global.CONFIG_PATH)
+
+
+func _on_download_image_confirmation_dialog_confirmed() -> void:
+	image_request.request(url_to_download)
+
+
+func _on_image_request_request_completed(
+	_result: int, _response_code: int, _headers: PackedStringArray, body: PackedByteArray
+) -> void:
+	var image := OpenSave.load_image_from_buffer(body)
+	if image.is_empty():
+		return
+	OpenSave.handle_loading_image(OS.get_system_dir(OS.SYSTEM_DIR_DESKTOP), image)

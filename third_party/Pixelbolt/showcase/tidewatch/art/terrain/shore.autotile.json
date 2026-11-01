@@ -1,0 +1,110 @@
+{
+  "format": "pixelforge-autotile",
+  "version": 1,
+  "name": "shore",
+  "tile": 16,
+  "mode": "blob",
+  "palette": {
+    "$ref": "../palette.json",
+    "tint1": "#97e3e388",
+    "tint2": "#97e3e366",
+    "tint3": "#97e3e344",
+    "foam-soft": "#effcffaa",
+    "!": "#97e3e388",
+    "@": "#97e3e366",
+    "$": "#effcffaa"
+  },
+  "template": [
+    "................$@!!dsSSSSSd!!@$",
+    "......$$$$......@@!ddSSSSSSdd!@@",
+    "....$$@@@@$$....!!!dsSSSSSSSd!!!",
+    "...$@@!!!!@@$...!dddSSSSSSSSddd!",
+    "..$@!!!dd!!!@$..ddsSSSSsSSSSSsdd",
+    ".$@!!dddddd!!@$.sSSSSSSSdSSSSSSs",
+    ".$@!ddsSSsdd!@$.SsSSSSSSSSSSSSdS",
+    ".$@!dsSSSSSd!@$.SSSSSSSSSSSSSSSS",
+    ".$@!dsSSSSSd!@$.SSSSSSSSSSSSSSSS",
+    ".$@!DddSSddD!@$.SSSSSSSSSSdSSSSS",
+    ".$@!!DDddDD!!@$.dSSSsSSSSSSSSSSd",
+    "..$@!!!DD!!!@$..DddSSdSSSSSSSddD",
+    "...$@@!!!!@@$...!DDdSSSSSSSSdDD!",
+    "....$$@@@@$$....!!!dsSSSSSSSd!!!",
+    "......$$$$......@@!DdSSSSsSdD!@@",
+    "................$@!!dsSSSSSd!!@$",
+    "................................",
+    "......$$$$$$$$$$$$$..$$$$$......",
+    "....$$@@@@@@@@@@@@@$$@@@@@$$....",
+    "...$@@!!!!!!!!!!!!!@@!!!!!@@$...",
+    "..$@!!!ddddd!!dddd!!!!ddd!!!@$..",
+    ".$@!!dddsssddddssdd!!ddsddd!!@$.",
+    ".$@!ddsSSSSSssdSSsddddSSSsdd!@$.",
+    ".$@!dsSSSSSSSSSSSSSssSSSSSSd!@$.",
+    ".$@!dsSSSSSSSSSSSSSSSSSSSSSd!@$.",
+    ".$@!DdSSSSdSSSSSSSSSSSSSSSdd!@$.",
+    ".$@!!dsSSSSSSSSSSSSSsSSSSSSd!@$.",
+    "..$@!dsSSSSSSsSSSSSSSdSSSSdD!@$.",
+    ".$@!!dsSSSSSSSSSSSSSSSSSSSd!!@$.",
+    ".$@!ddSSSSSSSSSSSdSSSSSSSSd!!@$.",
+    ".$@!dsSSSsSSSSSSSSSSSSSSSsdd!@$.",
+    ".$@!dsSSSSSSSSSSSSSSSSSSSSSd!@$.",
+    ".$@!dsSSSSSSSSSSSSSSSSSSSSdD!@$.",
+    ".$@!dsSSSSSsSSSSSSSSSSSSSSd!!@$.",
+    ".$@!DdSSSSSSdSSSSSSdSSSSSSd!@$..",
+    ".$@!!dsSSSSSSSSSSSSSSSSSSSd!!@$.",
+    ".$@!!dssSSSSSSSSSSSSSSSsSSdd!@$.",
+    ".$@!ddSSdSSSSSSSSSSSSSSSdSSd!@$.",
+    ".$@!dsSSSSSSSSdSSsSSSSSSSSSd!@$.",
+    ".$@!dsSSSSSSSSSSSSSSSSSSSSSd!@$.",
+    ".$@!dsSSSSSSSSSSSSSSSSSSSSSd!@$.",
+    ".$@!DddSSSdddSSSSSSddSSSSddD!@$.",
+    ".$@!!DDdddDDDddddddDDddddDD!!@$.",
+    "..$@!!!DDD!!!DDDDDD!!DDDD!!!@$..",
+    "...$@@!!!!!@!!!!!!!!!!!!!!@@$...",
+    "....$$@@@@@$@@@@@@@@@@@@@@$$....",
+    "......$$$$$.$$$$$$$$$$$$$$......",
+    "................................"
+  ],
+  "frame": "shore-{mask}-{variant}",
+  "variants": [
+    {
+      "name": "0",
+      "duration": 240,
+      "palette": {
+        "!": "tint1",
+        "@": "tint2",
+        "$": "foam-soft"
+      }
+    },
+    {
+      "name": "1",
+      "duration": 200,
+      "palette": {
+        "!": "tint1",
+        "@": "w",
+        "$": "tint3"
+      }
+    },
+    {
+      "name": "2",
+      "duration": 260,
+      "palette": {
+        "!": "w",
+        "@": "foam-soft",
+        "$": "tint3"
+      }
+    },
+    {
+      "name": "3",
+      "duration": 340,
+      "palette": {
+        "!": "foam-soft",
+        "@": "tint2",
+        "$": "tint3"
+      }
+    }
+  ],
+  "animation": "surf-{mask}",
+  "sheet": {
+    "columns": 16
+  }
+}

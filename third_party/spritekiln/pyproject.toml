@@ -1,0 +1,130 @@
+[build-system]
+requires = ["hatchling>=1.27", "hatch-fancy-pypi-readme>=24"]
+build-backend = "hatchling.build"
+
+[project]
+name = "spritekiln"
+dynamic = ["version", "readme"]
+description = "Animated 8-direction pixel-art sprites from procedural 3D models described in YAML, built to be driven by coding AIs"
+requires-python = ">=3.10"
+license = "MIT"
+license-files = ["LICENSE", "LICENSES/*"]
+authors = [{ name = "Lucas Ramos" }]
+keywords = ["pixel-art", "sprites", "spritesheet", "gamedev", "sdf", "procedural", "top-down", "godot", "ai"]
+classifiers = [
+    "Development Status :: 3 - Alpha",
+    "Environment :: Console",
+    "Intended Audience :: Developers",
+    "Operating System :: OS Independent",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3 :: Only",
+    "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+    "Programming Language :: Python :: 3.13",
+    "Programming Language :: Python :: 3.14",
+    "Programming Language :: Python :: 3.15",
+    "Topic :: Games/Entertainment",
+    "Topic :: Multimedia :: Graphics",
+    "Topic :: Multimedia :: Graphics :: 3D Rendering",
+]
+dependencies = ["numpy>=1.24", "pillow>=10.0", "pyyaml>=6.0", "tomli>=1.1; python_version < '3.11'"]
+
+[project.optional-dependencies]
+splash = ["rembg[cpu]"]          # better background removal for splash arts (`ref prep`)
+# `spritekiln mcp`: the tools for any MCP client. mcp needs cryptography (through pyjwt[crypto]), which ships no
+# Intel macOS wheels from 49 on: without the cap an Intel Mac would have to compile it with Rust.
+mcp = ["mcp>=2.3,<3", "cryptography<49; sys_platform == 'darwin' and platform_machine == 'x86_64'"]
+# `--backend numba`: the compiled renderer, about 6x faster per frame (ADR-029). numba ships no macOS Intel
+# wheels from 0.63 on: there SpriteKiln keeps the numpy renderer.
+fast = ["numba>=0.61; sys_platform != 'darwin' or platform_machine != 'x86_64'"]
+dev = ["pytest>=8", "ruff>=0.6", "jsonschema>=4.18", "spritekiln[mcp]", "spritekiln[fast]"]
+
+[project.urls]
+Homepage = "https://github.com/LucasJRamos/spritekiln"
+Issues = "https://github.com/LucasJRamos/spritekiln/issues"
+
+[project.scripts]
+spritekiln = "spritekiln.cli:main"
+pxforge = "pxforge:main"
+
+[tool.hatch.version]
+path = "spritekiln/__init__.py"
+
+# PyPI shows the README without the repository around it: relative links and images become GitHub URLs.
+[tool.hatch.metadata.hooks.fancy-pypi-readme]
+content-type = "text/markdown"
+
+[[tool.hatch.metadata.hooks.fancy-pypi-readme.fragments]]
+path = "README.md"
+
+[[tool.hatch.metadata.hooks.fancy-pypi-readme.substitutions]]
+pattern = 'src="(?!https?://)([^"]+)"'
+replacement = 'src="https://raw.githubusercontent.com/LucasJRamos/spritekiln/main/\1"'
+
+[[tool.hatch.metadata.hooks.fancy-pypi-readme.substitutions]]
+pattern = '(!\[[^\]]*\])\((?!https?://)([^)]+)\)'
+replacement = '\1(https://raw.githubusercontent.com/LucasJRamos/spritekiln/main/\2)'
+
+[[tool.hatch.metadata.hooks.fancy-pypi-readme.substitutions]]
+pattern = '\]\((?!https?://|#)([^)]+)\)'
+replacement = '](https://github.com/LucasJRamos/spritekiln/blob/main/\1)'
+
+[tool.hatch.build.targets.wheel]
+packages = ["spritekiln", "pxforge"]
+
+# Built-in resources live where the repository uses them; the wheel carries copies in spritekiln/data/.
+[tool.hatch.build.targets.wheel.force-include]
+"specs/palettes/gothic.yaml" = "spritekiln/data/palettes/gothic.yaml"
+"specs/palettes/props.yaml" = "spritekiln/data/palettes/props.yaml"
+"specs/templates/humanoid.yaml" = "spritekiln/data/templates/humanoid.yaml"
+"specs/templates/side_humanoid.yaml" = "spritekiln/data/templates/side_humanoid.yaml"
+"specs/kits" = "spritekiln/data/kits"
+"integrations/godot/addons/pxforge" = "spritekiln/data/godot/addons/pxforge"
+"integrations/godot/addons/spritekiln" = "spritekiln/data/godot/addons/spritekiln"
+"docs/agent" = "spritekiln/data/agent"
+
+[tool.hatch.build.targets.sdist]
+include = [  # anchored at the root (a bare "spritekiln/" would also match .claude/skills/spritekiln/)
+    "/spritekiln/",
+    "/pxforge/",
+    "/tests/",
+    "/specs/palettes/gothic.yaml",
+    "/specs/palettes/props.yaml",
+    "/specs/templates/",
+    "/specs/kits/",
+    "/specs/characters/gargula/gargula.yaml",
+    "/integrations/",
+    "/docs/agent/",
+    "/docs/format.md",
+    "/LICENSE",
+    "/LICENSES/",
+    "/README.md",
+]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+pythonpath = ["."]
+addopts = "-m 'not slow'"
+markers = [
+    "slow: long renders (showcase reproduction); run with `pytest -m slow`",
+]
+
+[tool.ruff]
+line-length = 120
+target-version = "py310"
+extend-exclude = ["legacy", "research"]
+
+[tool.ruff.format]
+quote-style = "single"
+
+[tool.ruff.lint]
+select = ["E", "F", "W", "I", "B", "UP", "BLE"]
+ignore = [
+    "E741",    # short math names (l, I) are clearer in geometry code
+    "B905",    # zip() without strict=: lengths are equal by construction
+]
+
+[tool.ruff.lint.isort]
+known-first-party = ["spritekiln", "pxforge"]
+known-local-folder = ["conftest"]

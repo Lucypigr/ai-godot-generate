@@ -1,0 +1,156 @@
+{
+  "version": 1,
+  "name": "keeper-draft",
+  "width": 32,
+  "height": 32,
+  "palette": {
+    "k": "#1b1528",
+    "U": "#663b2e",
+    "p": "#ffe2c6",
+    "P": "#f4b28e",
+    "q": "#cf7e69",
+    "a": "#f28f4a",
+    "A": "#c35a33",
+    "z": "#823429",
+    "e": "#fff3a3",
+    "E": "#fcd04a",
+    "f": "#dc9531",
+    "F": "#9e5d2b",
+    "B": "#3c4886",
+    "M": "#b7c2d6",
+    "_": "#1b152866"
+  },
+  "frames": [
+    {
+      "name": "idle-d",
+      "ops": [
+        {
+          "op": "ellipse",
+          "x": 10,
+          "y": 27,
+          "w": 12,
+          "h": 4,
+          "color": "_"
+        },
+        {
+          "op": "grid",
+          "x": 8,
+          "y": 8,
+          "rows": [
+            ".....kkkkkk.....",
+            "...kkeeeeEEkk...",
+            "..keeeeEEEEEEk..",
+            ".keeEEEEEEEEEfk.",
+            ".kEEEEEEEEEEEfk.",
+            "kEEEEEEEEEEEEEfk",
+            "kfEffffffffffEfk",
+            "kfEkzAaaaaAzkEfk",
+            "kfEkApppppPAkEfk",
+            "kffkpkppppkPkffk",
+            "kFfkpkppppkqkfFk",
+            ".kFkqPppppPqkFk.",
+            "..kkkqqqqqqkkk..",
+            "..kfEekkkkeEfk..",
+            ".kEkEeEEEEEfkfk.",
+            ".kEkeEEEEEEfkfk.",
+            ".kPkEEEEEEEfkqk.",
+            ".kPkUUUMMUUUkqk.",
+            "..kEEEEEEEEEEk..",
+            "..kfffffffffFk..",
+            "....kBBkkBBk....",
+            "...kUUUkkUUUk..."
+          ]
+        }
+      ]
+    },
+    {
+      "name": "idle-u",
+      "ops": [
+        {
+          "op": "ellipse",
+          "x": 10,
+          "y": 27,
+          "w": 12,
+          "h": 4,
+          "color": "_"
+        },
+        {
+          "op": "grid",
+          "x": 8,
+          "y": 8,
+          "rows": [
+            ".....kkkkkk.....",
+            "...kkeeeeEEkk...",
+            "..keeeeEEEEEEk..",
+            ".keeEEEEEEEEEfk.",
+            ".kEEEEEEEEEEEfk.",
+            "kEEEEEEEEEEEEEfk",
+            "keEEEEEEEEEEEEfk",
+            "kfEEEEEEEEEEEEfk",
+            "kfEEEEEEEEEEEffk",
+            "kffEEEEEEEEEfffk",
+            "kFffffffffffffFk",
+            ".kFFffffffffFFk.",
+            "..kkkkkkkkkkkk..",
+            "..kfzAAAAAAzfk..",
+            ".kEkEeEEEEEfkfk.",
+            ".kEkeEEEEEEfkfk.",
+            ".kPkEEEEEEEfkqk.",
+            ".kPkUUUUUUUUkqk.",
+            "..kEEEEEEEEEEk..",
+            "..kfffffffffFk..",
+            "....kBBkkBBk....",
+            "...kUUUkkUUUk..."
+          ]
+        }
+      ]
+    },
+    {
+      "name": "idle-r",
+      "ops": [
+        {
+          "op": "ellipse",
+          "x": 10,
+          "y": 27,
+          "w": 12,
+          "h": 4,
+          "color": "_"
+        },
+        {
+          "op": "grid",
+          "x": 7,
+          "y": 8,
+          "rows": [
+            ".....kkkkkkk......",
+            "...kkeeeeEEEkk....",
+            "..keeeEEEEEEEEk...",
+            ".keeEEEEEEEEEEEk..",
+            ".kEEEEEEEEEEEEEfk.",
+            "kEEEEEEEEEEEEEEEfk",
+            "kfEEEEffffffffffFk",
+            "kfEEEkzAaaappppkk.",
+            "kfEEEkzAapppkpPk..",
+            "kffEEkzAappppPPk..",
+            "kFffEkzzApppqqk...",
+            ".kFFfkkzzqqqkk....",
+            "..kkkkkkkkkkk.....",
+            "...kfEEeEEfk......",
+            "...kEEeEEEEfk.....",
+            "...kEeEEEEEfk.....",
+            "...kEEPPEEEfk.....",
+            "...kkUUPPUUkk.....",
+            "...kEEEEEEEEk.....",
+            "...kfffffffFk.....",
+            "....kBBkBBk.......",
+            "...kUUUkUUUk......"
+          ]
+        }
+      ]
+    },
+    {
+      "name": "idle-l",
+      "from": "idle-r",
+      "flipX": true
+    }
+  ]
+}

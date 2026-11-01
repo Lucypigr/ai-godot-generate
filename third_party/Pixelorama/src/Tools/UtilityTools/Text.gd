@@ -1,0 +1,307 @@
+extends BaseTool
+
+const BOLD_FLAG := 1
+const ITALIC_FLAG := 2
+const EMBOLDEN_AMOUNT := 0.6
+const ITALIC_AMOUNT := 0.2
+const ITALIC_TRANSFORM := Transform2D(Vector2(1.0, ITALIC_AMOUNT), Vector2(0.0, 1.0), Vector2.ZERO)
+const NEW_CANVAS_ITEM_MATERIAL := preload("res://assets/premult_alpha_canvas_item_mat.tres")
+
+var text_edit: TextToolEdit:
+	set(value):
+		text_edit = value
+		confirm_buttons.visible = is_instance_valid(text_edit)
+		get_tree().current_scene.is_writing_text = is_instance_valid(text_edit)
+var text_size := 16
+var font := FontVariation.new()
+var font_name := "":
+	set(value):
+		font_name = value
+		font.base_font = Global.find_font_from_name(font_name)
+		font.base_font.antialiasing = antialiasing
+		_textedit_text_changed()
+var text_style := 0:
+	set(value):
+		text_style = value
+		font.variation_embolden = EMBOLDEN_AMOUNT if text_style & BOLD_FLAG else 0.0
+		font.variation_transform = ITALIC_TRANSFORM if text_style & ITALIC_FLAG else Transform2D()
+		save_config()
+		_textedit_text_changed()
+
+var horizontal_alignment := HORIZONTAL_ALIGNMENT_LEFT:
+	set(value):
+		horizontal_alignment = value
+		save_config()
+var antialiasing := TextServer.FONT_ANTIALIASING_NONE:
+	set(value):
+		antialiasing = value
+		font.base_font.antialiasing = antialiasing
+		save_config()
+
+var _offset := Vector2i.ZERO
+
+@onready var bold_button: Button = %BoldButton
+@onready var italic_button: Button = %ItalicButton
+@onready var confirm_buttons: HBoxContainer = $ConfirmButtons
+@onready var font_option_button: OptionButton = $GridContainer/FontOptionButton
+@onready var horizontal_alignment_group: ButtonGroup = %HorizontalAlignmentLeftButton.button_group
+@onready var anti_aliasing_group: ButtonGroup = %AAOffButton.button_group
+
+
+func _ready() -> void:
+	if tool_slot.button == MOUSE_BUTTON_RIGHT:
+		$TextSizeSlider.allow_global_input_events = not Global.share_options_between_tools
+		Global.share_options_between_tools_changed.connect(
+			func(enabled): $TextSizeSlider.allow_global_input_events = not enabled
+		)
+	var font_names := Global.get_available_font_names()
+	for f_name in font_names:
+		font_option_button.add_item(f_name)
+	Tools.color_changed.connect(_on_color_changed)
+	horizontal_alignment_group.pressed.connect(_on_horizontal_alignment_button_pressed)
+	anti_aliasing_group.pressed.connect(_on_antialiasing_button_pressed)
+	super()
+
+
+func get_config() -> Dictionary:
+	return {
+		"font_name": font_name,
+		"text_size": text_size,
+		"text_style": text_style,
+		"horizontal_alignment": horizontal_alignment,
+		"antialiasing": antialiasing
+	}
+
+
+func set_config(config: Dictionary) -> void:
+	font_name = config.get("font_name", "Roboto")
+	if font_name not in Global.get_available_font_names():
+		font_name = "Roboto"
+	text_size = config.get("text_size", text_size)
+	text_style = config.get("text_style", text_style)
+	horizontal_alignment = config.get("horizontal_alignment", horizontal_alignment)
+	antialiasing = config.get("antialiasing", antialiasing)
+
+
+func update_config() -> void:
+	for i in font_option_button.item_count:
+		var item_name: String = font_option_button.get_item_text(i)
+		if font_name == item_name:
+			font_option_button.selected = i
+	$TextSizeSlider.value = text_size
+	# Update group buttons
+	bold_button.set_pressed_no_signal(text_style & BOLD_FLAG)
+	italic_button.set_pressed_no_signal(text_style & ITALIC_FLAG)
+	var aa_button: Button = anti_aliasing_group.get_buttons().get(antialiasing)
+	if aa_button:
+		aa_button.button_pressed = true
+	var h_align_button: Button = horizontal_alignment_group.get_buttons().get(horizontal_alignment)
+	if h_align_button:
+		h_align_button.button_pressed = true
+
+
+func draw_start(pos: Vector2i) -> void:
+	if not is_instance_valid(text_edit):
+		text_edit = TextToolEdit.new()
+		text_edit.text = ""
+		text_edit.font = font
+		text_edit.add_theme_color_override(&"font_color", tool_slot.color)
+		text_edit.add_theme_font_size_override(&"font_size", text_size)
+		Global.canvas.add_child(text_edit)
+		text_edit.position = pos - Vector2i(0, text_edit.custom_minimum_size.y / 2)
+	_offset = pos
+
+
+func draw_move(pos: Vector2i) -> void:
+	if is_instance_valid(text_edit) and not text_edit.get_global_rect().has_point(pos):
+		text_edit.position += Vector2(pos - _offset)
+	_offset = pos
+
+
+func draw_end(pos: Vector2i) -> void:
+	if is_instance_valid(text_edit):
+		text_edit.grab_focus()
+	super.draw_end(pos)
+
+
+func text_to_pixels() -> void:
+	if not is_instance_valid(text_edit):
+		return
+	if text_edit.text.is_empty():
+		text_edit.queue_free()
+		text_edit = null
+		return
+
+	var undo_data := _get_undo_data()
+	var project := Global.current_project
+	var cel := project.get_current_cel()
+	var cel_image := cel.get_image()
+	if cel is not PixelCel or cel_image == null:
+		return
+	var text_rect := text_edit.get_rect()
+	(cel as PixelCel).ensure_canvas_rect_in_bounds(text_rect.position, text_rect.size)
+	var vp := RenderingServer.viewport_create()
+	var canvas := RenderingServer.canvas_create()
+	RenderingServer.viewport_attach_canvas(vp, canvas)
+	RenderingServer.viewport_set_size(vp, text_rect.size.x, text_rect.size.y)
+	RenderingServer.viewport_set_disable_3d(vp, true)
+	RenderingServer.viewport_set_active(vp, true)
+	RenderingServer.viewport_set_transparent_background(vp, true)
+	RenderingServer.viewport_set_default_canvas_item_texture_filter(
+		vp, RenderingServer.CANVAS_ITEM_TEXTURE_FILTER_NEAREST
+	)
+
+	var ci_rid := RenderingServer.canvas_item_create()
+	RenderingServer.viewport_set_canvas_transform(vp, canvas, Transform2D())
+	RenderingServer.canvas_item_set_parent(ci_rid, canvas)
+	RenderingServer.canvas_item_set_material(ci_rid, NEW_CANVAS_ITEM_MATERIAL.get_rid())
+	var text := text_edit.text
+	var color := tool_slot.color
+	var font_ascent := font.get_ascent(text_size)
+	var pos := Vector2(0, font_ascent + text_edit.get_theme_constant(&"line_spacing"))
+	pos += text_edit.position - Vector2(cel.offset)
+	var background_rid: RID
+	if antialiasing == TextServer.FONT_ANTIALIASING_LCD:
+		# NOTE: We need background information for FONT_ANTIALIASING_LCD to work.
+		background_rid = RenderingServer.texture_2d_create(cel_image)
+		RenderingServer.canvas_item_add_texture_rect(
+			ci_rid, Rect2(Vector2.ZERO, text_rect.size), background_rid
+		)
+	font.draw_multiline_string(
+		ci_rid, pos, text, horizontal_alignment, text_edit.size.x, text_size, -1, color
+	)
+
+	RenderingServer.viewport_set_update_mode(vp, RenderingServer.VIEWPORT_UPDATE_ONCE)
+	RenderingServer.force_draw(false)
+	var text_image := RenderingServer.texture_2d_get(RenderingServer.viewport_get_texture(vp))
+	RenderingServer.free_rid(vp)
+	RenderingServer.free_rid(canvas)
+	RenderingServer.free_rid(ci_rid)
+	if background_rid:
+		RenderingServer.free_rid(background_rid)
+	text_image.convert(cel_image.get_format())
+
+	text_edit.queue_free()
+	text_edit = null
+	if not text_image.is_empty():
+		# Crop to selection area
+		if project.has_selection:
+			var selected_content := project.new_empty_image()
+			var selection_map_copy := project.selection_map.return_cropped_copy(
+				project, project.size
+			)
+			var selection_rect := selection_map_copy.get_used_rect()
+			selected_content.blit_rect_mask(
+				text_image, selection_map_copy, selection_rect, selection_rect.position
+			)
+			text_image = selected_content
+		# Add this text to our cel's image
+		if background_rid:
+			cel_image.blit_rect(
+				text_image, Rect2i(Vector2i.ZERO, cel_image.get_size()), Vector2i.ZERO
+			)
+		else:
+			cel_image.blend_rect(
+				text_image, Rect2i(Vector2i.ZERO, cel_image.get_size()), Vector2i.ZERO
+			)
+		if cel_image is ImageExtended:
+			cel_image.convert_rgb_to_indexed()
+		(cel as PixelCel).shrink_to_content()
+		commit_undo("Draw", undo_data)
+
+
+func commit_undo(action: String, undo_data: Dictionary) -> void:
+	var project := Global.current_project
+	Global.canvas.update_selected_cels_textures(project)
+	var used_tilesets := project.update_tilemaps(undo_data)
+	var redo_data := _get_undo_data()
+	var frame := -1
+	var layer := -1
+	if Global.animation_timeline.animation_timer.is_stopped() and project.selected_cels.size() == 1:
+		frame = project.current_frame
+		layer = project.current_layer
+
+	project.undo_redo.create_action(action)
+	var layers_to_update := PackedInt32Array()
+	for l in Global.current_project.layers:
+		if l is LayerTileMap:
+			if l.tileset in used_tilesets:
+				layers_to_update.append(l.index)
+	project.deserialize_cel_undo_data(redo_data, undo_data)
+	# we may be on a different layer during undo/redo
+	Global.current_project.undo_redo.add_do_property(
+		Global.canvas, "mandatory_update_layers", layers_to_update
+	)
+	Global.current_project.undo_redo.add_undo_property(
+		Global.canvas, "mandatory_update_layers", layers_to_update
+	)
+	project.undo_redo.add_do_method(Global.undo_or_redo.bind(false, frame, layer))
+	project.undo_redo.add_undo_method(Global.undo_or_redo.bind(true, frame, layer))
+	project.undo_redo.commit_action()
+
+
+func _get_undo_data() -> Dictionary:
+	var data := {}
+	Global.current_project.serialize_cel_undo_data(_get_selected_draw_cels(), data)
+	return data
+
+
+func _on_confirm_button_pressed() -> void:
+	if is_instance_valid(text_edit):
+		text_to_pixels()
+
+
+func _on_cancel_button_pressed() -> void:
+	if is_instance_valid(text_edit):
+		text_edit.queue_free()
+		text_edit = null
+
+
+func _textedit_text_changed() -> void:
+	if not is_instance_valid(text_edit):
+		return
+	text_edit.add_theme_font_size_override(&"font_size", 1)  # Needed to update font and text style
+	text_edit.add_theme_font_size_override(&"font_size", text_size)
+	text_edit._on_text_changed()
+
+
+func _on_color_changed(_color_info: Dictionary, _button: int) -> void:
+	if is_instance_valid(text_edit):
+		text_edit.add_theme_color_override(&"font_color", tool_slot.color)
+
+
+func _on_text_size_slider_value_changed(value: float) -> void:
+	text_size = value
+	_textedit_text_changed()
+	save_config()
+
+
+func _on_font_option_button_item_selected(index: int) -> void:
+	font_name = font_option_button.get_item_text(index)
+	save_config()
+
+
+func _on_bold_button_toggled(toggled_on: bool) -> void:
+	if toggled_on:
+		text_style |= BOLD_FLAG
+	else:
+		text_style &= ~BOLD_FLAG
+
+
+func _on_italic_button_toggled(toggled_on: bool) -> void:
+	if toggled_on:
+		text_style |= ITALIC_FLAG
+	else:
+		text_style &= ~ITALIC_FLAG
+
+
+func _on_horizontal_alignment_button_pressed(button: BaseButton) -> void:
+	horizontal_alignment = button.get_index() as HorizontalAlignment
+
+
+func _on_antialiasing_button_pressed(button: BaseButton) -> void:
+	antialiasing = button.get_index() as TextServer.FontAntialiasing
+
+
+func _exit_tree() -> void:
+	text_to_pixels()

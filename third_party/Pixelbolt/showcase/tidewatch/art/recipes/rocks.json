@@ -1,0 +1,110 @@
+{
+  "version": 1,
+  "name": "rocks",
+  "width": 32,
+  "height": 32,
+  "palette": {
+    "$ref": "../palette.json"
+  },
+  "frames": [
+    {
+      "name": "boulder-a",
+      "anchor": [
+        16,
+        23
+      ],
+      "ops": [
+        {
+          "op": "grid",
+          "x": 0,
+          "y": 0,
+          "rows": [
+            "................................",
+            "................................",
+            "................................",
+            "................................",
+            "................................",
+            "..........kkkkkkkk..............",
+            "........kkRrrrrRRRkk............",
+            ".......kRrrrrRRRRRRtk...........",
+            "......kRrrrRRRRRRRRttk..........",
+            ".....kRrrRRRRRRRRRRtttkk........",
+            "....kRrRRRRRRRRRRRRttttRkk......",
+            "...kRRRRRRRRRRRRRttttTttRRk.....",
+            "...kRRRRRRRRRRRRtttttTttRRRk....",
+            "..kRRRRRRRRRRttttttttTtttRRtk...",
+            "..kRRRRRRRtttttttttTTTttttttk...",
+            "..ktRRRRtttttttttTTyTTtttttTTk..",
+            ".kttttttttttttttTTyyTTTtttTTTk..",
+            ".kttTtttttttttTTTyTTTTTTTTTTTk..",
+            ".ktTTTtttttTTTTTyTTTTTTTTTTyyk..",
+            ".kTTTTTTTTTTTTTTyTTTTTTTTyyyyk..",
+            "..kTTTTTTTTTTTTyyTTTTTTyyyyyk...",
+            "..kyTTTTTTTTTTTyyyyyyyyyyyyk....",
+            "...kyyyTTTTTyyyyyyyyyyyykk......",
+            "....kkyyyyyyyyyyyyyykkkk........",
+            "..____kkkkkkkkkkkkkk______......",
+            "...______________________.......",
+            "................................",
+            "................................",
+            "................................",
+            "................................",
+            "................................",
+            "................................"
+          ]
+        }
+      ]
+    },
+    {
+      "name": "boulder-b",
+      "anchor": [
+        16,
+        20
+      ],
+      "ops": [
+        {
+          "op": "grid",
+          "x": 0,
+          "y": 0,
+          "rows": [
+            "................................",
+            "................................",
+            "................................",
+            "................................",
+            "................................",
+            "................................",
+            "................................",
+            "................................",
+            "...........kkkkkk...............",
+            ".........kkRrrrRRk..kkkk........",
+            "........kRrrrRRRRtkkRrRRkk......",
+            ".......kRrrRRRRRttkRRRRRttk.....",
+            "......kRrRRRRRRtttkRRRRtttTk....",
+            "......kRRRRRRRttttkRRRtttTTk....",
+            ".....kRRRRRRtttttTkRtttttTTTk...",
+            ".....ktRRRRtttttTTykttttTTTyk...",
+            ".....kttttttttTTTykTTTTTTyyk....",
+            ".....kTttttttTTTTyykTTTTyyyk....",
+            "......kTTTTTTTTTyyyykyyyyyk.....",
+            "......kyTTTTTTyyyyyykyyyykk.....",
+            ".......kkyyyyyyyyykkkkkkk.......",
+            ".....__kkkkkkkkkkk________......",
+            "......__________________........",
+            "................................",
+            "................................",
+            "................................",
+            "................................",
+            "................................",
+            "................................",
+            "................................",
+            "................................",
+            "................................"
+          ]
+        }
+      ]
+    }
+  ],
+  "sheet": {
+    "trim": true
+  }
+}

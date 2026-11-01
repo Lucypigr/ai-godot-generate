@@ -1,0 +1,4 @@
+[
+  { "set": "palette.L", "value": "#f2dc93" },
+  { "set": "frames[blink].duration", "value": 200 }
+]

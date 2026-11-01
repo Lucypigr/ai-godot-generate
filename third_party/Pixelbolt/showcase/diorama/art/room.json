@@ -1,0 +1,983 @@
+{
+  "version": 1,
+  "name": "room",
+  "width": 144,
+  "height": 112,
+  "palette": { "$ref": "palette.json" },
+  "symbols": {
+    "cap": [
+      "wwwwwwwukwwwwwwk",
+      "vvvvvvvuvvvvvvvu",
+      "vvvvrvvuvvvvrvvu",
+      "uuuuuuuuuuuuuuuu",
+      "wwwuwwwwwwwuwwww",
+      "vvvuvvvvvvvuvvvv",
+      "vrvuvvvvvrvuvvvv",
+      "uuuuuuuukuuuuuuk",
+      ".kkkkkkkkkkkkkk.",
+      "kwwwwwwwwwwwwwwk",
+      "kvvvrvvuvvvvrvvk",
+      "kuuuuuuuuuuuuuuk",
+      "kwwuwwwwwwwuwwwk",
+      "kvvuvvvvvvvuvvvk",
+      "krvuvvvvvrvuvvvk",
+      "kuuuuuuuuuuuuuuk",
+      "kwwwwwwuwwwwwwwk",
+      "kvvvvvvuvvvvvvvk",
+      "kvvvrvvuvvvvrvvk",
+      "kuuuuuuuuuuuuuuk",
+      "kwwuwwwwwwwuwwwk",
+      "kvvuvvvvvvvuvvvk",
+      "kuuuuuuuuuuuuuuk",
+      ".kkkkkkkkkkkkkk."
+    ],
+    "cracked": [
+      "wwwwwwwukwwwwwwk",
+      "vvvkvvvuvvvkvvvu",
+      "vvvvkvvuvvvvkvvu",
+      "uuuuuuuuuuuuuuuu",
+      "wwwuwwnwwwwuwwnw",
+      "vvvuvnovvvvuvnov",
+      "vrvuvvnvvrvuvvnv",
+      "uuuuuuuukuuuuuuk",
+      ".kkkkkkkkkkkkkk.",
+      "kwwwwwwwwwwwwwwk",
+      "kvvvkvvuvvvvkvvk",
+      "kuuuuuuuuuuuuuuk",
+      "kwwuwwnwwwwuwwnk",
+      "kvvuvnovvvvuvnok",
+      "krvuvvnvvrvuvvnk",
+      "kuuuuuuuuuuuuuuk",
+      "kwwwwwwuwwwwwwwk",
+      "kvvkvvvuvvvkvvvk",
+      "kvvvkvvuvvvvkvvk",
+      "kuuuuuuuuuuuuuuk",
+      "kwwuwwnwwwwuwwnk",
+      "kvvuvnovvvvuvnok",
+      "kuuuuuuuuuuuuuuk",
+      ".kkkkkkkkkkkkkk."
+    ],
+    "water": [
+      "cccccccckcccccck",
+      "ccccc1ccccccc1cc",
+      "cccccccccccccccc",
+      "cccccccccccccccc",
+      "cc2ccccccc2ccccc",
+      "cccccccccccccccc",
+      "cccccc1ccccccc1c",
+      "cccccccckcccccck",
+      ".kkkkkkkkkkkkkk.",
+      "kttttttttttttttk",
+      "kssssssssssssssk",
+      "kdbbbbbbbbbbbbdk",
+      "kd2ccccccc2cccdk",
+      "kdccccccccccccdk",
+      "kdcccc1cccccccdk",
+      "kdccccccccccccdk",
+      "kdccccccccccccdk",
+      "kdccc1ccccccc1dk",
+      "kdccccccccccccdk",
+      "kdccccccccccccdk",
+      "kd2ccccccc2cccdk",
+      "kdccccccccccccdk",
+      "kddddddddddddddk",
+      ".kkkkkkkkkkkkkk."
+    ],
+    "floor-0": [
+      "gggggggg",
+      "gggggggg",
+      "gggggggg",
+      "gggggggg",
+      "gggggggg",
+      "gggggggg",
+      "gggggggg",
+      "gggggggg"
+    ],
+    "floor-1": [
+      "gggggggg",
+      "gggggggg",
+      "gggfgggg",
+      "ggggfggg",
+      "gggfhggg",
+      "gggggggg",
+      "gggggggg",
+      "gggggggg"
+    ],
+    "floor-2": [
+      "gggggggg",
+      "gghggggg",
+      "ggfggggg",
+      "gggggggg",
+      "gggggggg",
+      "gggggghg",
+      "ggggggfg",
+      "gggggggg"
+    ],
+    "floor-3": [
+      "gggggggg",
+      "gggggggg",
+      "gggggggg",
+      "gggggfgg",
+      "gggggggg",
+      "gggggggg",
+      "gggggggg",
+      "gggggggg"
+    ],
+    "brick-0": [
+      "grrrrrgg",
+      "grhggrgg",
+      "grrrrrrr",
+      "ggggrhgr",
+      "ggrrrrrr",
+      "ggrhggrg",
+      "ggrrrrrg",
+      "gggggggg"
+    ],
+    "brick-1": [
+      "gggggggg",
+      "rrrrrggg",
+      "gggrhrgg",
+      "rrrrrrrg",
+      "grhgggrg",
+      "grrrrrrg",
+      "gggggggg",
+      "gggggggg"
+    ],
+    "nface-0": [
+      "tttsttts",
+      "tttsttts",
+      "ssssssss",
+      "tsttttst",
+      "tsttttst",
+      "kkkkkkkk",
+      "ffffffff",
+      "........"
+    ],
+    "nface-1": [
+      "ttttstts",
+      "ttttstts",
+      "ssssssss",
+      "tttsttst",
+      "tttsttst",
+      "kkkkkkkk",
+      "ffffffff",
+      "........"
+    ],
+    "cliff-0": [
+      "tttsttts",
+      "ssssssss",
+      "tsttttst",
+      "ssssssss",
+      "KKKKKKKK",
+      "k.k.k.k.",
+      "........",
+      "........"
+    ],
+    "cliff-1": [
+      "ttttstts",
+      "ssssssss",
+      "tttsttst",
+      "ssssssss",
+      "KKKKKKKK",
+      ".k.k.k.k",
+      "........",
+      "........"
+    ],
+    "bricks-a": [
+      ".rrrrr.rrrr",
+      "rrhgrrrghr.",
+      ".rrrrrrrrrr",
+      "..rghrr.rgr",
+      "..rrrr..rrr"
+    ],
+    "bricks-b": [
+      "rrrr.rrr",
+      "rghrrghr",
+      "rrrrrrrr",
+      ".rrhgr..",
+      ".rrrrr.."
+    ],
+    "bricks-c": [
+      ".rrrrrr",
+      ".rghrhr",
+      "rrrrrrr",
+      "rhgr...",
+      "rrrr..."
+    ],
+    "plank": [
+      ".kkkkk",
+      "kyzzyk",
+      "kkkkk."
+    ],
+    "plank-d": [
+      "..kk.",
+      ".kzyk",
+      "kzyk.",
+      "kyk..",
+      ".k..."
+    ],
+    "bones": [
+      ".l...L",
+      "lLLl.l",
+      "..l.kk"
+    ],
+    "skull": [
+      ".kkk.",
+      "kLLLk",
+      "kkLkk",
+      ".kLk."
+    ],
+    "rubble": [
+      "..kk..k",
+      ".kuvkku",
+      "kuvukvk"
+    ],
+    "cobweb": [
+      "lLlLl.",
+      "L.l.l.",
+      "ll.L..",
+      "L.l...",
+      "l.....",
+      "......"
+    ],
+    "cobweb-r": [
+      ".lLlLl",
+      ".l.l.L",
+      "..L.ll",
+      "...l.L",
+      ".....l",
+      "......"
+    ]
+  },
+  "frames": [
+    {
+      "name": "water-0",
+      "duration": 180,
+      "palette": { "1": "c", "2": "d" },
+      "ops": [
+        {
+          "op": "tilemap",
+          "tile": [8, 8],
+          "rows": [
+            ".......WWWW.......",
+            "..WWWWWWVVWWWWWW..",
+            "..WFFFFFPPFFFFFW..",
+            "WWWFFFFFPPFFFFFWWW",
+            "WFFFFFFFPPFFFFFFFW",
+            "WFFFFFPPPPPPFFFFFW",
+            "WFFFFFPPPPPPFFFFFW",
+            "WFFFFFFFFFFFFFFFFW",
+            "WWWFFFFFFFFFFFFWWW",
+            "..WFFFFFFFFFFFFW..",
+            "..WWWWWFFFFWWWWW..",
+            "......WFFFFW......",
+            "......WWWWWW......",
+            ".................."
+          ],
+          "empty": "~",
+          "legend": {
+            "F": {
+              "rules": [
+                { "symbols": ["floor-0", "floor-3", "floor-1", "floor-2"], "weights": [3, 1, 1, 1] },
+                { "where": ["...", "W..", "..."], "symbols": ["brick-0", "brick-1"], "chance": 0.3 },
+                { "where": ["...", "..W", "..."], "symbols": ["brick-0", "brick-1"], "chance": 0.3 },
+                { "where": ["...", "...", ".W."], "symbols": ["brick-0", "brick-1"], "chance": 0.3 },
+                { "where": [".W.", "...", "..."], "symbols": ["nface-0", "nface-1"] }
+              ]
+            },
+            "P": {
+              "rules": [
+                { "template": "water", "autotile": "blob", "match": "PV" },
+                { "where": [".W.", "...", "..."], "symbols": ["nface-0", "nface-1"] }
+              ]
+            },
+            "W": {
+              "rules": [
+                { "templates": ["cap", "cracked"], "weights": [2, 1], "autotile": "blob" },
+                { "where": ["...", "...", ".~."], "symbols": ["cliff-0", "cliff-1"], "offset": [0, 1] }
+              ]
+            },
+            "V": null
+          }
+        },
+        {
+          "op": "dither",
+          "x": 8,
+          "y": 43,
+          "w": 44,
+          "h": 30,
+          "color": "n",
+          "density": [0.9, 0],
+          "direction": "radial",
+          "pattern": "value",
+          "scale": 5,
+          "seed": 3,
+          "over": "g"
+        },
+        {
+          "op": "dither",
+          "x": 91,
+          "y": 28,
+          "w": 34,
+          "h": 24,
+          "color": "n",
+          "density": [0.9, 0],
+          "direction": "radial",
+          "pattern": "value",
+          "scale": 5,
+          "seed": 3,
+          "over": "g"
+        },
+        {
+          "op": "dither",
+          "x": 58,
+          "y": 69,
+          "w": 40,
+          "h": 18,
+          "color": "n",
+          "density": [0.9, 0],
+          "direction": "radial",
+          "pattern": "value",
+          "scale": 5,
+          "seed": 3,
+          "over": "g"
+        },
+        {
+          "op": "dither",
+          "x": 24,
+          "y": 15,
+          "w": 24,
+          "h": 14,
+          "color": "n",
+          "density": [0.9, 0],
+          "direction": "radial",
+          "pattern": "value",
+          "scale": 5,
+          "seed": 3,
+          "over": "g"
+        },
+        {
+          "op": "dither",
+          "x": 113,
+          "y": 23,
+          "w": 14,
+          "h": 10,
+          "color": "n",
+          "density": [0.9, 0],
+          "direction": "radial",
+          "pattern": "value",
+          "scale": 5,
+          "seed": 3,
+          "over": "g"
+        },
+        { "op": "dither", "color": "o", "density": 0.35, "pattern": "value", "scale": 2, "seed": 8, "over": "n" },
+        {
+          "op": "rewrite",
+          "chance": 0.8,
+          "seed": 6,
+          "rules": [
+            {
+              "match": [
+                "n",
+                "g"
+              ],
+              "replace": [
+                "m",
+                "."
+              ]
+            },
+            {
+              "match": [
+                "o",
+                "g"
+              ],
+              "replace": [
+                "n",
+                "."
+              ]
+            }
+          ]
+        },
+        { "op": "stamp", "symbol": "bricks-a", "x": 15, "y": 59 },
+        { "op": "stamp", "symbol": "bricks-b", "x": 121, "y": 53 },
+        { "op": "stamp", "symbol": "bricks-c", "x": 49, "y": 75 },
+        { "op": "stamp", "symbol": "bricks-b", "x": 83, "y": 35 },
+        { "op": "stamp", "symbol": "bricks-c", "x": 105, "y": 25 },
+        { "op": "stamp", "symbol": "plank", "x": 47, "y": 45 },
+        { "op": "stamp", "symbol": "plank-d", "x": 100, "y": 57 },
+        { "op": "stamp", "symbol": "plank", "x": 89, "y": 78 },
+        { "op": "stamp", "symbol": "bones", "x": 41, "y": 59 },
+        { "op": "stamp", "symbol": "skull", "x": 98, "y": 52 },
+        { "op": "stamp", "symbol": "rubble", "x": 89, "y": 28 },
+        { "op": "stamp", "symbol": "rubble", "x": 41, "y": 72 },
+        { "op": "stamp", "symbol": "cobweb", "x": 8, "y": 32 },
+        { "op": "stamp", "symbol": "cobweb-r", "x": 130, "y": 32 },
+        { "op": "shade", "shape": "ellipse", "x": 23, "y": 22, "w": 11, "h": 4 },
+        { "op": "shade", "shape": "ellipse", "x": 111, "y": 22, "w": 11, "h": 4 },
+        { "op": "shade", "shape": "ellipse", "x": 7, "y": 37, "w": 10, "h": 4 },
+        { "op": "shade", "shape": "ellipse", "x": 8, "y": 46, "w": 10, "h": 4 },
+        { "op": "shade", "shape": "ellipse", "x": 18, "y": 37, "w": 9, "h": 4 },
+        { "op": "shade", "shape": "ellipse", "x": 127, "y": 61, "w": 10, "h": 4 },
+        { "op": "shade", "shape": "ellipse", "x": 128, "y": 37, "w": 9, "h": 4 },
+        { "op": "shade", "shape": "ellipse", "x": 128, "y": 45, "w": 9, "h": 4 },
+        { "op": "shade", "shape": "ellipse", "x": 121, "y": 36, "w": 9, "h": 4 },
+        { "op": "shade", "shape": "ellipse", "x": 23, "y": 77, "w": 10, "h": 4 },
+        { "op": "shade", "shape": "ellipse", "x": 34, "y": 78, "w": 9, "h": 4 },
+        { "op": "shade", "shape": "ellipse", "x": 111, "y": 77, "w": 10, "h": 4 },
+        { "op": "shade", "shape": "ellipse", "x": 105, "y": 78, "w": 9, "h": 4 },
+        { "op": "shade", "shape": "ellipse", "x": 78, "y": 92, "w": 8, "h": 4 },
+        { "op": "shade", "shape": "ellipse", "x": 54, "y": 92, "w": 8, "h": 4 },
+        { "op": "shade", "shape": "ellipse", "x": 55, "y": 73, "w": 10, "h": 4 },
+        { "op": "shade", "shape": "ellipse", "x": 67, "y": 92, "w": 11, "h": 4 },
+        { "op": "shade", "shape": "ellipse", "x": 95, "y": 67, "w": 9, "h": 4 }
+      ]
+    },
+    {
+      "name": "water-1",
+      "duration": 180,
+      "palette": { "1": "d", "2": "e" },
+      "ops": [
+        {
+          "op": "tilemap",
+          "tile": [8, 8],
+          "rows": [
+            ".......WWWW.......",
+            "..WWWWWWVVWWWWWW..",
+            "..WFFFFFPPFFFFFW..",
+            "WWWFFFFFPPFFFFFWWW",
+            "WFFFFFFFPPFFFFFFFW",
+            "WFFFFFPPPPPPFFFFFW",
+            "WFFFFFPPPPPPFFFFFW",
+            "WFFFFFFFFFFFFFFFFW",
+            "WWWFFFFFFFFFFFFWWW",
+            "..WFFFFFFFFFFFFW..",
+            "..WWWWWFFFFWWWWW..",
+            "......WFFFFW......",
+            "......WWWWWW......",
+            ".................."
+          ],
+          "empty": "~",
+          "legend": {
+            "F": {
+              "rules": [
+                { "symbols": ["floor-0", "floor-3", "floor-1", "floor-2"], "weights": [3, 1, 1, 1] },
+                { "where": ["...", "W..", "..."], "symbols": ["brick-0", "brick-1"], "chance": 0.3 },
+                { "where": ["...", "..W", "..."], "symbols": ["brick-0", "brick-1"], "chance": 0.3 },
+                { "where": ["...", "...", ".W."], "symbols": ["brick-0", "brick-1"], "chance": 0.3 },
+                { "where": [".W.", "...", "..."], "symbols": ["nface-0", "nface-1"] }
+              ]
+            },
+            "P": {
+              "rules": [
+                { "template": "water", "autotile": "blob", "match": "PV" },
+                { "where": [".W.", "...", "..."], "symbols": ["nface-0", "nface-1"] }
+              ]
+            },
+            "W": {
+              "rules": [
+                { "templates": ["cap", "cracked"], "weights": [2, 1], "autotile": "blob" },
+                { "where": ["...", "...", ".~."], "symbols": ["cliff-0", "cliff-1"], "offset": [0, 1] }
+              ]
+            },
+            "V": null
+          }
+        },
+        {
+          "op": "dither",
+          "x": 8,
+          "y": 43,
+          "w": 44,
+          "h": 30,
+          "color": "n",
+          "density": [0.9, 0],
+          "direction": "radial",
+          "pattern": "value",
+          "scale": 5,
+          "seed": 3,
+          "over": "g"
+        },
+        {
+          "op": "dither",
+          "x": 91,
+          "y": 28,
+          "w": 34,
+          "h": 24,
+          "color": "n",
+          "density": [0.9, 0],
+          "direction": "radial",
+          "pattern": "value",
+          "scale": 5,
+          "seed": 3,
+          "over": "g"
+        },
+        {
+          "op": "dither",
+          "x": 58,
+          "y": 69,
+          "w": 40,
+          "h": 18,
+          "color": "n",
+          "density": [0.9, 0],
+          "direction": "radial",
+          "pattern": "value",
+          "scale": 5,
+          "seed": 3,
+          "over": "g"
+        },
+        {
+          "op": "dither",
+          "x": 24,
+          "y": 15,
+          "w": 24,
+          "h": 14,
+          "color": "n",
+          "density": [0.9, 0],
+          "direction": "radial",
+          "pattern": "value",
+          "scale": 5,
+          "seed": 3,
+          "over": "g"
+        },
+        {
+          "op": "dither",
+          "x": 113,
+          "y": 23,
+          "w": 14,
+          "h": 10,
+          "color": "n",
+          "density": [0.9, 0],
+          "direction": "radial",
+          "pattern": "value",
+          "scale": 5,
+          "seed": 3,
+          "over": "g"
+        },
+        { "op": "dither", "color": "o", "density": 0.35, "pattern": "value", "scale": 2, "seed": 8, "over": "n" },
+        {
+          "op": "rewrite",
+          "chance": 0.8,
+          "seed": 6,
+          "rules": [
+            {
+              "match": [
+                "n",
+                "g"
+              ],
+              "replace": [
+                "m",
+                "."
+              ]
+            },
+            {
+              "match": [
+                "o",
+                "g"
+              ],
+              "replace": [
+                "n",
+                "."
+              ]
+            }
+          ]
+        },
+        { "op": "stamp", "symbol": "bricks-a", "x": 15, "y": 59 },
+        { "op": "stamp", "symbol": "bricks-b", "x": 121, "y": 53 },
+        { "op": "stamp", "symbol": "bricks-c", "x": 49, "y": 75 },
+        { "op": "stamp", "symbol": "bricks-b", "x": 83, "y": 35 },
+        { "op": "stamp", "symbol": "bricks-c", "x": 105, "y": 25 },
+        { "op": "stamp", "symbol": "plank", "x": 47, "y": 45 },
+        { "op": "stamp", "symbol": "plank-d", "x": 100, "y": 57 },
+        { "op": "stamp", "symbol": "plank", "x": 89, "y": 78 },
+        { "op": "stamp", "symbol": "bones", "x": 41, "y": 59 },
+        { "op": "stamp", "symbol": "skull", "x": 98, "y": 52 },
+        { "op": "stamp", "symbol": "rubble", "x": 89, "y": 28 },
+        { "op": "stamp", "symbol": "rubble", "x": 41, "y": 72 },
+        { "op": "stamp", "symbol": "cobweb", "x": 8, "y": 32 },
+        { "op": "stamp", "symbol": "cobweb-r", "x": 130, "y": 32 },
+        { "op": "shade", "shape": "ellipse", "x": 23, "y": 22, "w": 11, "h": 4 },
+        { "op": "shade", "shape": "ellipse", "x": 111, "y": 22, "w": 11, "h": 4 },
+        { "op": "shade", "shape": "ellipse", "x": 7, "y": 37, "w": 10, "h": 4 },
+        { "op": "shade", "shape": "ellipse", "x": 8, "y": 46, "w": 10, "h": 4 },
+        { "op": "shade", "shape": "ellipse", "x": 18, "y": 37, "w": 9, "h": 4 },
+        { "op": "shade", "shape": "ellipse", "x": 127, "y": 61, "w": 10, "h": 4 },
+        { "op": "shade", "shape": "ellipse", "x": 128, "y": 37, "w": 9, "h": 4 },
+        { "op": "shade", "shape": "ellipse", "x": 128, "y": 45, "w": 9, "h": 4 },
+        { "op": "shade", "shape": "ellipse", "x": 121, "y": 36, "w": 9, "h": 4 },
+        { "op": "shade", "shape": "ellipse", "x": 23, "y": 77, "w": 10, "h": 4 },
+        { "op": "shade", "shape": "ellipse", "x": 34, "y": 78, "w": 9, "h": 4 },
+        { "op": "shade", "shape": "ellipse", "x": 111, "y": 77, "w": 10, "h": 4 },
+        { "op": "shade", "shape": "ellipse", "x": 105, "y": 78, "w": 9, "h": 4 },
+        { "op": "shade", "shape": "ellipse", "x": 78, "y": 92, "w": 8, "h": 4 },
+        { "op": "shade", "shape": "ellipse", "x": 54, "y": 92, "w": 8, "h": 4 },
+        { "op": "shade", "shape": "ellipse", "x": 55, "y": 73, "w": 10, "h": 4 },
+        { "op": "shade", "shape": "ellipse", "x": 67, "y": 92, "w": 11, "h": 4 },
+        { "op": "shade", "shape": "ellipse", "x": 95, "y": 67, "w": 9, "h": 4 }
+      ]
+    },
+    {
+      "name": "water-2",
+      "duration": 180,
+      "palette": { "1": "e", "2": "c" },
+      "ops": [
+        {
+          "op": "tilemap",
+          "tile": [8, 8],
+          "rows": [
+            ".......WWWW.......",
+            "..WWWWWWVVWWWWWW..",
+            "..WFFFFFPPFFFFFW..",
+            "WWWFFFFFPPFFFFFWWW",
+            "WFFFFFFFPPFFFFFFFW",
+            "WFFFFFPPPPPPFFFFFW",
+            "WFFFFFPPPPPPFFFFFW",
+            "WFFFFFFFFFFFFFFFFW",
+            "WWWFFFFFFFFFFFFWWW",
+            "..WFFFFFFFFFFFFW..",
+            "..WWWWWFFFFWWWWW..",
+            "......WFFFFW......",
+            "......WWWWWW......",
+            ".................."
+          ],
+          "empty": "~",
+          "legend": {
+            "F": {
+              "rules": [
+                { "symbols": ["floor-0", "floor-3", "floor-1", "floor-2"], "weights": [3, 1, 1, 1] },
+                { "where": ["...", "W..", "..."], "symbols": ["brick-0", "brick-1"], "chance": 0.3 },
+                { "where": ["...", "..W", "..."], "symbols": ["brick-0", "brick-1"], "chance": 0.3 },
+                { "where": ["...", "...", ".W."], "symbols": ["brick-0", "brick-1"], "chance": 0.3 },
+                { "where": [".W.", "...", "..."], "symbols": ["nface-0", "nface-1"] }
+              ]
+            },
+            "P": {
+              "rules": [
+                { "template": "water", "autotile": "blob", "match": "PV" },
+                { "where": [".W.", "...", "..."], "symbols": ["nface-0", "nface-1"] }
+              ]
+            },
+            "W": {
+              "rules": [
+                { "templates": ["cap", "cracked"], "weights": [2, 1], "autotile": "blob" },
+                { "where": ["...", "...", ".~."], "symbols": ["cliff-0", "cliff-1"], "offset": [0, 1] }
+              ]
+            },
+            "V": null
+          }
+        },
+        {
+          "op": "dither",
+          "x": 8,
+          "y": 43,
+          "w": 44,
+          "h": 30,
+          "color": "n",
+          "density": [0.9, 0],
+          "direction": "radial",
+          "pattern": "value",
+          "scale": 5,
+          "seed": 3,
+          "over": "g"
+        },
+        {
+          "op": "dither",
+          "x": 91,
+          "y": 28,
+          "w": 34,
+          "h": 24,
+          "color": "n",
+          "density": [0.9, 0],
+          "direction": "radial",
+          "pattern": "value",
+          "scale": 5,
+          "seed": 3,
+          "over": "g"
+        },
+        {
+          "op": "dither",
+          "x": 58,
+          "y": 69,
+          "w": 40,
+          "h": 18,
+          "color": "n",
+          "density": [0.9, 0],
+          "direction": "radial",
+          "pattern": "value",
+          "scale": 5,
+          "seed": 3,
+          "over": "g"
+        },
+        {
+          "op": "dither",
+          "x": 24,
+          "y": 15,
+          "w": 24,
+          "h": 14,
+          "color": "n",
+          "density": [0.9, 0],
+          "direction": "radial",
+          "pattern": "value",
+          "scale": 5,
+          "seed": 3,
+          "over": "g"
+        },
+        {
+          "op": "dither",
+          "x": 113,
+          "y": 23,
+          "w": 14,
+          "h": 10,
+          "color": "n",
+          "density": [0.9, 0],
+          "direction": "radial",
+          "pattern": "value",
+          "scale": 5,
+          "seed": 3,
+          "over": "g"
+        },
+        { "op": "dither", "color": "o", "density": 0.35, "pattern": "value", "scale": 2, "seed": 8, "over": "n" },
+        {
+          "op": "rewrite",
+          "chance": 0.8,
+          "seed": 6,
+          "rules": [
+            {
+              "match": [
+                "n",
+                "g"
+              ],
+              "replace": [
+                "m",
+                "."
+              ]
+            },
+            {
+              "match": [
+                "o",
+                "g"
+              ],
+              "replace": [
+                "n",
+                "."
+              ]
+            }
+          ]
+        },
+        { "op": "stamp", "symbol": "bricks-a", "x": 15, "y": 59 },
+        { "op": "stamp", "symbol": "bricks-b", "x": 121, "y": 53 },
+        { "op": "stamp", "symbol": "bricks-c", "x": 49, "y": 75 },
+        { "op": "stamp", "symbol": "bricks-b", "x": 83, "y": 35 },
+        { "op": "stamp", "symbol": "bricks-c", "x": 105, "y": 25 },
+        { "op": "stamp", "symbol": "plank", "x": 47, "y": 45 },
+        { "op": "stamp", "symbol": "plank-d", "x": 100, "y": 57 },
+        { "op": "stamp", "symbol": "plank", "x": 89, "y": 78 },
+        { "op": "stamp", "symbol": "bones", "x": 41, "y": 59 },
+        { "op": "stamp", "symbol": "skull", "x": 98, "y": 52 },
+        { "op": "stamp", "symbol": "rubble", "x": 89, "y": 28 },
+        { "op": "stamp", "symbol": "rubble", "x": 41, "y": 72 },
+        { "op": "stamp", "symbol": "cobweb", "x": 8, "y": 32 },
+        { "op": "stamp", "symbol": "cobweb-r", "x": 130, "y": 32 },
+        { "op": "shade", "shape": "ellipse", "x": 23, "y": 22, "w": 11, "h": 4 },
+        { "op": "shade", "shape": "ellipse", "x": 111, "y": 22, "w": 11, "h": 4 },
+        { "op": "shade", "shape": "ellipse", "x": 7, "y": 37, "w": 10, "h": 4 },
+        { "op": "shade", "shape": "ellipse", "x": 8, "y": 46, "w": 10, "h": 4 },
+        { "op": "shade", "shape": "ellipse", "x": 18, "y": 37, "w": 9, "h": 4 },
+        { "op": "shade", "shape": "ellipse", "x": 127, "y": 61, "w": 10, "h": 4 },
+        { "op": "shade", "shape": "ellipse", "x": 128, "y": 37, "w": 9, "h": 4 },
+        { "op": "shade", "shape": "ellipse", "x": 128, "y": 45, "w": 9, "h": 4 },
+        { "op": "shade", "shape": "ellipse", "x": 121, "y": 36, "w": 9, "h": 4 },
+        { "op": "shade", "shape": "ellipse", "x": 23, "y": 77, "w": 10, "h": 4 },
+        { "op": "shade", "shape": "ellipse", "x": 34, "y": 78, "w": 9, "h": 4 },
+        { "op": "shade", "shape": "ellipse", "x": 111, "y": 77, "w": 10, "h": 4 },
+        { "op": "shade", "shape": "ellipse", "x": 105, "y": 78, "w": 9, "h": 4 },
+        { "op": "shade", "shape": "ellipse", "x": 78, "y": 92, "w": 8, "h": 4 },
+        { "op": "shade", "shape": "ellipse", "x": 54, "y": 92, "w": 8, "h": 4 },
+        { "op": "shade", "shape": "ellipse", "x": 55, "y": 73, "w": 10, "h": 4 },
+        { "op": "shade", "shape": "ellipse", "x": 67, "y": 92, "w": 11, "h": 4 },
+        { "op": "shade", "shape": "ellipse", "x": 95, "y": 67, "w": 9, "h": 4 }
+      ]
+    },
+    {
+      "name": "water-3",
+      "duration": 180,
+      "palette": { "1": "c", "2": "c" },
+      "ops": [
+        {
+          "op": "tilemap",
+          "tile": [8, 8],
+          "rows": [
+            ".......WWWW.......",
+            "..WWWWWWVVWWWWWW..",
+            "..WFFFFFPPFFFFFW..",
+            "WWWFFFFFPPFFFFFWWW",
+            "WFFFFFFFPPFFFFFFFW",
+            "WFFFFFPPPPPPFFFFFW",
+            "WFFFFFPPPPPPFFFFFW",
+            "WFFFFFFFFFFFFFFFFW",
+            "WWWFFFFFFFFFFFFWWW",
+            "..WFFFFFFFFFFFFW..",
+            "..WWWWWFFFFWWWWW..",
+            "......WFFFFW......",
+            "......WWWWWW......",
+            ".................."
+          ],
+          "empty": "~",
+          "legend": {
+            "F": {
+              "rules": [
+                { "symbols": ["floor-0", "floor-3", "floor-1", "floor-2"], "weights": [3, 1, 1, 1] },
+                { "where": ["...", "W..", "..."], "symbols": ["brick-0", "brick-1"], "chance": 0.3 },
+                { "where": ["...", "..W", "..."], "symbols": ["brick-0", "brick-1"], "chance": 0.3 },
+                { "where": ["...", "...", ".W."], "symbols": ["brick-0", "brick-1"], "chance": 0.3 },
+                { "where": [".W.", "...", "..."], "symbols": ["nface-0", "nface-1"] }
+              ]
+            },
+            "P": {
+              "rules": [
+                { "template": "water", "autotile": "blob", "match": "PV" },
+                { "where": [".W.", "...", "..."], "symbols": ["nface-0", "nface-1"] }
+              ]
+            },
+            "W": {
+              "rules": [
+                { "templates": ["cap", "cracked"], "weights": [2, 1], "autotile": "blob" },
+                { "where": ["...", "...", ".~."], "symbols": ["cliff-0", "cliff-1"], "offset": [0, 1] }
+              ]
+            },
+            "V": null
+          }
+        },
+        {
+          "op": "dither",
+          "x": 8,
+          "y": 43,
+          "w": 44,
+          "h": 30,
+          "color": "n",
+          "density": [0.9, 0],
+          "direction": "radial",
+          "pattern": "value",
+          "scale": 5,
+          "seed": 3,
+          "over": "g"
+        },
+        {
+          "op": "dither",
+          "x": 91,
+          "y": 28,
+          "w": 34,
+          "h": 24,
+          "color": "n",
+          "density": [0.9, 0],
+          "direction": "radial",
+          "pattern": "value",
+          "scale": 5,
+          "seed": 3,
+          "over": "g"
+        },
+        {
+          "op": "dither",
+          "x": 58,
+          "y": 69,
+          "w": 40,
+          "h": 18,
+          "color": "n",
+          "density": [0.9, 0],
+          "direction": "radial",
+          "pattern": "value",
+          "scale": 5,
+          "seed": 3,
+          "over": "g"
+        },
+        {
+          "op": "dither",
+          "x": 24,
+          "y": 15,
+          "w": 24,
+          "h": 14,
+          "color": "n",
+          "density": [0.9, 0],
+          "direction": "radial",
+          "pattern": "value",
+          "scale": 5,
+          "seed": 3,
+          "over": "g"
+        },
+        {
+          "op": "dither",
+          "x": 113,
+          "y": 23,
+          "w": 14,
+          "h": 10,
+          "color": "n",
+          "density": [0.9, 0],
+          "direction": "radial",
+          "pattern": "value",
+          "scale": 5,
+          "seed": 3,
+          "over": "g"
+        },
+        { "op": "dither", "color": "o", "density": 0.35, "pattern": "value", "scale": 2, "seed": 8, "over": "n" },
+        {
+          "op": "rewrite",
+          "chance": 0.8,
+          "seed": 6,
+          "rules": [
+            {
+              "match": [
+                "n",
+                "g"
+              ],
+              "replace": [
+                "m",
+                "."
+              ]
+            },
+            {
+              "match": [
+                "o",
+                "g"
+              ],
+              "replace": [
+                "n",
+                "."
+              ]
+            }
+          ]
+        },
+        { "op": "stamp", "symbol": "bricks-a", "x": 15, "y": 59 },
+        { "op": "stamp", "symbol": "bricks-b", "x": 121, "y": 53 },
+        { "op": "stamp", "symbol": "bricks-c", "x": 49, "y": 75 },
+        { "op": "stamp", "symbol": "bricks-b", "x": 83, "y": 35 },
+        { "op": "stamp", "symbol": "bricks-c", "x": 105, "y": 25 },
+        { "op": "stamp", "symbol": "plank", "x": 47, "y": 45 },
+        { "op": "stamp", "symbol": "plank-d", "x": 100, "y": 57 },
+        { "op": "stamp", "symbol": "plank", "x": 89, "y": 78 },
+        { "op": "stamp", "symbol": "bones", "x": 41, "y": 59 },
+        { "op": "stamp", "symbol": "skull", "x": 98, "y": 52 },
+        { "op": "stamp", "symbol": "rubble", "x": 89, "y": 28 },
+        { "op": "stamp", "symbol": "rubble", "x": 41, "y": 72 },
+        { "op": "stamp", "symbol": "cobweb", "x": 8, "y": 32 },
+        { "op": "stamp", "symbol": "cobweb-r", "x": 130, "y": 32 },
+        { "op": "shade", "shape": "ellipse", "x": 23, "y": 22, "w": 11, "h": 4 },
+        { "op": "shade", "shape": "ellipse", "x": 111, "y": 22, "w": 11, "h": 4 },
+        { "op": "shade", "shape": "ellipse", "x": 7, "y": 37, "w": 10, "h": 4 },
+        { "op": "shade", "shape": "ellipse", "x": 8, "y": 46, "w": 10, "h": 4 },
+        { "op": "shade", "shape": "ellipse", "x": 18, "y": 37, "w": 9, "h": 4 },
+        { "op": "shade", "shape": "ellipse", "x": 127, "y": 61, "w": 10, "h": 4 },
+        { "op": "shade", "shape": "ellipse", "x": 128, "y": 37, "w": 9, "h": 4 },
+        { "op": "shade", "shape": "ellipse", "x": 128, "y": 45, "w": 9, "h": 4 },
+        { "op": "shade", "shape": "ellipse", "x": 121, "y": 36, "w": 9, "h": 4 },
+        { "op": "shade", "shape": "ellipse", "x": 23, "y": 77, "w": 10, "h": 4 },
+        { "op": "shade", "shape": "ellipse", "x": 34, "y": 78, "w": 9, "h": 4 },
+        { "op": "shade", "shape": "ellipse", "x": 111, "y": 77, "w": 10, "h": 4 },
+        { "op": "shade", "shape": "ellipse", "x": 105, "y": 78, "w": 9, "h": 4 },
+        { "op": "shade", "shape": "ellipse", "x": 78, "y": 92, "w": 8, "h": 4 },
+        { "op": "shade", "shape": "ellipse", "x": 54, "y": 92, "w": 8, "h": 4 },
+        { "op": "shade", "shape": "ellipse", "x": 55, "y": 73, "w": 10, "h": 4 },
+        { "op": "shade", "shape": "ellipse", "x": 67, "y": 92, "w": 11, "h": 4 },
+        { "op": "shade", "shape": "ellipse", "x": 95, "y": 67, "w": 9, "h": 4 }
+      ]
+    }
+  ],
+  "animations": { "water": { "frames": ["water-0", "water-1", "water-2", "water-3"] } }
+}

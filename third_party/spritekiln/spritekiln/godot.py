@@ -1,0 +1,257 @@
+"""Export `spritekiln render` output into a Godot 4 project.
+
+For a spec whose render exists in `<spec dir>/out/<name>/`, writes to `<project>/<dest>/<name>/`:
+  <name>.png, <name>_normal.png, <name>_emissive.png, <name>.json   (copied from the render)
+  <name>.tres          SpriteFrames: one animation per "<anim>_<dir>", exact per-frame durations
+  <name>_lit.tres      SpriteFrames whose atlas is a CanvasTexture (diffuse + normal) -> Light2D works
+  <name>_canvas.tres   CanvasTexture (diffuse + normal map)
+  <name>_emissive.tres SpriteFrames over the emissive atlas (only when the atlas is not empty)
+  <name>.tscn          scene: KilnSprite2D (addons/spritekiln) wired with frames + sheet JSON; projects driven
+                       by the legacy `pxforge` command get PxSprite2D (addons/pxforge) instead
+
+Also installs the addon in the project when missing (or updates it with --update-addon).
+"""
+
+import json
+import os
+import shutil
+
+from . import resources
+from .errors import ExportError
+
+# addon name -> (node script, default destination inside the project, source folder)
+ADDONS = {
+    'spritekiln': ('kiln_sprite_2d.gd', 'assets/spritekiln', resources.data_dir('godot_kiln_addon')),
+    'pxforge': ('px_sprite_2d.gd', 'assets/pxforge', resources.data_dir('godot_addon')),  # Hunt Tower until Phase 6
+}
+ADDON_SRC = ADDONS['pxforge'][2]
+DEFAULT_DEST = 'assets/pxforge'
+
+
+def block(meta):
+    """The exporter's own block of a render JSON (format 1 "spritekiln", or "pxforge" from older files)."""
+    return meta.get('spritekiln') or meta.get('pxforge')
+
+
+def _q(s):
+    """Godot resource string literal."""
+    return json.dumps(str(s), ensure_ascii=False)
+
+
+def _res(dest_res, *parts):
+    return dest_res.rstrip('/') + '/' + '/'.join(parts)
+
+
+def _find_project(explicit=None, start=None):
+    """Godot project folder: --project, then $SPRITEKILN_GODOT_PROJECT / $PXFORGE_GODOT_PROJECT, then the
+    `export.godot_project` of the spritekiln.toml around `start` (a spec path; default: cwd)."""
+    p = explicit or os.environ.get('SPRITEKILN_GODOT_PROJECT') or os.environ.get('PXFORGE_GODOT_PROJECT')
+    if not p:
+        from . import config
+
+        cfg = config.load(start)
+        if cfg.get('engine') == 'godot':
+            p = cfg['godot_project']
+    if not p:
+        raise ExportError(
+            'no Godot project: use --project <folder>, set SPRITEKILN_GODOT_PROJECT, or run `spritekiln init`'
+        )
+    p = os.path.abspath(p)
+    if not os.path.exists(os.path.join(p, 'project.godot')):
+        raise ExportError(f'not a Godot project (no project.godot): {p}')
+    return p
+
+
+def _project_path(project, dest):
+    """`dest` (res://..., relative to the project, or an absolute path inside it) as a res:// relative path."""
+    if dest.startswith('res://'):
+        dest = dest[6:]
+    elif os.path.isabs(dest):
+        rel = os.path.relpath(os.path.abspath(dest), os.path.abspath(project))
+        if rel.startswith('..') or os.path.isabs(rel):
+            raise ExportError(f'{dest} is outside the Godot project {project}')
+        dest = rel
+    dest = dest.replace('\\', '/').strip('/')
+    if '..' in dest.split('/'):
+        raise ExportError(f'{dest}: the export folder must be inside the Godot project')
+    return dest
+
+
+def install_addon(project, update=False, addon='spritekiln'):
+    src = ADDONS[addon][2]
+    dst = os.path.join(project, 'addons', addon)
+    if os.path.exists(dst) and not update:
+        return False
+    if not os.path.exists(src):
+        raise ExportError(f'Godot addon not found in {src}')
+    os.makedirs(dst, exist_ok=True)
+    shipped = [f for f in os.listdir(src) if os.path.isfile(os.path.join(src, f)) and not f.endswith('.uid')]
+    for f in os.listdir(dst):  # drop files an older addon had; keep what Godot generated (.uid, .import)
+        if f not in shipped and not f.endswith(('.uid', '.import')) and os.path.isfile(os.path.join(dst, f)):
+            os.remove(os.path.join(dst, f))
+    for f in shipped:
+        shutil.copy2(os.path.join(src, f), os.path.join(dst, f))
+    return True
+
+
+def _sprite_frames_tres(meta, atlas_res, atlas_type='Texture2D'):
+    """Build a SpriteFrames .tres. speed = 1 fps so frame duration (s) = ms / 1000 exactly."""
+    px = block(meta)
+    frames = meta['frames']
+    regions = {}  # (x, y, w, h) -> sub id
+    lines_sub = []
+    anims_txt = []
+    for a, A in px['animations'].items():
+        loop = 'true' if A.get('loop', True) else 'false'
+        for d, D in A['directions'].items():
+            items = []
+            for key, ms in zip(D['frames'], D['durations']):
+                r = frames[key]['frame']
+                rk = (r['x'], r['y'], r['w'], r['h'])
+                if rk not in regions:
+                    sid = f'AtlasTexture_{len(regions)}'
+                    regions[rk] = sid
+                    lines_sub.append(
+                        f'[sub_resource type="AtlasTexture" id="{sid}"]\n'
+                        f'atlas = ExtResource("1_atlas")\n'
+                        f'region = Rect2({rk[0]}, {rk[1]}, {rk[2]}, {rk[3]})\n'
+                    )
+                items.append(f'{{\n"duration": {round(ms / 1000.0, 4)},\n"texture": SubResource("{regions[rk]}")\n}}')
+            anims_txt.append(
+                f'{{\n"frames": [{", ".join(items)}],\n"loop": {loop},\n"name": &"{a}_{d}",\n"speed": 1.0\n}}'
+            )
+    head = (
+        f'[gd_resource type="SpriteFrames" load_steps={len(regions) + 2} format=3]\n\n'
+        f'[ext_resource type="{atlas_type}" path={_q(atlas_res)} id="1_atlas"]\n\n'
+    )
+    return head + '\n'.join(lines_sub) + '\n[resource]\nanimations = [' + ', '.join(anims_txt) + ']\n'
+
+
+def _canvas_texture_tres(diffuse_res, normal_res):
+    return (
+        '[gd_resource type="CanvasTexture" load_steps=3 format=3]\n\n'
+        f'[ext_resource type="Texture2D" path={_q(diffuse_res)} id="1"]\n'
+        f'[ext_resource type="Texture2D" path={_q(normal_res)} id="2"]\n\n'
+        '[resource]\ndiffuse_texture = ExtResource("1")\nnormal_texture = ExtResource("2")\n'
+    )
+
+
+def _scene_tscn(name, frames_res, json_res, emissive_res, pivot, first_anim, addon='pxforge', start=None):
+    script = f'res://addons/{addon}/{ADDONS[addon][0]}'
+    ext = [
+        f'[ext_resource type="Script" path="{script}" id="1_script"]',
+        f'[ext_resource type="SpriteFrames" path={_q(frames_res)} id="2_frames"]',
+        f'[ext_resource type="JSON" path={_q(json_res)} id="3_sheet"]',
+    ]
+    if emissive_res:
+        ext.append(f'[ext_resource type="SpriteFrames" path={_q(emissive_res)} id="4_emissive"]')
+    body = [
+        f'[node name="{name}" type="AnimatedSprite2D"]',
+        'texture_filter = 1',
+        'sprite_frames = ExtResource("2_frames")',
+        f'animation = &"{first_anim}"',
+        'centered = false',
+        f'offset = Vector2({-round(pivot["x"])}, {-round(pivot["y"])})',
+        'script = ExtResource("1_script")',
+        'sheet = ExtResource("3_sheet")',
+    ]
+    if emissive_res:
+        body.append('emissive_frames = ExtResource("4_emissive")')
+    if start:  # KilnSprite2D: the clip to start with (a side view has no `s` direction)
+        body += [f'anim = &"{start[0]}"', f'facing = &"{start[1]}"']
+    return f'[gd_scene load_steps={len(ext) + 1} format=3]\n\n' + '\n'.join(ext) + '\n\n' + '\n'.join(body) + '\n'
+
+
+def _write(path, text):
+    with open(path, 'w', encoding='utf-8') as fh:
+        fh.write(text)
+
+
+def _has_pixels(png):
+    try:
+        import numpy as np
+        from PIL import Image
+
+        return bool(np.asarray(Image.open(png).convert('RGBA'))[..., 3].any())
+    except Exception:  # noqa
+        return os.path.exists(png)
+
+
+def export_godot(spec, project, dest=None, lit=False, update_addon=False, render_dir=None, addon='spritekiln'):
+    """spec: loaded spec dict (needs name/_dir). `addon`: 'spritekiln' (KilnSprite2D) or 'pxforge' (the legacy
+    PxSprite2D Hunt Tower uses). Returns dict with written paths."""
+    dest = dest or ADDONS[addon][1]
+    name = spec['name']
+    src = render_dir or os.path.join(spec['_dir'], 'out', name)
+    jpath = os.path.join(src, f'{name}.json')
+    if not os.path.exists(jpath):
+        raise ExportError(f'render not found: {jpath}  (run `spritekiln render` first)')
+    with open(jpath, encoding='utf-8') as fh:
+        meta = json.load(fh)
+    px = block(meta)
+    if px is None:
+        raise ExportError(f'{jpath}: no "spritekiln" (or "pxforge") block; not a spritekiln render')
+    dest = _project_path(project, dest)
+    out_dir = os.path.join(project, *dest.split('/'), name)
+    os.makedirs(out_dir, exist_ok=True)
+    res = 'res://' + dest + '/' + name
+    written = {}
+
+    # 1. copy render products
+    for f in (meta['meta']['image'], px.get('normal_map'), px.get('emissive_map'), f'{name}.json'):
+        if f and os.path.exists(os.path.join(src, f)):
+            shutil.copy2(os.path.join(src, f), os.path.join(out_dir, f))
+            written[f] = os.path.join(out_dir, f)
+
+    # 2. resources
+    atlas_res = _res(res, meta['meta']['image'])
+    frames_path = os.path.join(out_dir, f'{name}.tres')
+    _write(frames_path, _sprite_frames_tres(meta, atlas_res))
+    written['frames'] = frames_path
+
+    lit_frames_res = None
+    nm = px.get('normal_map')
+    if nm and os.path.exists(os.path.join(out_dir, nm)):
+        canvas_path = os.path.join(out_dir, f'{name}_canvas.tres')
+        _write(canvas_path, _canvas_texture_tres(atlas_res, _res(res, nm)))
+        lit_path = os.path.join(out_dir, f'{name}_lit.tres')
+        lit_frames_res = _res(res, f'{name}_lit.tres')
+        _write(lit_path, _sprite_frames_tres(meta, _res(res, f'{name}_canvas.tres'), 'CanvasTexture'))
+        written['canvas'] = canvas_path
+        written['lit'] = lit_path
+
+    emissive_res = None
+    em = px.get('emissive_map')
+    if em and os.path.exists(os.path.join(out_dir, em)) and _has_pixels(os.path.join(out_dir, em)):
+        em_path = os.path.join(out_dir, f'{name}_emissive.tres')
+        _write(em_path, _sprite_frames_tres(meta, _res(res, em)))
+        emissive_res = _res(res, f'{name}_emissive.tres')
+        written['emissive'] = em_path
+    elif em and os.path.exists(os.path.join(out_dir, em)):
+        os.remove(os.path.join(out_dir, em))
+        written.pop(em, None)
+
+    # 3. scene
+    anims = list(px['animations'])
+    first = 'idle' if 'idle' in anims else anims[0]
+    first_dir = px['directions'][0]
+    scene_path = os.path.join(out_dir, f'{name}.tscn')
+    frames_res = lit_frames_res if (lit and lit_frames_res) else _res(res, f'{name}.tres')
+    _write(
+        scene_path,
+        _scene_tscn(
+            name,
+            frames_res,
+            _res(res, f'{name}.json'),
+            emissive_res,
+            px['pivot'],
+            f'{first}_{first_dir}',
+            addon,
+            None if addon == 'pxforge' else (first, first_dir),
+        ),
+    )
+    written['scene'] = scene_path
+
+    written['addon_installed'] = install_addon(project, update_addon, addon)
+    written['res'] = res
+    return written

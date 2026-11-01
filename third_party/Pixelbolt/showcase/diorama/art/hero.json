@@ -1,0 +1,440 @@
+{
+  "version": 1,
+  "name": "hero",
+  "width": 12,
+  "height": 14,
+  "palette": { "$ref": "palette.json" },
+  "anchor": [6, 12],
+  "frames": [
+    {
+      "name": "idle-0",
+      "duration": 400,
+      "points": { "feet": [6, 12] },
+      "ops": [
+        {
+          "op": "grid",
+          "x": 3,
+          "y": 2,
+          "rows": [
+            "..kkk..",
+            ".kRRRk.",
+            "kRRRRRk",
+            "kRlLlRk",
+            ".kRRRk.",
+            "kvwwwvk",
+            "kuvGvuk",
+            ".kuuuk."
+          ]
+        },
+        {
+          "op": "grid",
+          "x": 3,
+          "y": 10,
+          "rows": [
+            ".kt.tk.",
+            ".kk.kk."
+          ]
+        }
+      ]
+    },
+    {
+      "name": "idle-1",
+      "duration": 400,
+      "points": { "feet": [6, 12] },
+      "ops": [
+        {
+          "op": "grid",
+          "x": 3,
+          "y": 3,
+          "rows": [
+            "..kkk..",
+            ".kRRRk.",
+            "kRRRRRk",
+            "kRlLlRk",
+            ".kRRRk.",
+            "kvwwwvk",
+            "kuvGvuk"
+          ]
+        },
+        {
+          "op": "grid",
+          "x": 3,
+          "y": 10,
+          "rows": [
+            ".kt.tk.",
+            ".kk.kk."
+          ]
+        }
+      ]
+    },
+    {
+      "name": "down-0",
+      "duration": 120,
+      "points": { "feet": [6, 12] },
+      "ops": [
+        {
+          "op": "grid",
+          "x": 3,
+          "y": 2,
+          "rows": [
+            "..kkk..",
+            ".kRRRk.",
+            "kRRRRRk",
+            "kRlLlRk",
+            ".kRRRk.",
+            "kvwwwvk",
+            "kuvGvuk",
+            ".kuuuk."
+          ]
+        },
+        {
+          "op": "grid",
+          "x": 3,
+          "y": 10,
+          "rows": [
+            ".kt.k..",
+            ".kk...."
+          ]
+        }
+      ]
+    },
+    {
+      "name": "down-1",
+      "duration": 120,
+      "points": { "feet": [6, 12] },
+      "ops": [
+        {
+          "op": "grid",
+          "x": 3,
+          "y": 1,
+          "rows": [
+            "..kkk..",
+            ".kRRRk.",
+            "kRRRRRk",
+            "kRlLlRk",
+            ".kRRRk.",
+            "kvwwwvk",
+            "kuvGvuk",
+            ".kuuuk."
+          ]
+        },
+        {
+          "op": "grid",
+          "x": 3,
+          "y": 10,
+          "rows": [
+            ".kt.tk.",
+            ".kk.kk."
+          ]
+        }
+      ]
+    },
+    {
+      "name": "down-2",
+      "duration": 120,
+      "points": { "feet": [6, 12] },
+      "ops": [
+        {
+          "op": "grid",
+          "x": 3,
+          "y": 2,
+          "rows": [
+            "..kkk..",
+            ".kRRRk.",
+            "kRRRRRk",
+            "kRlLlRk",
+            ".kRRRk.",
+            "kvwwwvk",
+            "kuvGvuk",
+            ".kuuuk."
+          ]
+        },
+        {
+          "op": "grid",
+          "x": 3,
+          "y": 10,
+          "rows": [
+            "..k.tk.",
+            "....kk."
+          ]
+        }
+      ]
+    },
+    {
+      "name": "down-3",
+      "duration": 120,
+      "points": { "feet": [6, 12] },
+      "ops": [
+        {
+          "op": "grid",
+          "x": 3,
+          "y": 1,
+          "rows": [
+            "..kkk..",
+            ".kRRRk.",
+            "kRRRRRk",
+            "kRlLlRk",
+            ".kRRRk.",
+            "kvwwwvk",
+            "kuvGvuk",
+            ".kuuuk."
+          ]
+        },
+        {
+          "op": "grid",
+          "x": 3,
+          "y": 10,
+          "rows": [
+            ".kt.tk.",
+            ".kk.kk."
+          ]
+        }
+      ]
+    },
+    {
+      "name": "right-0",
+      "duration": 120,
+      "points": { "feet": [6, 12] },
+      "ops": [
+        {
+          "op": "grid",
+          "x": 3,
+          "y": 2,
+          "rows": [
+            "..kkk..",
+            ".kRRRk.",
+            "kRRRRRk",
+            "kRRlLk.",
+            ".kRRk..",
+            ".kvwwk.",
+            ".kuvGk.",
+            ".kuuk.."
+          ]
+        },
+        {
+          "op": "grid",
+          "x": 3,
+          "y": 10,
+          "rows": [
+            ".kt..tk",
+            "kk...kk"
+          ]
+        }
+      ]
+    },
+    {
+      "name": "right-1",
+      "duration": 120,
+      "points": { "feet": [6, 12] },
+      "ops": [
+        {
+          "op": "grid",
+          "x": 3,
+          "y": 1,
+          "rows": [
+            "..kkk..",
+            ".kRRRk.",
+            "kRRRRRk",
+            "kRRlLk.",
+            ".kRRk..",
+            ".kvwwk.",
+            ".kuvGk.",
+            ".kuuk.."
+          ]
+        },
+        {
+          "op": "grid",
+          "x": 3,
+          "y": 10,
+          "rows": [
+            "..ktk..",
+            "..kkk.."
+          ]
+        }
+      ]
+    },
+    {
+      "name": "right-2",
+      "duration": 120,
+      "points": { "feet": [6, 12] },
+      "ops": [
+        {
+          "op": "grid",
+          "x": 3,
+          "y": 2,
+          "rows": [
+            "..kkk..",
+            ".kRRRk.",
+            "kRRRRRk",
+            "kRRlLk.",
+            ".kRRk..",
+            ".kvwwk.",
+            ".kuvGk.",
+            ".kuuk.."
+          ]
+        },
+        {
+          "op": "grid",
+          "x": 3,
+          "y": 10,
+          "rows": [
+            ".kt.tk.",
+            ".kk.kk."
+          ]
+        }
+      ]
+    },
+    {
+      "name": "right-3",
+      "duration": 120,
+      "points": { "feet": [6, 12] },
+      "ops": [
+        {
+          "op": "grid",
+          "x": 3,
+          "y": 1,
+          "rows": [
+            "..kkk..",
+            ".kRRRk.",
+            "kRRRRRk",
+            "kRRlLk.",
+            ".kRRk..",
+            ".kvwwk.",
+            ".kuvGk.",
+            ".kuuk.."
+          ]
+        },
+        {
+          "op": "grid",
+          "x": 3,
+          "y": 10,
+          "rows": [
+            "..ktk..",
+            "..kkk.."
+          ]
+        }
+      ]
+    },
+    {
+      "name": "atk-0",
+      "duration": 90,
+      "points": { "feet": [6, 12], "blade": [9, 8] },
+      "ops": [
+        {
+          "op": "grid",
+          "x": 3,
+          "y": 2,
+          "rows": [
+            "..kkk..",
+            ".kRRRk.",
+            "kRRRRRk",
+            "kRRlLk.",
+            ".kRRk..",
+            ".kvwwk.",
+            ".kuvGk.",
+            ".kuuk.."
+          ]
+        },
+        {
+          "op": "grid",
+          "x": 3,
+          "y": 10,
+          "rows": [
+            ".kt.tk.",
+            ".kk.kk."
+          ]
+        },
+        {
+          "op": "grid",
+          "x": 0,
+          "y": 1,
+          "rows": [
+            "L...",
+            ".L..",
+            "..lk",
+            "...k"
+          ]
+        }
+      ]
+    },
+    {
+      "name": "atk-1",
+      "duration": 70,
+      "points": { "feet": [6, 12], "blade": [9, 8] },
+      "ops": [
+        {
+          "op": "grid",
+          "x": 4,
+          "y": 3,
+          "rows": [
+            "..kkk..",
+            ".kRRRk.",
+            "kRRRRRk",
+            "kRRlLk.",
+            ".kRRk..",
+            ".kvwwk.",
+            ".kuvGk.",
+            ".kuuk.."
+          ]
+        },
+        {
+          "op": "grid",
+          "x": 4,
+          "y": 10,
+          "rows": [
+            "kt...tk",
+            "kk...kk"
+          ]
+        },
+        { "op": "grid", "x": 9, "y": 7, "rows": ["kLL"] }
+      ]
+    },
+    {
+      "name": "atk-2",
+      "duration": 160,
+      "points": { "feet": [6, 12], "blade": [9, 8] },
+      "ops": [
+        {
+          "op": "grid",
+          "x": 4,
+          "y": 3,
+          "rows": [
+            "..kkk..",
+            ".kRRRk.",
+            "kRRRRRk",
+            "kRRlLk.",
+            ".kRRk..",
+            ".kvwwk.",
+            ".kuvGk.",
+            ".kuuk.."
+          ]
+        },
+        {
+          "op": "grid",
+          "x": 4,
+          "y": 10,
+          "rows": [
+            "kt...tk",
+            "kk...kk"
+          ]
+        },
+        {
+          "op": "grid",
+          "x": 9,
+          "y": 8,
+          "rows": [
+            "k..",
+            ".L.",
+            "..L"
+          ]
+        }
+      ]
+    }
+  ],
+  "animations": {
+    "idle": { "frames": ["idle-0", "idle-1"] },
+    "down": { "frames": ["down-0", "down-1", "down-2", "down-3"] },
+    "right": { "frames": ["right-0", "right-1", "right-2", "right-3"] },
+    "attack": { "frames": ["atk-0", "atk-1", "atk-2", "right-0"], "loop": false }
+  }
+}

@@ -1,0 +1,165 @@
+// @group_uniforms gradient_textures;
+// The gradient texture itself, with interpolation.
+// @uniform sampler2D gradient_texture : filter_nearest, repeat_disable;
+// A Nx1 image, where N is the amount of the different colors of gradient_texture,
+// without interpolating between them. Used in dithering.
+// @uniform sampler2D gradient_texture_no_interpolation : filter_nearest, repeat_disable;
+// A Nx1 grayscale image, where N is the amount of the different colors of gradient_texture,
+// where each pixel contains the offset, ranging from 0-1 of each color. Used in dithering.
+// @uniform sampler2D gradient_offset_texture : filter_nearest, repeat_disable;
+
+// @group_uniforms gradient_options;
+// @uniform int shape : hint_enum("Linear", "Radial") = 0;
+// @uniform int repeat : hint_enum("None", "Repeat", "Mirrored", "Truncate") = 0;
+// @uniform bool use_dithering = false;
+// @uniform sampler2D dither_texture : filter_nearest, repeat_enable;
+// @uniform float position : hint_range(-0.5, 0.5, 0.01) = 0.0;
+// @uniform float size : hint_range(0.01, 2.0, 0.01) = 1.0;
+// @uniform float angle : hint_range(0.0, 360.0, 0.01) = 0.0;
+// @uniform vec2 pivot = vec2(0.5);
+// @uniform vec2 center = vec2(0.5);
+// @uniform vec2 radius = vec2(1.0);
+// @uniform bool use_color_masking = false;
+// @uniform vec4 color_mask : source_color = vec4(0.0, 0.0, 0.0, 0.0);
+// @uniform float tolerance : hint_range(0.0, 1.0) = 0.0;
+
+
+float modify_uv(
+	vec2 uv,
+	int shape,
+	float position,
+	float size,
+	float angle,
+	vec2 pivot,
+	vec2 center,
+	vec2 radius,
+) {
+	float modified_uv;
+	if (shape == 0) { // Linear
+		vec2 uv_offsetted = uv - pivot;
+		float angle_cos = cos(radians(angle));
+		float angle_sin = sin(radians(angle));
+		modified_uv = uv_offsetted.x * angle_cos - uv_offsetted.y * angle_sin;
+		modified_uv /= abs(angle_cos) + abs(angle_sin);
+		if (size == 0.0) {
+			size = 0.01;
+		}
+		modified_uv /= size;
+		float pos = position / size;
+		modified_uv -= pos - 0.5;
+	}
+	else { // Radial
+		vec2 uv_offsetted = uv * 2.0 - 1.0;
+		uv_offsetted -= (center * 2.0) - vec2(1.0);
+		if (radius.x == 0.0) {
+			radius.x = 0.01;
+		}
+		if (radius.y == 0.0) {
+			radius.y = 0.01;
+		}
+		uv_offsetted /= radius;
+		modified_uv = length(uv_offsetted);
+	}
+	return modified_uv;
+}
+
+
+float mirror_fract(float uv) {
+	int sign_uv = (int(sign(uv)) - 1) / 2; // returns -1 for negative sign and 0 for positive
+	if (int((uv)) % 2 == sign_uv)
+		uv = fract(uv);
+	else
+		uv = fract(1.0 - uv);
+
+	return uv;
+}
+
+// Logic taken from https://godotshaders.com/shader/dither-gradient-shader/
+float dither(vec2 uv, float modified_uv, ivec2 image_size, sampler2D dither_texture) {
+	float uv_lower = floor(modified_uv);
+	float uv_upper = floor(modified_uv) + 1.0;
+	ivec2 pixel_size = textureSize(dither_texture, 0);
+	float threshold = texture(dither_texture, uv * vec2(image_size / pixel_size.x)).r;
+	float ramp_val = modified_uv < threshold ? 0.0 : 1.0;
+	// sample at the lower bound colour if ramp_val is 0.0, upper bound color if 1.0
+	float col_sample = mix(uv_lower, uv_upper, ramp_val);
+	return col_sample;
+}
+
+bool similar_colors(vec4 c1, vec4 c2, float tol) {
+	return (
+		abs(c1.r - c2.r) <= tol
+		&& abs(c1.g - c2.g) <= tol
+		&& abs(c1.b - c2.b) <= tol
+		&& abs(c1.a - c2.a) <= tol
+	);
+}
+
+vec4 apply_effect(
+	sampler2D source_texture,
+	vec2 uv,
+	sampler2D selection,
+	sampler2D gradient_texture,
+	sampler2D gradient_texture_no_interpolation,
+	sampler2D gradient_offset_texture,
+	int shape,
+	int repeat,
+	bool use_dithering,
+	sampler2D dither_texture,
+	float position,
+	float size,
+	float angle,
+	vec2 pivot,
+	vec2 center,
+	vec2 radius,
+	bool use_color_masking,
+	vec4 color_mask,
+	float tolerance
+) {
+	vec4 original_color = texture(source_texture, uv);
+	vec4 selection_color = texture(selection, uv);
+	float modified_uv = modify_uv(uv, shape, position, size, angle, pivot, center, radius);
+	if (repeat == 1)
+		modified_uv = fract(modified_uv);
+	else if (repeat == 2)
+		modified_uv = mirror_fract(modified_uv);
+
+	vec4 output;
+	if (use_dithering) {
+		int n_of_colors = textureSize(gradient_offset_texture, 0).x;
+		float colors_minus = float(n_of_colors - 1);
+		for (int i = 1; i <= n_of_colors; i++) {
+			float off = texture(gradient_offset_texture, vec2(float(i) / colors_minus)).r;
+			float off_prev = texture(gradient_offset_texture, vec2(float(i - 1) / colors_minus)).r;
+			vec4 first = texture(gradient_texture_no_interpolation, vec2(float((i - 1)) / colors_minus));
+			vec4 second = texture(gradient_texture_no_interpolation, vec2(float(i) / colors_minus));
+			if (modified_uv < off_prev) {
+				if (i == 1) {
+					output = first;
+				}
+				continue;
+			}
+			if (modified_uv >= off) {
+				if (i == n_of_colors) {
+					output = second;
+				}
+				continue;
+			}
+			float uvt = (modified_uv - off_prev) / (off - off_prev);
+			float col_sample = dither(uv, uvt, textureSize(source_texture, 0), dither_texture);
+			output = mix(first, second, col_sample);
+		}
+	}
+	else
+		output = texture(gradient_texture, vec2(modified_uv));
+	if (repeat == 3)
+		output.a = min(step(modified_uv, 1.0) * step(0.0, modified_uv), output.a);
+	if (use_color_masking) {
+		if (!similar_colors(original_color, color_mask, tolerance)) {
+			output = original_color;
+		}
+	}
+	output = mix(original_color, output, output.a);
+
+	return mix(original_color, output, selection_color.a);
+}

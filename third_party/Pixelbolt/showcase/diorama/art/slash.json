@@ -1,0 +1,94 @@
+{
+  "version": 1,
+  "name": "slash",
+  "width": 16,
+  "height": 14,
+  "palette": { "$ref": "palette.json" },
+  "anchor": [2, 9],
+  "frames": [
+    {
+      "name": "slash-0",
+      "duration": 60,
+      "ops": [
+        {
+          "op": "grid",
+          "x": 4,
+          "y": 0,
+          "rows": [
+            "..EEE.....",
+            "....LEE...",
+            ".....LEE..",
+            ".....LLE..",
+            "......LLE.",
+            "......LLE.",
+            "......LLE.",
+            "......LLE.",
+            "......LLE.",
+            "......LLE.",
+            ".....LLE..",
+            ".....LEE..",
+            "....LEE...",
+            "..EEE....."
+          ]
+        }
+      ]
+    },
+    {
+      "name": "slash-1",
+      "duration": 60,
+      "ops": [
+        {
+          "op": "grid",
+          "x": 4,
+          "y": 0,
+          "rows": [
+            "..EEE.....",
+            "..LLLEE...",
+            "...LLLEE..",
+            "...LLLLE..",
+            "....LLLLE.",
+            "....LLLLE.",
+            "....LLLLE.",
+            "....LLLLE.",
+            "....LLLLE.",
+            "....LLLLE.",
+            "...LLLLE..",
+            "...LLLEE..",
+            "..LLLEE...",
+            "..EEE....."
+          ]
+        },
+        { "op": "dither", "erase": true, "density": 0.35, "pattern": "bayer2" }
+      ]
+    },
+    {
+      "name": "slash-2",
+      "duration": 60,
+      "ops": [
+        {
+          "op": "grid",
+          "x": 4,
+          "y": 0,
+          "rows": [
+            "..EEE.....",
+            "..LLLEE...",
+            "..LLLLEE..",
+            "..LLLLLE..",
+            "...LLLLLE.",
+            "...LLLLLE.",
+            "...LLLLLE.",
+            "...LLLLLE.",
+            "...LLLLLE.",
+            "...LLLLLE.",
+            "..LLLLLE..",
+            "..LLLLEE..",
+            "..LLLEE...",
+            "..EEE....."
+          ]
+        },
+        { "op": "dither", "erase": true, "density": 0.7, "pattern": "bayer2" }
+      ]
+    }
+  ],
+  "animations": { "slash": { "frames": ["slash-0", "slash-1", "slash-2"], "loop": false } }
+}

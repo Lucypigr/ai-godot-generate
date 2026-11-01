@@ -1,0 +1,14 @@
+#!/bin/sh
+# Prints MCP settings for this folder. It only prints; it changes no configuration file.
+self=$0
+while [ -L "$self" ]; do
+  target=$(readlink "$self")
+  case $target in /*) self=$target ;; *) self=$(dirname "$self")/$target ;; esac
+done
+here=$(CDPATH= cd -- "$(dirname "$self")" && pwd -P) || exit 1
+if [ ! -x "$here/runtime/node" ]; then
+  echo "This helper cannot find runtime/node next to this script." >&2
+  echo "Extract the whole archive first and keep its contents together." >&2
+  exit 1
+fi
+exec "$here/runtime/node" "$here/launcher/connect.mjs" "$@"

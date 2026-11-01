@@ -1,0 +1,20 @@
+{
+  "extends": "./tsconfig.json",
+  "compilerOptions": {
+    // The published bundle stays ES5-compatible. TS 6 deprecated the es5 target (TS 7 removes it),
+    // so it is declared explicitly here to keep the existing compatibility; see AGENTS.md
+    // "Known pitfalls" for the migration decision.
+    "target": "es5",
+    "ignoreDeprecations": "6.0",
+    "module": "esnext",
+    "rootDir": "./src",
+    "declaration": true,
+    "declarationDir": "./dist",
+    "outDir": "./dist",
+    "removeComments": true,
+    "types": [],
+    "forceConsistentCasingInFileNames": true
+  },
+  "include": ["./src/**/*"],
+  "exclude": ["./test/**/*", "./node_modules", "./lib", "./dist"]
+}

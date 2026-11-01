@@ -1,0 +1,261 @@
+{
+  "format": "pixelforge-pose-metadata",
+  "version": 1,
+  "coordinates": "unscaled source pixels; top-left origin; positive y down; marker times are milliseconds before playback-rate adjustment",
+  "poses": {
+    "idle-0": {
+      "origin": [16, 19],
+      "parts": {
+        "legs": { "definition": "legs-a", "topLeft": [5, 16], "anchor": [16, 16], "points": {} },
+        "shell": {
+          "definition": "shell",
+          "topLeft": [8, 10],
+          "anchor": [16, 18],
+          "points": { "clawL": [8, 13], "clawR": [23, 13], "eyes": [16, 10], "legs": [16, 16] }
+        },
+        "eyes": { "definition": "eyes-open", "topLeft": [11, 7], "anchor": [16, 10], "points": {} },
+        "clawL": { "definition": "claw-l-closed", "topLeft": [2, 8], "anchor": [8, 13], "points": { "tip": [3, 8] } },
+        "clawR": {
+          "definition": "claw-l-closed",
+          "flipX": true,
+          "topLeft": [23, 8],
+          "anchor": [23, 13],
+          "points": { "tip": [28, 8] }
+        }
+      },
+      "markers": []
+    },
+    "idle-1": {
+      "origin": [16, 19],
+      "parts": {
+        "legs": { "definition": "legs-a", "topLeft": [5, 16], "anchor": [16, 16], "points": {} },
+        "shell": {
+          "definition": "shell",
+          "topLeft": [8, 10],
+          "anchor": [16, 18],
+          "points": { "clawL": [8, 13], "clawR": [23, 13], "eyes": [16, 10], "legs": [16, 16] }
+        },
+        "eyes": { "definition": "eyes-blink", "topLeft": [11, 7], "anchor": [16, 10], "points": {} },
+        "clawL": { "definition": "claw-l-closed", "topLeft": [2, 8], "anchor": [8, 13], "points": { "tip": [3, 8] } },
+        "clawR": {
+          "definition": "claw-l-closed",
+          "flipX": true,
+          "topLeft": [23, 8],
+          "anchor": [23, 13],
+          "points": { "tip": [28, 8] }
+        }
+      },
+      "markers": []
+    },
+    "idle-2": {
+      "origin": [16, 19],
+      "parts": {
+        "legs": { "definition": "legs-a", "topLeft": [5, 16], "anchor": [16, 16], "points": {} },
+        "shell": {
+          "definition": "shell",
+          "topLeft": [8, 10],
+          "anchor": [16, 18],
+          "points": { "clawL": [8, 13], "clawR": [23, 13], "eyes": [16, 10], "legs": [16, 16] }
+        },
+        "eyes": { "definition": "eyes-open", "topLeft": [11, 7], "anchor": [16, 10], "points": {} },
+        "clawL": { "definition": "claw-l-open", "topLeft": [2, 8], "anchor": [8, 13], "points": {} },
+        "clawR": { "definition": "claw-l-open", "flipX": true, "topLeft": [23, 8], "anchor": [23, 13], "points": {} }
+      },
+      "markers": []
+    },
+    "walk-0": {
+      "origin": [16, 19],
+      "parts": {
+        "legs": { "definition": "legs-a", "topLeft": [5, 16], "anchor": [16, 16], "points": {} },
+        "shell": {
+          "definition": "shell",
+          "topLeft": [8, 10],
+          "anchor": [16, 18],
+          "points": { "clawL": [8, 13], "clawR": [23, 13], "eyes": [16, 10], "legs": [16, 16] }
+        },
+        "eyes": { "definition": "eyes-open", "topLeft": [11, 7], "anchor": [16, 10], "points": {} },
+        "clawL": { "definition": "claw-l-closed", "topLeft": [2, 8], "anchor": [8, 13], "points": { "tip": [3, 8] } },
+        "clawR": {
+          "definition": "claw-l-closed",
+          "flipX": true,
+          "topLeft": [23, 8],
+          "anchor": [23, 13],
+          "points": { "tip": [28, 8] }
+        }
+      },
+      "markers": []
+    },
+    "walk-1": {
+      "origin": [16, 19],
+      "parts": {
+        "legs": { "definition": "legs-b", "topLeft": [5, 15], "anchor": [16, 15], "points": {} },
+        "shell": {
+          "definition": "shell",
+          "topLeft": [8, 9],
+          "anchor": [16, 17],
+          "points": { "clawL": [8, 12], "clawR": [23, 12], "eyes": [16, 9], "legs": [16, 15] }
+        },
+        "eyes": { "definition": "eyes-open", "topLeft": [11, 6], "anchor": [16, 9], "points": {} },
+        "clawL": { "definition": "claw-l-closed", "topLeft": [2, 7], "anchor": [8, 12], "points": { "tip": [3, 7] } },
+        "clawR": {
+          "definition": "claw-l-closed",
+          "flipX": true,
+          "topLeft": [23, 7],
+          "anchor": [23, 12],
+          "points": { "tip": [28, 7] }
+        }
+      },
+      "markers": []
+    },
+    "walk-2": {
+      "origin": [16, 19],
+      "parts": {
+        "legs": { "definition": "legs-a", "topLeft": [5, 16], "anchor": [16, 16], "points": {} },
+        "shell": {
+          "definition": "shell",
+          "topLeft": [8, 10],
+          "anchor": [16, 18],
+          "points": { "clawL": [8, 13], "clawR": [23, 13], "eyes": [16, 10], "legs": [16, 16] }
+        },
+        "eyes": { "definition": "eyes-open", "topLeft": [11, 7], "anchor": [16, 10], "points": {} },
+        "clawL": { "definition": "claw-l-open", "topLeft": [2, 8], "anchor": [8, 13], "points": {} },
+        "clawR": { "definition": "claw-l-open", "flipX": true, "topLeft": [23, 8], "anchor": [23, 13], "points": {} }
+      },
+      "markers": []
+    },
+    "walk-3": {
+      "origin": [16, 19],
+      "parts": {
+        "legs": { "definition": "legs-b", "topLeft": [5, 15], "anchor": [16, 15], "points": {} },
+        "shell": {
+          "definition": "shell",
+          "topLeft": [8, 9],
+          "anchor": [16, 17],
+          "points": { "clawL": [8, 12], "clawR": [23, 12], "eyes": [16, 9], "legs": [16, 15] }
+        },
+        "eyes": { "definition": "eyes-open", "topLeft": [11, 6], "anchor": [16, 9], "points": {} },
+        "clawL": { "definition": "claw-l-open", "topLeft": [2, 7], "anchor": [8, 12], "points": {} },
+        "clawR": { "definition": "claw-l-open", "flipX": true, "topLeft": [23, 7], "anchor": [23, 12], "points": {} }
+      },
+      "markers": []
+    },
+    "snap-0": {
+      "origin": [16, 19],
+      "parts": {
+        "legs": { "definition": "legs-a", "topLeft": [5, 15], "anchor": [16, 15], "points": {} },
+        "shell": {
+          "definition": "shell",
+          "topLeft": [8, 9],
+          "anchor": [16, 17],
+          "points": { "clawL": [8, 12], "clawR": [23, 12], "eyes": [16, 9], "legs": [16, 15] }
+        },
+        "eyes": { "definition": "eyes-angry", "topLeft": [11, 6], "anchor": [16, 9], "points": {} },
+        "clawL": { "definition": "claw-l-raised", "topLeft": [2, 5], "anchor": [8, 12], "points": { "tip": [3, 5] } },
+        "clawR": {
+          "definition": "claw-l-raised",
+          "flipX": true,
+          "topLeft": [23, 5],
+          "anchor": [23, 12],
+          "points": { "tip": [28, 5] }
+        }
+      },
+      "markers": []
+    },
+    "snap-1": {
+      "origin": [16, 19],
+      "parts": {
+        "legs": { "definition": "legs-a", "topLeft": [5, 14], "anchor": [16, 14], "points": {} },
+        "shell": {
+          "definition": "shell",
+          "topLeft": [8, 8],
+          "anchor": [16, 16],
+          "points": { "clawL": [8, 11], "clawR": [23, 11], "eyes": [16, 8], "legs": [16, 14] }
+        },
+        "eyes": { "definition": "eyes-angry", "topLeft": [11, 5], "anchor": [16, 8], "points": {} },
+        "clawL": { "definition": "claw-l-open", "topLeft": [2, 6], "anchor": [8, 11], "points": {} },
+        "clawR": { "definition": "claw-l-open", "flipX": true, "topLeft": [23, 6], "anchor": [23, 11], "points": {} }
+      },
+      "markers": []
+    },
+    "snap-2": {
+      "origin": [16, 19],
+      "parts": {
+        "legs": { "definition": "legs-a", "topLeft": [5, 16], "anchor": [16, 16], "points": {} },
+        "shell": {
+          "definition": "shell",
+          "topLeft": [8, 10],
+          "anchor": [16, 18],
+          "points": { "clawL": [8, 13], "clawR": [23, 13], "eyes": [16, 10], "legs": [16, 16] }
+        },
+        "eyes": { "definition": "eyes-angry", "topLeft": [11, 7], "anchor": [16, 10], "points": {} },
+        "clawL": { "definition": "claw-l-closed", "topLeft": [2, 8], "anchor": [8, 13], "points": { "tip": [3, 8] } },
+        "clawR": {
+          "definition": "claw-l-closed",
+          "flipX": true,
+          "topLeft": [23, 8],
+          "anchor": [23, 13],
+          "points": { "tip": [28, 8] }
+        }
+      },
+      "markers": [{ "name": "hit", "part": "clawL", "point": "tip", "at": [3, 8] }]
+    },
+    "hurt": {
+      "origin": [16, 19],
+      "parts": {
+        "legs": { "definition": "legs-a", "topLeft": [5, 14], "anchor": [16, 14], "points": {} },
+        "shell": {
+          "definition": "shell",
+          "topLeft": [8, 8],
+          "anchor": [16, 16],
+          "points": { "clawL": [8, 11], "clawR": [23, 11], "eyes": [16, 8], "legs": [16, 14] }
+        },
+        "eyes": { "definition": "eyes-blink", "topLeft": [11, 5], "anchor": [16, 8], "points": {} },
+        "clawL": { "definition": "claw-l-open", "topLeft": [2, 6], "anchor": [8, 11], "points": {} },
+        "clawR": { "definition": "claw-l-open", "flipX": true, "topLeft": [23, 6], "anchor": [23, 11], "points": {} }
+      },
+      "markers": []
+    }
+  },
+  "animations": {
+    "idle": {
+      "duration": 2440,
+      "loop": true,
+      "entries": [
+        { "position": 0, "frame": "idle-0", "start": 0, "duration": 900, "markers": [] },
+        { "position": 1, "frame": "idle-1", "start": 900, "duration": 140, "markers": [] },
+        { "position": 2, "frame": "idle-0", "start": 1040, "duration": 900, "markers": [] },
+        { "position": 3, "frame": "idle-2", "start": 1940, "duration": 500, "markers": [] }
+      ]
+    },
+    "walk": {
+      "duration": 440,
+      "loop": true,
+      "entries": [
+        { "position": 0, "frame": "walk-0", "start": 0, "duration": 110, "markers": [] },
+        { "position": 1, "frame": "walk-1", "start": 110, "duration": 110, "markers": [] },
+        { "position": 2, "frame": "walk-2", "start": 220, "duration": 110, "markers": [] },
+        { "position": 3, "frame": "walk-3", "start": 330, "duration": 110, "markers": [] }
+      ]
+    },
+    "snap": {
+      "duration": 470,
+      "loop": false,
+      "entries": [
+        { "position": 0, "frame": "snap-0", "start": 0, "duration": 220, "markers": [] },
+        { "position": 1, "frame": "snap-1", "start": 220, "duration": 90, "markers": [] },
+        {
+          "position": 2,
+          "frame": "snap-2",
+          "start": 310,
+          "duration": 160,
+          "markers": [{ "name": "hit", "part": "clawL", "point": "tip", "at": [3, 8] }]
+        }
+      ]
+    },
+    "hurt": {
+      "duration": 200,
+      "loop": false,
+      "entries": [{ "position": 0, "frame": "hurt", "start": 0, "duration": 200, "markers": [] }]
+    }
+  }
+}

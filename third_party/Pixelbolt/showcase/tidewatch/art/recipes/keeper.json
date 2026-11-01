@@ -1,0 +1,804 @@
+{
+  "version": 1,
+  "name": "keeper",
+  "width": 40,
+  "height": 40,
+  "palette": { "$ref": "../palette.json" },
+  "anchor": [20, 31],
+  "symbols": {
+    "head-d": [
+      ".....kkkkkk.....",
+      "...kkeeeeEEkk...",
+      "..keeeeEEEEEEk..",
+      ".keeEEEEEEEEEfk.",
+      ".kEEEEEEEEEEEfk.",
+      "kEEEEEEEEEEEEEfk",
+      "kfEffffffffffEfk",
+      "kfEkzAaaaaAzkEfk",
+      "kfEkApppppPAkEfk",
+      "kffkpkppppkPkffk",
+      "kFfkpkppppkqkfFk",
+      ".kFkqPppppPqkFk.",
+      "..kkkqqqqqqkkk.."
+    ],
+    "head-d-hurt": [
+      ".....kkkkkk.....",
+      "...kkeeeeEEkk...",
+      "..keeeeEEEEEEk..",
+      ".keeEEEEEEEEEfk.",
+      ".kEEEEEEEEEEEfk.",
+      "kEEEEEEEEEEEEEfk",
+      "kfEffffffffffEfk",
+      "kfEkzAaaaaAzkEfk",
+      "kfEkApppppPAkEfk",
+      "kffkpppppppPkffk",
+      "kFfkpkkppkkqkfFk",
+      ".kFkqPpkkpPqkFk.",
+      "..kkkqqqqqqkkk.."
+    ],
+    "head-d-happy": [
+      ".....kkkkkk.....",
+      "...kkeeeeEEkk...",
+      "..keeeeEEEEEEk..",
+      ".keeEEEEEEEEEfk.",
+      ".kEEEEEEEEEEEfk.",
+      "kEEEEEEEEEEEEEfk",
+      "kfEffffffffffEfk",
+      "kfEkzAaaaaAzkEfk",
+      "kfEkApppppPAkEfk",
+      "kffkpkkppkkPkffk",
+      "kFfkpppppppqkfFk",
+      ".kFkqPpkkpPqkFk.",
+      "..kkkqqqqqqkkk.."
+    ],
+    "body-d": [
+      "..kfEekkkkeEfk..",
+      ".kEkEeEEEEEfkfk.",
+      ".kEkeEEEEEEfkfk.",
+      ".kPkEEEEEEEfkqk.",
+      ".kPkUUUMMUUUkqk.",
+      "..kEEEEEEEEEEk..",
+      "..kfffffffffFk.."
+    ],
+    "body-d-a": [
+      "..kfEekkkkeEfk..",
+      ".kEkEeEEEEEfkfk.",
+      ".kPkeEEEEEEfkfk.",
+      ".kPkEEEEEEEfkfk.",
+      ".kEkUUUMMUUUkqk.",
+      "..kEEEEEEEEEEqk.",
+      "..kfffffffffFk.."
+    ],
+    "body-d-b": [
+      "..kfEekkkkeEfk..",
+      ".kEkEeEEEEEfkqk.",
+      ".kEkeEEEEEEfkqk.",
+      ".kEkEEEEEEEfkfk.",
+      ".kPkUUUMMUUUkk..",
+      ".kPEEEEEEEEEEk..",
+      "..kfffffffffFk.."
+    ],
+    "body-d-lift": [
+      "..kfEekkkkeEfk..",
+      "...kEeEEEEEfk...",
+      "...keEEEEEEfk...",
+      "...kEEEEEEEfk...",
+      "...kUUUMMUUUk...",
+      "..kEEEEEEEEEEk..",
+      "..kfffffffffFk.."
+    ],
+    "arm-up-l": [
+      "kqk.",
+      "kPk.",
+      "kEk.",
+      "kfk.",
+      ".kEk",
+      ".kEk",
+      ".kfk",
+      ".kEk",
+      ".kEk",
+      ".kfk",
+      ".kEk",
+      ".kEk",
+      ".kfk",
+      ".kEk",
+      ".kEk",
+      ".kfk",
+      ".kEk"
+    ],
+    "legs-d": [
+      ".kBBkkBBk.",
+      "kUUUkkUUUk"
+    ],
+    "legs-d-cl": [
+      ".kBBkkUUUk",
+      ".kBBk.kkk.",
+      "kUUUk....."
+    ],
+    "legs-d-cr": [
+      "kUUUkkBBk.",
+      ".kkk.kBBk.",
+      ".....kUUUk"
+    ],
+    "legs-d-pass": [
+      ".kBBkkBBk.",
+      ".kBBkkBBk.",
+      "kUUUkkUUUk"
+    ],
+    "legs-d-pa": [
+      ".kBBkkBBk.",
+      "kUUUkkBBk.",
+      ".kkk.kUUUk"
+    ],
+    "legs-d-pb": [
+      ".kBBkkBBk.",
+      ".kBBkkUUUk",
+      "kUUUk.kkk."
+    ],
+    "head-u": [
+      ".....kkkkkk.....",
+      "...kkeeeeEEkk...",
+      "..keeeeEEEEEEk..",
+      ".keeEEEEEEEEEfk.",
+      ".kEEEEEEEEEEEfk.",
+      "kEEEEEEEEEEEEEfk",
+      "keEEEEEEEEEEEEfk",
+      "kfEEEEEEEEEEEEfk",
+      "kfEEEEEEEEEEEffk",
+      "kffEEEEEEEEEfffk",
+      "kFffffffffffffFk",
+      ".kFFffffffffFFk.",
+      "..kkkkkkkkkkkk.."
+    ],
+    "body-u": [
+      "..kfzAAAAAAzfk..",
+      ".kEkEeEEEEEfkfk.",
+      ".kEkeEEEEEEfkfk.",
+      ".kPkEEEEEEEfkqk.",
+      ".kPkUUUUUUUUkqk.",
+      "..kEEEEEEEEEEk..",
+      "..kfffffffffFk.."
+    ],
+    "body-u-a": [
+      "..kfzAAAAAAzfk..",
+      ".kEkEeEEEEEfkqk.",
+      ".kEkeEEEEEEfkqk.",
+      ".kEkEEEEEEEfkfk.",
+      ".kPkUUUUUUUUkk..",
+      ".kPEEEEEEEEEEk..",
+      "..kfffffffffFk.."
+    ],
+    "body-u-b": [
+      "..kfzAAAAAAzfk..",
+      ".kEkEeEEEEEfkfk.",
+      ".kPkeEEEEEEfkfk.",
+      ".kPkEEEEEEEfkfk.",
+      ".kEkUUUUUUUUkqk.",
+      "..kEEEEEEEEEEqk.",
+      "..kfffffffffFk.."
+    ],
+    "head-r": [
+      ".....kkkkkkk......",
+      "...kkeeeeEEEkk....",
+      "..keeeEEEEEEEEk...",
+      ".keeEEEEEEEEEEEk..",
+      ".kEEEEEEEEEEEEEfk.",
+      "kEEEEEEEEEEEEEEEfk",
+      "kfEEEEffffffffffFk",
+      "kfEEEkzAaaappppkk.",
+      "kfEEEkzAapppkpPk..",
+      "kffEEkzAappppPPk..",
+      "kFffEkzzApppqqk...",
+      ".kFFfkkzzqqqkk....",
+      "..kkkkkkkkkkk....."
+    ],
+    "head-r-hurt": [
+      ".....kkkkkkk......",
+      "...kkeeeeEEEkk....",
+      "..keeeEEEEEEEEk...",
+      ".keeEEEEEEEEEEEk..",
+      ".kEEEEEEEEEEEEEfk.",
+      "kEEEEEEEEEEEEEEEfk",
+      "kfEEEEffffffffffFk",
+      "kfEEEkzAaaappppkk.",
+      "kfEEEkzAappkkpPk..",
+      "kffEEkzAappppPPk..",
+      "kFffEkzzApppqqk...",
+      ".kFFfkkzzqqqkk....",
+      "..kkkkkkkkkkk....."
+    ],
+    "body-r": [
+      "kfEEeEEfk.",
+      "kEEeEEEEfk",
+      "kEeEEEEEfk",
+      "kEEPPEEEfk",
+      "kkUUPPUUkk",
+      "kEEEEEEEEk",
+      "kfffffffFk"
+    ],
+    "body-r-fwd": [
+      "kfEEeEEfk.",
+      "kEEeEEEEfk",
+      "kEeEEEEEfk",
+      "kEEEEPPEfk",
+      "kkUUUUPPkk",
+      "kEEEEEEEEk",
+      "kfffffffFk"
+    ],
+    "body-r-back": [
+      "kfEEeEEfk.",
+      "kEEeEEEEfk",
+      "kEeEEEEEfk",
+      "kEPPEEEEfk",
+      "kkPPUUUUkk",
+      "kEEEEEEEEk",
+      "kfffffffFk"
+    ],
+    "legs-r": [
+      ".kBBkBBk.",
+      "kUUUkUUUk"
+    ],
+    "legs-r-c1": [
+      ".kVVk...kBBk.",
+      "kUUUk...kUUUk"
+    ],
+    "legs-r-c2": [
+      ".kBBk...kVVk.",
+      "kUUUk...kUUUk"
+    ],
+    "legs-r-pass": [
+      "...kVBBk.",
+      "...kVBBk.",
+      "..kUUUUk."
+    ],
+    "legs-r-pa": [
+      "..kVkBBk.",
+      "..kUUkBBk",
+      "...kkUUUk"
+    ],
+    "legs-r-pb": [
+      "...kVBBk.",
+      "...kVkUUU",
+      "..kUUUkk."
+    ],
+    "body-d-noarm": [
+      "..kfEekkkkeEfk..",
+      ".kEkEeEEEEEfk...",
+      ".kEkeEEEEEEfk...",
+      ".kPkEEEEEEEfk...",
+      ".kPkUUUMMUUUk...",
+      "..kEEEEEEEEEEk..",
+      "..kfffffffffFk.."
+    ],
+    "body-u-noarm": [
+      "..kfzAAAAAAzfk..",
+      "...kEeEEEEEfkfk.",
+      "...keEEEEEEfkfk.",
+      "...kEEEEEEEfkqk.",
+      "...kUUUUUUUUkqk.",
+      "..kEEEEEEEEEEk..",
+      "..kfffffffffFk.."
+    ],
+    "body-r-noarm": [
+      "kfEEeEEfk.",
+      "kEEeEEEEfk",
+      "kEeEEEEEfk",
+      "kEEEEEEEfk",
+      "kkUUUUUUkk",
+      "kEEEEEEEEk",
+      "kfffffffFk"
+    ],
+    "sa-d-windup": [
+      "....kk..",
+      "...kmMk.",
+      "...kmMk.",
+      "...kmMk.",
+      "...kmMk.",
+      "...kmvk.",
+      "..kiXXik",
+      "...kUUk.",
+      "...kqqk.",
+      "..kfEk..",
+      ".kfEk...",
+      "kfEk....",
+      "kEk....."
+    ],
+    "sa-d-strike": [
+      "...kEk.",
+      "..kEfk.",
+      ".kEfk..",
+      ".kqqk..",
+      "kiXXik.",
+      ".kmMk..",
+      ".kmMk..",
+      ".kmMk..",
+      ".kmMk..",
+      ".kmMk..",
+      ".kmvk..",
+      "..kk..."
+    ],
+    "sa-d-recover": [
+      "kEk....",
+      "kEfk...",
+      ".kqqk..",
+      ".kiXk..",
+      "..kmMk.",
+      "...kmMk",
+      "....kmk",
+      ".....k."
+    ],
+    "sa-u-windup": [
+      "....kEk",
+      "...kfEk",
+      "..kqqk.",
+      "..kXik.",
+      ".kMmk..",
+      "kMmk...",
+      "kmk....",
+      ".k....."
+    ],
+    "sa-u-strike": [
+      "..kk...",
+      ".kmMk..",
+      ".kmMk..",
+      ".kmMk..",
+      ".kmMk..",
+      ".kmMk..",
+      ".kmvk..",
+      "kiXXik.",
+      ".kUUk..",
+      ".kqqk..",
+      ".kEfk..",
+      "..kEfk.",
+      "...kEk."
+    ],
+    "sa-u-recover": [
+      ".k.....",
+      "kmk....",
+      "kMmk...",
+      ".kMmk..",
+      "..kXik.",
+      "..kqqk.",
+      "...kfEk",
+      "....kEk"
+    ],
+    "sa-r-windup": [
+      "..........k.kkkk.",
+      "..kkkkkkkkXkqfEEk",
+      ".kmmmmmmmmXkqqfEk",
+      ".kvMMMMMMMXkkkkk.",
+      "..kkkkkkk.k......"
+    ],
+    "sa-r-strike": [
+      ".kkkk.k..........",
+      "kEEfqkXkkkkkkkk..",
+      "kEfqqkXmmmmmmmmk.",
+      ".kkkkkXMMMMMMMvk.",
+      "......k.kkkkkkk.."
+    ],
+    "sa-r-recover": [
+      "kEk.....",
+      "kEfk....",
+      ".kqqk...",
+      ".kkXik..",
+      "...kmMk.",
+      "....kmMk",
+      ".....kmk",
+      "......k."
+    ]
+  },
+  "frames": [
+    {
+      "name": "idle-d",
+      "duration": 600,
+      "layers": [
+        { "name": "legs", "ops": [{ "op": "stamp", "symbol": "legs-d", "x": 15, "y": 30 }] },
+        { "name": "body", "ops": [{ "op": "stamp", "symbol": "body-d", "x": 12, "y": 23 }] },
+        { "name": "head", "ops": [{ "op": "stamp", "symbol": "head-d", "x": 12, "y": 10 }] }
+      ]
+    },
+    {
+      "name": "breathe-d",
+      "duration": 400,
+      "layers": [
+        { "name": "legs", "ops": [{ "op": "stamp", "symbol": "legs-d-pass", "x": 15, "y": 29 }] },
+        { "name": "body", "ops": [{ "op": "stamp", "symbol": "body-d", "x": 12, "y": 22 }] },
+        { "name": "head", "ops": [{ "op": "stamp", "symbol": "head-d", "x": 12, "y": 9 }] }
+      ]
+    },
+    {
+      "name": "walk-d-1",
+      "duration": 140,
+      "points": { "step": [17, 32] },
+      "layers": [
+        { "name": "legs", "ops": [{ "op": "stamp", "symbol": "legs-d-cl", "x": 15, "y": 30 }] },
+        { "name": "body", "ops": [{ "op": "stamp", "symbol": "body-d-a", "x": 12, "y": 23 }] },
+        { "name": "head", "ops": [{ "op": "stamp", "symbol": "head-d", "x": 12, "y": 10 }] }
+      ]
+    },
+    {
+      "name": "walk-d-2",
+      "duration": 120,
+      "layers": [
+        { "name": "legs", "ops": [{ "op": "stamp", "symbol": "legs-d-pb", "x": 15, "y": 29 }] },
+        { "name": "body", "ops": [{ "op": "stamp", "symbol": "body-d", "x": 12, "y": 22 }] },
+        { "name": "head", "ops": [{ "op": "stamp", "symbol": "head-d", "x": 12, "y": 9 }] }
+      ]
+    },
+    {
+      "name": "walk-d-3",
+      "duration": 140,
+      "points": { "step": [22, 32] },
+      "layers": [
+        { "name": "legs", "ops": [{ "op": "stamp", "symbol": "legs-d-cr", "x": 15, "y": 30 }] },
+        { "name": "body", "ops": [{ "op": "stamp", "symbol": "body-d-b", "x": 12, "y": 23 }] },
+        { "name": "head", "ops": [{ "op": "stamp", "symbol": "head-d", "x": 12, "y": 10 }] }
+      ]
+    },
+    {
+      "name": "walk-d-4",
+      "duration": 120,
+      "layers": [
+        { "name": "legs", "ops": [{ "op": "stamp", "symbol": "legs-d-pa", "x": 15, "y": 29 }] },
+        { "name": "body", "ops": [{ "op": "stamp", "symbol": "body-d", "x": 12, "y": 22 }] },
+        { "name": "head", "ops": [{ "op": "stamp", "symbol": "head-d", "x": 12, "y": 9 }] }
+      ]
+    },
+    {
+      "name": "idle-u",
+      "duration": 600,
+      "layers": [
+        { "name": "legs", "ops": [{ "op": "stamp", "symbol": "legs-d", "x": 15, "y": 30 }] },
+        { "name": "body", "ops": [{ "op": "stamp", "symbol": "body-u", "x": 12, "y": 23 }] },
+        { "name": "head", "ops": [{ "op": "stamp", "symbol": "head-u", "x": 12, "y": 10 }] }
+      ]
+    },
+    {
+      "name": "breathe-u",
+      "duration": 400,
+      "layers": [
+        { "name": "legs", "ops": [{ "op": "stamp", "symbol": "legs-d-pass", "x": 15, "y": 29 }] },
+        { "name": "body", "ops": [{ "op": "stamp", "symbol": "body-u", "x": 12, "y": 22 }] },
+        { "name": "head", "ops": [{ "op": "stamp", "symbol": "head-u", "x": 12, "y": 9 }] }
+      ]
+    },
+    {
+      "name": "walk-u-1",
+      "duration": 140,
+      "points": { "step": [22, 32] },
+      "layers": [
+        { "name": "legs", "ops": [{ "op": "stamp", "symbol": "legs-d-cr", "x": 15, "y": 30 }] },
+        { "name": "body", "ops": [{ "op": "stamp", "symbol": "body-u-a", "x": 12, "y": 23 }] },
+        { "name": "head", "ops": [{ "op": "stamp", "symbol": "head-u", "x": 12, "y": 10 }] }
+      ]
+    },
+    {
+      "name": "walk-u-2",
+      "duration": 120,
+      "layers": [
+        { "name": "legs", "ops": [{ "op": "stamp", "symbol": "legs-d-pa", "x": 15, "y": 29 }] },
+        { "name": "body", "ops": [{ "op": "stamp", "symbol": "body-u", "x": 12, "y": 22 }] },
+        { "name": "head", "ops": [{ "op": "stamp", "symbol": "head-u", "x": 12, "y": 9 }] }
+      ]
+    },
+    {
+      "name": "walk-u-3",
+      "duration": 140,
+      "points": { "step": [17, 32] },
+      "layers": [
+        { "name": "legs", "ops": [{ "op": "stamp", "symbol": "legs-d-cl", "x": 15, "y": 30 }] },
+        { "name": "body", "ops": [{ "op": "stamp", "symbol": "body-u-b", "x": 12, "y": 23 }] },
+        { "name": "head", "ops": [{ "op": "stamp", "symbol": "head-u", "x": 12, "y": 10 }] }
+      ]
+    },
+    {
+      "name": "walk-u-4",
+      "duration": 120,
+      "layers": [
+        { "name": "legs", "ops": [{ "op": "stamp", "symbol": "legs-d-pb", "x": 15, "y": 29 }] },
+        { "name": "body", "ops": [{ "op": "stamp", "symbol": "body-u", "x": 12, "y": 22 }] },
+        { "name": "head", "ops": [{ "op": "stamp", "symbol": "head-u", "x": 12, "y": 9 }] }
+      ]
+    },
+    {
+      "name": "idle-r",
+      "duration": 600,
+      "layers": [
+        { "name": "legs", "ops": [{ "op": "stamp", "symbol": "legs-r", "x": 16, "y": 30 }] },
+        { "name": "body", "ops": [{ "op": "stamp", "symbol": "body-r", "x": 15, "y": 23 }] },
+        { "name": "head", "ops": [{ "op": "stamp", "symbol": "head-r", "x": 12, "y": 10 }] }
+      ]
+    },
+    {
+      "name": "breathe-r",
+      "duration": 400,
+      "layers": [
+        { "name": "legs", "ops": [{ "op": "stamp", "symbol": "legs-r-pass", "x": 15, "y": 29 }] },
+        { "name": "body", "ops": [{ "op": "stamp", "symbol": "body-r", "x": 15, "y": 22 }] },
+        { "name": "head", "ops": [{ "op": "stamp", "symbol": "head-r", "x": 12, "y": 9 }] }
+      ]
+    },
+    {
+      "name": "walk-r-1",
+      "duration": 140,
+      "points": { "step": [24, 31] },
+      "layers": [
+        { "name": "legs", "ops": [{ "op": "stamp", "symbol": "legs-r-c1", "x": 14, "y": 30 }] },
+        { "name": "body", "ops": [{ "op": "stamp", "symbol": "body-r-back", "x": 15, "y": 23 }] },
+        { "name": "head", "ops": [{ "op": "stamp", "symbol": "head-r", "x": 12, "y": 10 }] }
+      ]
+    },
+    {
+      "name": "walk-r-2",
+      "duration": 120,
+      "layers": [
+        { "name": "legs", "ops": [{ "op": "stamp", "symbol": "legs-r-pb", "x": 15, "y": 29 }] },
+        { "name": "body", "ops": [{ "op": "stamp", "symbol": "body-r", "x": 15, "y": 22 }] },
+        { "name": "head", "ops": [{ "op": "stamp", "symbol": "head-r", "x": 12, "y": 9 }] }
+      ]
+    },
+    {
+      "name": "walk-r-3",
+      "duration": 140,
+      "points": { "step": [24, 31] },
+      "layers": [
+        { "name": "legs", "ops": [{ "op": "stamp", "symbol": "legs-r-c2", "x": 14, "y": 30 }] },
+        { "name": "body", "ops": [{ "op": "stamp", "symbol": "body-r-fwd", "x": 15, "y": 23 }] },
+        { "name": "head", "ops": [{ "op": "stamp", "symbol": "head-r", "x": 12, "y": 10 }] }
+      ]
+    },
+    {
+      "name": "walk-r-4",
+      "duration": 120,
+      "layers": [
+        { "name": "legs", "ops": [{ "op": "stamp", "symbol": "legs-r-pa", "x": 15, "y": 29 }] },
+        { "name": "body", "ops": [{ "op": "stamp", "symbol": "body-r", "x": 15, "y": 22 }] },
+        { "name": "head", "ops": [{ "op": "stamp", "symbol": "head-r", "x": 12, "y": 9 }] }
+      ]
+    },
+    {
+      "name": "idle-l",
+      "duration": 600,
+      "layers": [
+        { "name": "legs", "ops": [{ "op": "stamp", "symbol": "legs-r", "x": 15, "y": 30, "flipX": true }] },
+        { "name": "body", "ops": [{ "op": "stamp", "symbol": "body-r", "x": 15, "y": 23, "flipX": true }] },
+        { "name": "head", "ops": [{ "op": "stamp", "symbol": "head-r", "x": 10, "y": 10, "flipX": true }] }
+      ]
+    },
+    {
+      "name": "breathe-l",
+      "duration": 400,
+      "layers": [
+        { "name": "legs", "ops": [{ "op": "stamp", "symbol": "legs-r-pass", "x": 16, "y": 29, "flipX": true }] },
+        { "name": "body", "ops": [{ "op": "stamp", "symbol": "body-r", "x": 15, "y": 22, "flipX": true }] },
+        { "name": "head", "ops": [{ "op": "stamp", "symbol": "head-r", "x": 10, "y": 9, "flipX": true }] }
+      ]
+    },
+    {
+      "name": "walk-l-1",
+      "duration": 140,
+      "points": { "step": [15, 31] },
+      "layers": [
+        { "name": "legs", "ops": [{ "op": "stamp", "symbol": "legs-r-c1", "x": 13, "y": 30, "flipX": true }] },
+        { "name": "body", "ops": [{ "op": "stamp", "symbol": "body-r-back", "x": 15, "y": 23, "flipX": true }] },
+        { "name": "head", "ops": [{ "op": "stamp", "symbol": "head-r", "x": 10, "y": 10, "flipX": true }] }
+      ]
+    },
+    {
+      "name": "walk-l-2",
+      "duration": 120,
+      "layers": [
+        { "name": "legs", "ops": [{ "op": "stamp", "symbol": "legs-r-pb", "x": 16, "y": 29, "flipX": true }] },
+        { "name": "body", "ops": [{ "op": "stamp", "symbol": "body-r", "x": 15, "y": 22, "flipX": true }] },
+        { "name": "head", "ops": [{ "op": "stamp", "symbol": "head-r", "x": 10, "y": 9, "flipX": true }] }
+      ]
+    },
+    {
+      "name": "walk-l-3",
+      "duration": 140,
+      "points": { "step": [15, 31] },
+      "layers": [
+        { "name": "legs", "ops": [{ "op": "stamp", "symbol": "legs-r-c2", "x": 13, "y": 30, "flipX": true }] },
+        { "name": "body", "ops": [{ "op": "stamp", "symbol": "body-r-fwd", "x": 15, "y": 23, "flipX": true }] },
+        { "name": "head", "ops": [{ "op": "stamp", "symbol": "head-r", "x": 10, "y": 10, "flipX": true }] }
+      ]
+    },
+    {
+      "name": "walk-l-4",
+      "duration": 120,
+      "layers": [
+        { "name": "legs", "ops": [{ "op": "stamp", "symbol": "legs-r-pa", "x": 16, "y": 29, "flipX": true }] },
+        { "name": "body", "ops": [{ "op": "stamp", "symbol": "body-r", "x": 15, "y": 22, "flipX": true }] },
+        { "name": "head", "ops": [{ "op": "stamp", "symbol": "head-r", "x": 10, "y": 9, "flipX": true }] }
+      ]
+    },
+    {
+      "name": "hurt-d",
+      "duration": 300,
+      "layers": [
+        { "name": "legs", "ops": [{ "op": "stamp", "symbol": "legs-d", "x": 15, "y": 30 }] },
+        { "name": "body", "ops": [{ "op": "stamp", "symbol": "body-d", "x": 12, "y": 23 }] },
+        { "name": "head", "ops": [{ "op": "stamp", "symbol": "head-d-hurt", "x": 12, "y": 10 }] }
+      ]
+    },
+    {
+      "name": "hurt-r",
+      "duration": 300,
+      "layers": [
+        { "name": "legs", "ops": [{ "op": "stamp", "symbol": "legs-r", "x": 16, "y": 30 }] },
+        { "name": "body", "ops": [{ "op": "stamp", "symbol": "body-r", "x": 15, "y": 23 }] },
+        { "name": "head", "ops": [{ "op": "stamp", "symbol": "head-r-hurt", "x": 12, "y": 10 }] }
+      ]
+    },
+    {
+      "name": "hurt-l",
+      "duration": 300,
+      "layers": [
+        { "name": "legs", "ops": [{ "op": "stamp", "symbol": "legs-r", "x": 15, "y": 30, "flipX": true }] },
+        { "name": "body", "ops": [{ "op": "stamp", "symbol": "body-r", "x": 15, "y": 23, "flipX": true }] },
+        { "name": "head", "ops": [{ "op": "stamp", "symbol": "head-r-hurt", "x": 10, "y": 10, "flipX": true }] }
+      ]
+    },
+    {
+      "name": "attack-d-1",
+      "duration": 70,
+      "points": { "blade": [28, 12] },
+      "layers": [
+        { "name": "legs", "ops": [{ "op": "stamp", "symbol": "legs-d", "x": 15, "y": 30 }] },
+        { "name": "body", "ops": [{ "op": "stamp", "symbol": "body-d-noarm", "x": 12, "y": 23 }] },
+        { "name": "head", "ops": [{ "op": "stamp", "symbol": "head-d", "x": 12, "y": 10 }] },
+        { "name": "sword", "ops": [{ "op": "stamp", "symbol": "sa-d-windup", "x": 24, "y": 12 }] }
+      ]
+    },
+    {
+      "name": "attack-d-2",
+      "duration": 150,
+      "points": { "hit": [23, 35] },
+      "layers": [
+        { "name": "legs", "ops": [{ "op": "stamp", "symbol": "legs-d", "x": 15, "y": 30 }] },
+        { "name": "body", "ops": [{ "op": "stamp", "symbol": "body-d-noarm", "x": 12, "y": 23 }] },
+        { "name": "head", "ops": [{ "op": "stamp", "symbol": "head-d", "x": 12, "y": 10 }] },
+        { "name": "sword", "ops": [{ "op": "stamp", "symbol": "sa-d-strike", "x": 21, "y": 24 }] }
+      ]
+    },
+    {
+      "name": "attack-d-3",
+      "duration": 90,
+      "points": { "blade": [29, 31] },
+      "layers": [
+        { "name": "legs", "ops": [{ "op": "stamp", "symbol": "legs-d", "x": 15, "y": 30 }] },
+        { "name": "body", "ops": [{ "op": "stamp", "symbol": "body-d-noarm", "x": 12, "y": 23 }] },
+        { "name": "head", "ops": [{ "op": "stamp", "symbol": "head-d", "x": 12, "y": 10 }] },
+        { "name": "sword", "ops": [{ "op": "stamp", "symbol": "sa-d-recover", "x": 24, "y": 24 }] }
+      ]
+    },
+    {
+      "name": "attack-u-1",
+      "duration": 70,
+      "points": { "blade": [10, 31] },
+      "layers": [
+        { "name": "legs", "ops": [{ "op": "stamp", "symbol": "legs-d", "x": 15, "y": 30 }] },
+        { "name": "body", "ops": [{ "op": "stamp", "symbol": "body-u-noarm", "x": 12, "y": 23 }] },
+        { "name": "head", "ops": [{ "op": "stamp", "symbol": "head-u", "x": 12, "y": 10 }] },
+        { "name": "sword", "ops": [{ "op": "stamp", "symbol": "sa-u-windup", "x": 9, "y": 24 }] }
+      ]
+    },
+    {
+      "name": "attack-u-2",
+      "duration": 150,
+      "points": { "hit": [12, 12] },
+      "layers": [
+        { "name": "legs", "ops": [{ "op": "stamp", "symbol": "legs-d", "x": 15, "y": 30 }] },
+        { "name": "body", "ops": [{ "op": "stamp", "symbol": "body-u-noarm", "x": 12, "y": 23 }] },
+        { "name": "sword", "ops": [{ "op": "stamp", "symbol": "sa-u-strike", "x": 10, "y": 12 }] },
+        { "name": "head", "ops": [{ "op": "stamp", "symbol": "head-u", "x": 12, "y": 10 }] }
+      ]
+    },
+    {
+      "name": "attack-u-3",
+      "duration": 90,
+      "points": { "blade": [10, 17] },
+      "layers": [
+        { "name": "legs", "ops": [{ "op": "stamp", "symbol": "legs-d", "x": 15, "y": 30 }] },
+        { "name": "body", "ops": [{ "op": "stamp", "symbol": "body-u-noarm", "x": 12, "y": 23 }] },
+        { "name": "sword", "ops": [{ "op": "stamp", "symbol": "sa-u-recover", "x": 9, "y": 17 }] },
+        { "name": "head", "ops": [{ "op": "stamp", "symbol": "head-u", "x": 12, "y": 10 }] }
+      ]
+    },
+    {
+      "name": "attack-r-1",
+      "duration": 70,
+      "points": { "blade": [6, 24] },
+      "layers": [
+        { "name": "legs", "ops": [{ "op": "stamp", "symbol": "legs-r", "x": 16, "y": 30 }] },
+        { "name": "body", "ops": [{ "op": "stamp", "symbol": "body-r-noarm", "x": 15, "y": 23 }] },
+        { "name": "head", "ops": [{ "op": "stamp", "symbol": "head-r", "x": 12, "y": 10 }] },
+        { "name": "sword", "ops": [{ "op": "stamp", "symbol": "sa-r-windup", "x": 5, "y": 22 }] }
+      ]
+    },
+    {
+      "name": "attack-r-2",
+      "duration": 150,
+      "points": { "hit": [36, 24] },
+      "layers": [
+        { "name": "legs", "ops": [{ "op": "stamp", "symbol": "legs-r", "x": 16, "y": 30 }] },
+        { "name": "body", "ops": [{ "op": "stamp", "symbol": "body-r-noarm", "x": 15, "y": 23 }] },
+        { "name": "head", "ops": [{ "op": "stamp", "symbol": "head-r", "x": 12, "y": 10 }] },
+        { "name": "sword", "ops": [{ "op": "stamp", "symbol": "sa-r-strike", "x": 21, "y": 22 }] }
+      ]
+    },
+    {
+      "name": "attack-r-3",
+      "duration": 90,
+      "points": { "blade": [26, 31] },
+      "layers": [
+        { "name": "legs", "ops": [{ "op": "stamp", "symbol": "legs-r", "x": 16, "y": 30 }] },
+        { "name": "body", "ops": [{ "op": "stamp", "symbol": "body-r-noarm", "x": 15, "y": 23 }] },
+        { "name": "head", "ops": [{ "op": "stamp", "symbol": "head-r", "x": 12, "y": 10 }] },
+        { "name": "sword", "ops": [{ "op": "stamp", "symbol": "sa-r-recover", "x": 20, "y": 24 }] }
+      ]
+    },
+    {
+      "name": "attack-l-1",
+      "duration": 70,
+      "points": { "blade": [33, 24] },
+      "layers": [
+        { "name": "legs", "ops": [{ "op": "stamp", "symbol": "legs-r", "x": 15, "y": 30, "flipX": true }] },
+        { "name": "body", "ops": [{ "op": "stamp", "symbol": "body-r-noarm", "x": 15, "y": 23, "flipX": true }] },
+        { "name": "head", "ops": [{ "op": "stamp", "symbol": "head-r", "x": 10, "y": 10, "flipX": true }] },
+        { "name": "sword", "ops": [{ "op": "stamp", "symbol": "sa-r-windup", "x": 18, "y": 22, "flipX": true }] }
+      ]
+    },
+    {
+      "name": "attack-l-2",
+      "duration": 150,
+      "points": { "hit": [3, 24] },
+      "layers": [
+        { "name": "legs", "ops": [{ "op": "stamp", "symbol": "legs-r", "x": 15, "y": 30, "flipX": true }] },
+        { "name": "body", "ops": [{ "op": "stamp", "symbol": "body-r-noarm", "x": 15, "y": 23, "flipX": true }] },
+        { "name": "head", "ops": [{ "op": "stamp", "symbol": "head-r", "x": 10, "y": 10, "flipX": true }] },
+        { "name": "sword", "ops": [{ "op": "stamp", "symbol": "sa-r-strike", "x": 2, "y": 22, "flipX": true }] }
+      ]
+    },
+    {
+      "name": "attack-l-3",
+      "duration": 90,
+      "points": { "blade": [13, 31] },
+      "layers": [
+        { "name": "legs", "ops": [{ "op": "stamp", "symbol": "legs-r", "x": 15, "y": 30, "flipX": true }] },
+        { "name": "body", "ops": [{ "op": "stamp", "symbol": "body-r-noarm", "x": 15, "y": 23, "flipX": true }] },
+        { "name": "head", "ops": [{ "op": "stamp", "symbol": "head-r", "x": 10, "y": 10, "flipX": true }] },
+        { "name": "sword", "ops": [{ "op": "stamp", "symbol": "sa-r-recover", "x": 12, "y": 24, "flipX": true }] }
+      ]
+    },
+    {
+      "name": "hold-up",
+      "duration": 900,
+      "points": { "item": [20, 7] },
+      "layers": [
+        { "name": "legs", "ops": [{ "op": "stamp", "symbol": "legs-d", "x": 15, "y": 30 }] },
+        { "name": "body", "ops": [{ "op": "stamp", "symbol": "body-d-lift", "x": 12, "y": 23 }] },
+        { "name": "head", "ops": [{ "op": "stamp", "symbol": "head-d-happy", "x": 12, "y": 10 }] },
+        { "name": "armL", "ops": [{ "op": "stamp", "symbol": "arm-up-l", "x": 12, "y": 8 }] },
+        { "name": "armR", "ops": [{ "op": "stamp", "symbol": "arm-up-l", "x": 24, "y": 8, "flipX": true }] }
+      ]
+    }
+  ],
+  "animations": {
+    "idle-d": { "frames": ["idle-d", "breathe-d"] },
+    "walk-d": { "frames": ["walk-d-1", "walk-d-2", "walk-d-3", "walk-d-4"] },
+    "idle-u": { "frames": ["idle-u", "breathe-u"] },
+    "walk-u": { "frames": ["walk-u-1", "walk-u-2", "walk-u-3", "walk-u-4"] },
+    "idle-r": { "frames": ["idle-r", "breathe-r"] },
+    "walk-r": { "frames": ["walk-r-1", "walk-r-2", "walk-r-3", "walk-r-4"] },
+    "idle-l": { "frames": ["idle-l", "breathe-l"] },
+    "walk-l": { "frames": ["walk-l-1", "walk-l-2", "walk-l-3", "walk-l-4"] },
+    "attack-d": { "frames": ["attack-d-1", "attack-d-2", "attack-d-3"], "loop": false },
+    "attack-u": { "frames": ["attack-u-1", "attack-u-2", "attack-u-3"], "loop": false },
+    "attack-r": { "frames": ["attack-r-1", "attack-r-2", "attack-r-3"], "loop": false },
+    "attack-l": { "frames": ["attack-l-1", "attack-l-2", "attack-l-3"], "loop": false },
+    "hurt-d": { "frames": ["hurt-d"], "loop": false },
+    "hold-up": { "frames": ["hold-up"], "loop": false }
+  },
+  "sheet": { "columns": 8, "trim": true }
+}
