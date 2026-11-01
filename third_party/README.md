@@ -10,8 +10,16 @@ LICENSE file. See each subdirectory's LICENSE for full terms.
 | `ppae-engine/` | https://github.com/Mairon31/ppae-engine | `ed98da220d9ac30e35b23da555d60f5a0ec84a51` | Apache-2.0 |
 | `autotiler/` | https://github.com/itsjavi/autotiler | `bc573b8e9a2f94a2dadc175de42cd3eecc33cbd3` | MIT |
 | `Pixelorama/` | https://github.com/Orama-Interactive/Pixelorama | `fae9327992f1506f340b920e0fa6515a88298079` | MIT |
+| `jsfxr/` | https://github.com/chr15m/jsfxr | `b7b6aa2` | Unlicense (public domain) |
+| `PixelPlanets/` | https://github.com/Deep-Fold/PixelPlanets | `8ec6ee3` | MIT |
+| `PixelSpace/` | https://github.com/Deep-Fold/PixelSpace | `758359f` | MIT |
+| `Image-to-Pixel/` | https://github.com/Tezumie/Image-to-Pixel | `3dc4cf8` | MIT |
 
 ## Excluded files
+
+Font files (`*.ttf`, `*.otf`) were not copied from `PixelPlanets`, `PixelSpace` and
+`Image-to-Pixel` (the Silkscreen font in the Deep-Fold repos ships without a license file).
+
 
 spritekiln marks some files as `LicenseRef-Showcase` (all rights reserved, not
 licensed for reuse in other projects). They were **not** copied:

@@ -4,6 +4,8 @@ import { spriteFrames } from '@pixelbolt/godot.js';
 import { encodeGIF } from '@pixelbolt/gif.js';
 import { type Rgba, gridSheet, pngBytes, downloadZip, download, safeName } from './image';
 
+const MAX_ATLAS_WIDTH = 4096;
+
 export interface AtlasFrame {
   frame: { x: number; y: number; w: number; h: number };
   rotated: boolean;
@@ -31,11 +33,14 @@ export interface Clip {
 export function atlasFromClips(baseName: string, clips: Clip[], { columns = 0, padding = 0, rowPerClip = true } = {}): Atlas {
   const all: Rgba[] = [], names: string[] = [], durations: number[] = [];
   const longest = Math.max(...clips.map(c => c.frames.length));
-  const cols = columns > 0 ? columns : rowPerClip ? longest : Math.ceil(Math.sqrt(clips.reduce((n, c) => n + c.frames.length, 0)));
   const animations: Atlas['animations'] = {};
   const empty = (w: number, h: number): Rgba => ({ width: w, height: h, data: new Uint8Array(w * h * 4) });
   const w = Math.max(...clips.flatMap(c => c.frames.map(f => f.width)));
   const h = Math.max(...clips.flatMap(c => c.frames.map(f => f.height)));
+  // Keep the sheet at most MAX_ATLAS_WIDTH wide (Godot and most GPUs cap textures at 16384); long clips wrap.
+  const fit = Math.max(1, Math.floor(MAX_ATLAS_WIDTH / (w + padding * 2)));
+  const wanted = columns > 0 ? columns : rowPerClip ? longest : Math.ceil(Math.sqrt(clips.reduce((n, c) => n + c.frames.length, 0)));
+  const cols = Math.min(wanted, fit);
   const slots: (string | null)[] = [];
   for (const clip of clips) {
     const frameNames = clip.frames.map((frame, i) => {

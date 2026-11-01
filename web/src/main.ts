@@ -1,12 +1,15 @@
 import './style.css';
 import { h } from './lib/ui';
 
-type ToolId = 'vfx' | 'sprites' | 'tileset' | 'packer' | 'about';
+type ToolId = 'vfx' | 'sprites' | 'tileset' | 'space' | 'pixelize' | 'packer' | 'sfx' | 'about';
 const TOOLS: { id: ToolId; label: string; icon: string; load: () => Promise<HTMLElement> }[] = [
   { id: 'vfx', label: 'VFX 特效', icon: '✦', load: async () => (await import('./tools/vfx')).vfxTool() },
   { id: 'sprites', label: '角色 / 生物', icon: '☺', load: async () => (await import('./tools/sprites')).spritesTool() },
   { id: 'tileset', label: '地圖圖塊', icon: '▦', load: async () => (await import('./tools/tileset')).tilesetTool() },
+  { id: 'space', label: '星球 / 太空', icon: '◍', load: async () => (await import('./tools/space')).spaceTool() },
+  { id: 'pixelize', label: '圖片轉像素', icon: '▣', load: async () => (await import('./tools/pixelize')).pixelizeTool() },
   { id: 'packer', label: 'Sprite Sheet 打包', icon: '⧉', load: async () => (await import('./tools/packer')).packerTool() },
+  { id: 'sfx', label: '音效', icon: '♪', load: async () => (await import('./tools/sfx')).sfxTool() },
   { id: 'about', label: '關於 / 授權', icon: 'ⓘ', load: async () => (await import('./tools/about')).aboutPage() },
 ];
 

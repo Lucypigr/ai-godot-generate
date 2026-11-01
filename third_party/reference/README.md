@@ -16,6 +16,12 @@ own LICENSE file. Only projects with a permissive license file were copied.
 | `zfedoran_pixel-sprite-generator/` | https://github.com/zfedoran/pixel-sprite-generator | `8c2cee7` | MIT | Procedural mask-based sprites |
 | `ArtBIT_pixel-sprite-generator/` | https://github.com/ArtBIT/pixel-sprite-generator | `d930042` | MIT | Procedural sprite sheets |
 | `shikaan_pickcells/` | https://github.com/shikaan/pickcells | `2fb2576` | MIT | Procedural pixel art variations (TS + Vite) |
+| `ttencate_jfxr/` | https://github.com/ttencate/jfxr | `e971e4c` | BSD-3-Clause | Browser sound effect generator |
+| `mneubrand_jsfxr/` | https://github.com/mneubrand/jsfxr | `b2bfe50` | Apache-2.0 | sfxr port (JS library) |
+| `Zed2101_dither-studio/` | https://github.com/Zed2101/dither-studio | `a814d8e` | MIT | Dithering algorithms |
+| `Experience-Monks_msdf-bmfont/` | https://github.com/Experience-Monks/msdf-bmfont | `4c4b890` | MIT | TTF to BMFont (MSDF) |
+| `vladimirgamalian_fontbm/` | https://github.com/vladimirgamalian/fontbm | `7677b90` | MIT | BMFont generator (C++ CLI) |
+| `johnnesky_beepbox/` | https://github.com/johnnesky/beepbox | `355e510` | MIT | Chiptune music editor and synth |
 
 ## Excluded
 
@@ -23,4 +29,5 @@ own LICENSE file. Only projects with a permissive license file were copied.
   Per its README, many samples come from third-party artists and games (e.g. Ultima IV,
   Nyan Cat) and are not covered by the MIT license of the code.
 - `LingDong-_ndwfc`: `screenshots/` not copied (size only).
+- Test fonts (`*.ttf`) in `msdf-bmfont` and `fontbm` were not copied.
 - `codingtrain/wave-function-collapse` was **not** copied: it has no license file.

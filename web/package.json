@@ -16,6 +16,7 @@
   "dependencies": {
     "fast-png": "^8.0.0",
     "fflate": "^0.8.3",
-    "maxrects-packer": "^2.7.3"
+    "maxrects-packer": "^2.7.3",
+    "shadermate": "^2.0.1"
   }
 }

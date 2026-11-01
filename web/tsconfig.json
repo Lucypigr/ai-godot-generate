@@ -17,7 +17,9 @@
       "@pixelbolt/*": ["../third_party/Pixelbolt/src/*"],
       "@ppae/*": ["../third_party/ppae-engine/src/*"],
       "@autotiler/*": ["../third_party/autotiler/src/core/*"],
+      "@third/*": ["../third_party/*"],
       "fflate": ["./node_modules/fflate"],
+      "shadermate": ["./node_modules/shadermate"],
       "fast-png": ["./node_modules/fast-png/lib/index.d.ts"]
     }
   },

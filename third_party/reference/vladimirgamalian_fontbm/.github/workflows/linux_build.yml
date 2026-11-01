@@ -1,0 +1,32 @@
+name: linux build
+
+on: [push]
+
+jobs:
+  build:
+
+    runs-on: ubuntu-latest
+    
+    steps:
+    - name: freetype install
+      run: |
+        wget https://download.savannah.gnu.org/releases/freetype/freetype-2.11.1.tar.gz
+        tar xvfz freetype-2.11.1.tar.gz
+        cd freetype-2.11.1
+        ./configure --prefix=/usr/local --enable-freetype-config
+        make
+        sudo make install
+
+    - uses: actions/checkout@v7
+
+    - name: cmake
+      run: cmake -DCMAKE_CXX_FLAGS=-Werror .
+
+    - name: make
+      run: make
+
+    - name: release
+      uses: softprops/action-gh-release@v3
+      if: startsWith(github.ref, 'refs/tags/v')
+      with:
+        files: fontbm
