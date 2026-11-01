@@ -9,6 +9,8 @@ const ENGINES: [string, string, string, string][] = [
   ['Image-to-Pixel', 'https://github.com/Tezumie/Image-to-Pixel', 'MIT', '圖片轉像素圖：調色盤、抖色、外框'],
   ['shadermate', 'https://www.npmjs.com/package/shadermate', 'MIT', 'Image-to-Pixel 的 GPU 加速'],
   ['jsfxr', 'https://github.com/chr15m/jsfxr', 'Unlicense', '8-bit 音效產生'],
+  ['Pixelorama 旋轉 shader', 'https://github.com/Orama-Interactive/Pixelorama', 'MIT', '8 方向旋轉：cleanEdge（torcado）、OmniScale'],
+  ['three.js', 'https://github.com/mrdoob/three.js', 'MIT', '3D 模型（GLB / FBX / OBJ / VOX）算成 8 方向 sprite'],
   ['maxrects-packer', 'https://github.com/soimy/maxrects-packer', 'MIT', 'Sprite sheet 打包演算法'],
   ['fflate', 'https://github.com/101arrowz/fflate', 'MIT', 'ZIP 壓縮'],
   ['fast-png', 'https://github.com/image-js/fast-png', 'MIT', 'PNG 編碼（autotiler 匯出）'],
@@ -18,7 +20,7 @@ const ENGINES: [string, string, string, string][] = [
 export function aboutPage(): HTMLElement {
   return h('div', { class: 'about' },
     h('h2', {}, '關於 Asset Forge'),
-    h('p', {}, '一個在瀏覽器裡執行、不用安裝的遊戲素材工具組：VFX 特效、角色與生物、地圖圖塊、星球與太空背景、圖片轉像素圖、Sprite Sheet 打包、音效，輸出 Godot 4 可以直接使用的檔案。所有運算都在你的瀏覽器裡完成，不會上傳任何圖片。'),
+    h('p', {}, '一個在瀏覽器裡執行、不用安裝的遊戲素材工具組：VFX 特效（可用自己的圖片）、角色與生物、8 方向 sprite（圖片或 3D 模型）、地圖圖塊、星球與太空背景、圖片轉像素圖、Sprite Sheet 打包、音效，輸出 Godot 4 可以直接使用的檔案。所有運算都在你的瀏覽器裡完成，不會上傳任何圖片。'),
     h('h3', {}, '使用的開源引擎'),
     h('table', {}, h('thead', {}, h('tr', {}, h('th', {}, '專案'), h('th', {}, '授權'), h('th', {}, '用途'))),
       h('tbody', {}, ...ENGINES.map(([name, url, license, use]) => h('tr', {},

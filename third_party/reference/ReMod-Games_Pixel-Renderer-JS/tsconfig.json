@@ -1,0 +1,16 @@
+{
+    "compilerOptions": {
+        "allowSyntheticDefaultImports": true,
+        "esModuleInterop": true,
+        "moduleResolution": "node",
+        "target": "ES2021",
+        "module": "ESNext",
+        "sourceMap": true,
+        "outDir": "./dist/",
+        "checkJs": true,
+        "typeRoots": [
+            "./custom.d.ts",
+            "./node_modules/@types"
+        ]
+    }
+}

@@ -1,0 +1,48 @@
+name: Build example
+
+on:
+  workflow_dispatch:
+  pull_request:
+  push:
+    branches:
+      - main
+
+jobs:
+  build-and-deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout 🛎️
+        uses: actions/checkout@v4
+
+      - name: Install Java ♨️
+        uses: actions/setup-java@v4
+        with:
+          distribution: "temurin"
+          java-version: "25"
+
+      - name: Build 🔧
+        env:
+          DEFOLD_BOB_SHA1: ${{ vars.DEFOLD_BOB_SHA1 }}
+        run: |
+          lsb_release -a
+
+          mkdir -p bundle
+
+          # Download the latest bob.jar
+          BOB_SHA1=${DEFOLD_BOB_SHA1:-$(curl -s 'https://d.defold.com/stable/info.json' | jq -r .sha1)}
+          BOB_LOCAL_SHA1=$((java -jar bundle/bob.jar --version | cut -d' ' -f6) || true)
+          if [ "${BOB_LOCAL_SHA1}" != "${BOB_SHA1}" ]; then wget --progress=dot:mega -O bundle/bob.jar "https://d.defold.com/archive/${BOB_SHA1}/bob/bob.jar"; fi
+          java -jar bundle/bob.jar --version
+
+          # Build the project
+          java -jar bundle/bob.jar --email a@b.com --auth 123 --texture-compression true --bundle-output bundle/js-web --platform js-web --architectures wasm-web --archive --variant debug resolve build bundle
+
+          # Move to the public directory
+          mv bundle/js-web/*/ bundle/public
+
+      - name: Deploy to Pages 🚀
+        uses: JamesIves/github-pages-deploy-action@v4
+        with:
+          branch: gh-pages
+          folder: bundle/public
+        if: github.ref == 'refs/heads/main'

@@ -5,7 +5,7 @@ import type { Rgba } from './image';
 
 export type Value = number | boolean | number[] | number[][] | string | { ext: string } | { sub: string } | null;
 
-export interface Uniform { name: string; type: string; array: number; value: Value }
+export interface Uniform { name: string; type: string; array: number; value: Value; hint?: string }
 
 export interface ConvertedShader { glsl: string; uniforms: Uniform[] }
 
@@ -32,20 +32,31 @@ export function parseValue(raw: string): Value {
   return nums;
 }
 
-export function convertShader(source: string): ConvertedShader {
+export function convertShader(source: string, include?: (path: string) => string | undefined): ConvertedShader {
   const uniforms: Uniform[] = [];
-  let src = source.replace(/\/\*[\s\S]*?\*\//g, '').replace(/\/\/[^\n]*/g, '');
+  let src = source.replace(/^\s*#include\s+"([^"]+)"\s*$/gm, (_m, path: string) => {
+    const text = include?.(path);
+    if (text === undefined) throw new Error(`找不到 #include ${path}`);
+    return text;
+  });
+  src = src.replace(/\/\*[\s\S]*?\*\//g, '').replace(/\/\/[^\n]*/g, '');
   src = src.replace(/\bshader_type\s+\w+\s*;/, '').replace(/\brender_mode\s+[^;]*;/, '');
   src = src.replace(/uniform\s+(\w+)(?:\s*\[(\d+)\])?\s+(\w+)(?:\s*\[(\d+)\])?\s*(?::\s*[^=;]+)?(?:=\s*([^;]+))?;/g,
-    (_m, type: string, arrA: string | undefined, name: string, arrB: string | undefined, def: string | undefined) => {
+    (m: string, type: string, arrA: string | undefined, name: string, arrB: string | undefined, def: string | undefined) => {
       const array = Number(arrA ?? arrB ?? 0);
-      uniforms.push({ name, type, array, value: def === undefined ? null : parseValue(def) });
+      const hint = m.match(/:\s*([^=;]+)/)?.[1]?.trim();
+      uniforms.push({ name, type, array, value: def === undefined ? null : parseValue(def), hint });
       return array ? `uniform ${type} ${name}[${array}];` : `uniform ${type} ${name};`;
     });
   src = promoteIntLiterals(src);
   src = src.replace(/void\s+fragment\s*\(\s*\)/, 'void main()')
-    .replace(/\bUV\b/g, 'v_uv').replace(/\bCOLOR\b/g, 'fragColor').replace(/\bTIME\b/g, 'u_godot_time');
-  const glsl = `#version 300 es\nprecision highp float;\nprecision highp int;\nin vec2 v_uv;\nout vec4 fragColor;\nuniform float u_godot_time;\n${src}`;
+    .replace(/\bUV\b/g, 'v_uv').replace(/\bCOLOR\b/g, 'fragColor').replace(/\bTIME\b/g, 'u_godot_time')
+    .replace(/\bTEXTURE_PIXEL_SIZE\b/g, 'u_texture_pixel_size').replace(/\bTEXTURE\b/g, 'u_texture');
+  // The canvas item's own texture (TEXTURE) and its texel size; renderers bind them from textures.TEXTURE.
+  uniforms.push({ name: 'u_texture', type: 'sampler2D', array: 0, value: null, hint: 'filter_nearest' });
+  uniforms.push({ name: 'u_texture_pixel_size', type: 'vec2', array: 0, value: null });
+  const header = 'uniform float u_godot_time;\nuniform sampler2D u_texture;\nuniform vec2 u_texture_pixel_size;\n';
+  const glsl = `#version 300 es\nprecision highp float;\nprecision highp int;\nin vec2 v_uv;\nout vec4 fragColor;\n${header}${src}`;
   return { glsl, uniforms };
 }
 
@@ -185,9 +196,10 @@ export class ShaderRenderer {
   readonly canvas: HTMLCanvasElement;
   private gl: WebGL2RenderingContext;
   private programs = new Map<string, Program>();
-  private textureCache = new Map<Rgba, WebGLTexture>();
+  private textureCache = new Map<Rgba, Map<boolean, WebGLTexture>>();
 
-  constructor() {
+  /** `include` resolves #include paths (res://...). */
+  constructor(private include?: (path: string) => string | undefined) {
     this.canvas = document.createElement('canvas');
     const gl = this.canvas.getContext('webgl2', { premultipliedAlpha: false, preserveDrawingBuffer: true, antialias: false, alpha: true });
     if (!gl) throw new Error('這個瀏覽器不支援 WebGL 2');
@@ -201,7 +213,7 @@ export class ShaderRenderer {
     const cached = this.programs.get(source);
     if (cached) return cached;
     const gl = this.gl;
-    const { glsl, uniforms } = convertShader(source);
+    const { glsl, uniforms } = convertShader(source, this.include);
     const compile = (type: number, text: string) => {
       const s = gl.createShader(type)!;
       gl.shaderSource(s, text);
@@ -223,21 +235,23 @@ export class ShaderRenderer {
   }
 
   /** Uniforms declared by a shader, with their defaults. */
-  uniformsOf(source: string): Uniform[] { return convertShader(source).uniforms; }
+  uniformsOf(source: string): Uniform[] { return convertShader(source, this.include).uniforms; }
 
-  private texture(image: Rgba): WebGLTexture {
+  private texture(image: Rgba, nearest = false): WebGLTexture {
     const gl = this.gl;
-    let tex = this.textureCache.get(image);
+    let byFilter = this.textureCache.get(image);
+    if (!byFilter) { byFilter = new Map(); this.textureCache.set(image, byFilter); }
+    let tex = byFilter.get(nearest);
     if (tex) return tex;
     tex = gl.createTexture()!;
     gl.bindTexture(gl.TEXTURE_2D, tex);
     gl.pixelStorei(gl.UNPACK_FLIP_Y_WEBGL, false);
     gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, image.width, image.height, 0, gl.RGBA, gl.UNSIGNED_BYTE, new Uint8Array(image.data.buffer, image.data.byteOffset, image.data.byteLength));
-    gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.LINEAR);
-    gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.LINEAR);
+    gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, nearest ? gl.NEAREST : gl.LINEAR);
+    gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, nearest ? gl.NEAREST : gl.LINEAR);
     gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.CLAMP_TO_EDGE);
     gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.CLAMP_TO_EDGE);
-    this.textureCache.set(image, tex);
+    byFilter.set(nearest, tex);
     return tex;
   }
 
@@ -259,12 +273,14 @@ export class ShaderRenderer {
       for (const u of uniforms) {
         const loc = locations.get(u.name);
         if (!loc) continue;
+        const own = layer.textures?.TEXTURE;
+        if (u.name === 'u_texture_pixel_size') { if (own) gl.uniform2f(loc, 1 / own.width, 1 / own.height); continue; }
         const v = layer.params[u.name] ?? u.value;
         if (u.type === 'sampler2D') {
-          const img = layer.textures?.[u.name];
+          const img = u.name === 'u_texture' ? own : layer.textures?.[u.name];
           if (!img) continue;
           gl.activeTexture(gl.TEXTURE0 + unit);
-          gl.bindTexture(gl.TEXTURE_2D, this.texture(img));
+          gl.bindTexture(gl.TEXTURE_2D, this.texture(img, /filter_nearest/.test(u.hint ?? '')));
           gl.uniform1i(loc, unit++);
           continue;
         }
@@ -291,6 +307,7 @@ function setUniform(gl: WebGL2RenderingContext, loc: WebGLUniformLocation, u: Un
     case 'bool': gl.uniform1i(loc, v ? 1 : 0); break;
     case 'vec2': gl.uniform2fv(loc, flat(v)); break;
     case 'vec3': gl.uniform3fv(loc, flat(v).slice(0, 3)); break;
+    case 'mat2': gl.uniformMatrix2fv(loc, false, flat(v).slice(0, 4)); break;
     case 'vec4': {
       const values = u.array ? padColors(v, u.array) : flat(v);
       gl.uniform4fv(loc, values);

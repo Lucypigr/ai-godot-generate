@@ -22,6 +22,9 @@ own LICENSE file. Only projects with a permissive license file were copied.
 | `Experience-Monks_msdf-bmfont/` | https://github.com/Experience-Monks/msdf-bmfont | `4c4b890` | MIT | TTF to BMFont (MSDF) |
 | `vladimirgamalian_fontbm/` | https://github.com/vladimirgamalian/fontbm | `7677b90` | MIT | BMFont generator (C++ CLI) |
 | `johnnesky_beepbox/` | https://github.com/johnnesky/beepbox | `355e510` | MIT | Chiptune music editor and synth |
+| `ReMod-Games_Pixel-Renderer-JS/` | https://github.com/ReMod-Games/Pixel-Renderer-JS | `96f0b36` | MIT | 3D to pixel art rendering (BabylonJS) |
+| `ztry8_SpriteForge/` | https://github.com/ztry8/SpriteForge | `b5b16ea` | BSD-3-Clause | 8-direction sprites from 3D models (Python/OpenGL) |
+| `indiesoftby_defold-dissolve-fx/` | https://github.com/indiesoftby/defold-dissolve-fx | `d20ec60` | CC0-1.0 | Dissolve / burn shader (idea used by the image effects) |
 
 ## Excluded
 
@@ -30,4 +33,5 @@ own LICENSE file. Only projects with a permissive license file were copied.
   Nyan Cat) and are not covered by the MIT license of the code.
 - `LingDong-_ndwfc`: `screenshots/` not copied (size only).
 - Test fonts (`*.ttf`) in `msdf-bmfont` and `fontbm` were not copied.
+- `daneren2005/3d-to-spritesheet` was **not** copied: it has no license.
 - `codingtrain/wave-function-collapse` was **not** copied: it has no license file.

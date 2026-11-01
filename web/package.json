@@ -10,6 +10,7 @@
     "typecheck": "tsc --noEmit"
   },
   "devDependencies": {
+    "@types/three": "^0.170.0",
     "typescript": "^5.9.3",
     "vite": "^6.4.5"
   },
@@ -17,6 +18,7 @@
     "fast-png": "^8.0.0",
     "fflate": "^0.8.3",
     "maxrects-packer": "^2.7.3",
-    "shadermate": "^2.0.1"
+    "shadermate": "^2.0.1",
+    "three": "^0.170.0"
   }
 }

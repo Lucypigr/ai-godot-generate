@@ -4,7 +4,8 @@
 
 | 分頁 | 功能 | 引擎 |
 |---|---|---|
-| VFX 特效 | 特效預設（火球、爆炸、雷電、冰、毒、營火、瀑布…），可調色盤、幀數、速度、種子；含流體模擬 | Pixelbolt fx / fluid |
+| VFX 特效 | 特效預設（火球、爆炸、雷電、冰、毒、營火、瀑布…），可調色盤、幀數、速度、種子；含流體模擬。**上傳圖片**：當粒子形狀、讓角色傳送 / 光環 / 飄散 / 碎裂 / 燃燒，或套用溶解、受擊閃白、冰凍等 10 種動畫特效 | Pixelbolt fx / fluid |
+| 8 方向 | **上傳圖片**：俯視角圖片用像素畫旋轉演算法轉 4 / 8 / 16 方向；畫好的方向自動鏡像補齊 8 方向；**上傳 3D 模型**（GLB / FBX / OBJ / VOX）含動畫算成 8 方向像素 sprite | Pixelorama 旋轉 shader（cleanEdge、OmniScale）、three.js |
 | 角色 / 生物 | 程序化人物（8 方向 × 多種動作）、生物 / 怪物、樹木生長階段、隨機小物 | PPAE Engine、mask 產生器 |
 | 地圖圖塊 | 程序產生地形或上傳模板 → 47 格 blob / 16 格 dual grid tileset，含可繪製的測試地圖 | autotiler + Pixelbolt terrain |
 | 星球 / 太空 | 12 種會自轉的像素星球（類地、海洋、冰、熔岩、氣態、環狀、恆星、黑洞、星系、小行星），輸出無縫循環動畫；太空背景（星雲、星塵、星星、小星球）可分層匯出 | PixelPlanets、PixelSpace（原始 Godot shader 轉 WebGL 2） |
@@ -32,4 +33,4 @@ npm run typecheck
 
 引擎原始碼直接從 `../third_party/` 匯入（見 `vite.config.ts` 的 alias），沒有另外複製一份。
 
-`src/lib/godot-shader.ts` 會把 Godot 的 canvas_item shader 轉成 WebGL 2 GLSL，並讀取 `.tscn` / `.tres` 裡的材質參數和圖層位置，所以 PixelPlanets 和 PixelSpace 是直接執行原始檔案，沒有手動改寫。需要支援 WebGL 2 的瀏覽器。
+`src/lib/godot-shader.ts` 會把 Godot 的 canvas_item shader 轉成 WebGL 2 GLSL，並讀取 `.tscn` / `.tres` 裡的材質參數和圖層位置，所以 PixelPlanets、PixelSpace 和 Pixelorama 的旋轉 shader 都是直接執行原始檔案，沒有手動改寫。需要支援 WebGL 2 的瀏覽器。
