@@ -1,0 +1,500 @@
+[gd_scene format=3 uid="uid://be14ffwmcp5xy"]
+
+[ext_resource type="PackedScene" uid="uid://bbnqcxa20a5a5" path="res://src/UI/Nodes/Sliders/ValueSliderV2.tscn" id="1_evt0j"]
+[ext_resource type="Script" uid="uid://tfdhqto6j5j0" path="res://src/UI/Nodes/Sliders/ValueSlider.gd" id="1_pm12o"]
+[ext_resource type="Script" uid="uid://bt8qvbe6t6qjo" path="res://src/UI/Nodes/NoiseGenerator.gd" id="1_uxdt4"]
+[ext_resource type="PackedScene" uid="uid://bn4aw27dj7pwi" path="res://src/UI/Nodes/GradientEdit.tscn" id="2_nxkb0"]
+[ext_resource type="PackedScene" uid="uid://dpoteid430evf" path="res://src/UI/Nodes/Sliders/ValueSliderV3.tscn" id="3_ffklk"]
+
+[node name="NoiseGenerator" type="ScrollContainer" unique_id=1108915200]
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+script = ExtResource("1_uxdt4")
+
+[node name="VSplitContainer" type="VSplitContainer" parent="." unique_id=1261118777]
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_vertical = 3
+
+[node name="Preview" type="TextureRect" parent="VSplitContainer" unique_id=574262817]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(64, 64)
+layout_mode = 2
+size_flags_vertical = 3
+expand_mode = 1
+stretch_mode = 5
+
+[node name="VBoxContainer" type="VBoxContainer" parent="VSplitContainer" unique_id=2139545847]
+layout_mode = 2
+size_flags_horizontal = 3
+
+[node name="GridContainer" type="GridContainer" parent="VSplitContainer/VBoxContainer" unique_id=447799834]
+layout_mode = 2
+columns = 2
+
+[node name="SizeLabel" type="Label" parent="VSplitContainer/VBoxContainer/GridContainer" unique_id=1044564492]
+layout_mode = 2
+size_flags_horizontal = 3
+text = "Size:"
+
+[node name="SizeSlider" parent="VSplitContainer/VBoxContainer/GridContainer" unique_id=2023832741 instance=ExtResource("1_evt0j")]
+unique_name_in_owner = true
+layout_mode = 2
+value = Vector2(512, 512)
+min_value = Vector2(1, 1)
+max_value = Vector2(1024, 1024)
+allow_greater = true
+show_ratio = true
+grid_columns = 2
+suffix_x = "px"
+suffix_y = "px"
+
+[node name="InvertLabel" type="Label" parent="VSplitContainer/VBoxContainer/GridContainer" unique_id=1362909668]
+layout_mode = 2
+size_flags_horizontal = 3
+text = "Invert:"
+
+[node name="InvertCheckBox" type="CheckBox" parent="VSplitContainer/VBoxContainer/GridContainer" unique_id=1178172180]
+unique_name_in_owner = true
+layout_mode = 2
+mouse_default_cursor_shape = 2
+text = "On"
+
+[node name="In3DSpaceLabel" type="Label" parent="VSplitContainer/VBoxContainer/GridContainer" unique_id=737890940]
+layout_mode = 2
+size_flags_horizontal = 3
+text = "In 3D space:"
+
+[node name="In3DSpaceCheckBox" type="CheckBox" parent="VSplitContainer/VBoxContainer/GridContainer" unique_id=1210493411]
+unique_name_in_owner = true
+layout_mode = 2
+mouse_default_cursor_shape = 2
+text = "On"
+
+[node name="SeamlessLabel" type="Label" parent="VSplitContainer/VBoxContainer/GridContainer" unique_id=1854520935]
+layout_mode = 2
+size_flags_horizontal = 3
+text = "Seamless:"
+
+[node name="SeamlessCheckBox" type="CheckBox" parent="VSplitContainer/VBoxContainer/GridContainer" unique_id=287595744]
+unique_name_in_owner = true
+layout_mode = 2
+mouse_default_cursor_shape = 2
+text = "On"
+
+[node name="NormalMapLabel" type="Label" parent="VSplitContainer/VBoxContainer/GridContainer" unique_id=1465641475]
+layout_mode = 2
+size_flags_horizontal = 3
+text = "Normal map:"
+
+[node name="NormalMapCheckBox" type="CheckBox" parent="VSplitContainer/VBoxContainer/GridContainer" unique_id=42147971]
+unique_name_in_owner = true
+layout_mode = 2
+mouse_default_cursor_shape = 2
+text = "On"
+
+[node name="NormalizeLabel" type="Label" parent="VSplitContainer/VBoxContainer/GridContainer" unique_id=1479283604]
+layout_mode = 2
+size_flags_horizontal = 3
+text = "Normalize:"
+
+[node name="NormalizeCheckBox" type="CheckBox" parent="VSplitContainer/VBoxContainer/GridContainer" unique_id=1294934881]
+unique_name_in_owner = true
+layout_mode = 2
+mouse_default_cursor_shape = 2
+button_pressed = true
+text = "On"
+
+[node name="ColorRampLabel" type="Label" parent="VSplitContainer/VBoxContainer/GridContainer" unique_id=1166553692]
+layout_mode = 2
+size_flags_horizontal = 3
+text = "Color ramp:"
+
+[node name="ColorRampEdit" parent="VSplitContainer/VBoxContainer/GridContainer" unique_id=1174897398 instance=ExtResource("2_nxkb0")]
+unique_name_in_owner = true
+layout_mode = 2
+
+[node name="NoiseTypeLabel" type="Label" parent="VSplitContainer/VBoxContainer/GridContainer" unique_id=720620150]
+layout_mode = 2
+size_flags_horizontal = 3
+text = "Noise type:"
+
+[node name="NoiseTypeOptionButton" type="OptionButton" parent="VSplitContainer/VBoxContainer/GridContainer" unique_id=920604842]
+unique_name_in_owner = true
+layout_mode = 2
+size_flags_horizontal = 3
+mouse_default_cursor_shape = 2
+selected = 1
+item_count = 6
+popup/item_0/text = "Simplex"
+popup/item_0/id = 0
+popup/item_1/text = "Simplex Smooth"
+popup/item_1/id = 1
+popup/item_2/text = "Cellural"
+popup/item_2/id = 2
+popup/item_3/text = "Perlin"
+popup/item_3/id = 3
+popup/item_4/text = "Value Cubic"
+popup/item_4/id = 4
+popup/item_5/text = "Value"
+popup/item_5/id = 5
+
+[node name="SeedLabel" type="Label" parent="VSplitContainer/VBoxContainer/GridContainer" unique_id=1624840921]
+layout_mode = 2
+size_flags_horizontal = 3
+text = "Seed:"
+
+[node name="SeedSlider" type="TextureProgressBar" parent="VSplitContainer/VBoxContainer/GridContainer" unique_id=1892924475]
+unique_name_in_owner = true
+layout_mode = 2
+size_flags_horizontal = 3
+mouse_default_cursor_shape = 2
+theme_type_variation = &"ValueSlider"
+max_value = 1024.0
+allow_greater = true
+allow_lesser = true
+nine_patch_stretch = true
+stretch_margin_left = 3
+stretch_margin_top = 3
+stretch_margin_right = 3
+stretch_margin_bottom = 3
+script = ExtResource("1_pm12o")
+
+[node name="FrequencyLabel" type="Label" parent="VSplitContainer/VBoxContainer/GridContainer" unique_id=90526403]
+layout_mode = 2
+size_flags_horizontal = 3
+text = "Frequency:"
+
+[node name="FrequencySlider" type="TextureProgressBar" parent="VSplitContainer/VBoxContainer/GridContainer" unique_id=327841864]
+unique_name_in_owner = true
+layout_mode = 2
+size_flags_horizontal = 3
+mouse_default_cursor_shape = 2
+theme_type_variation = &"ValueSlider"
+min_value = 0.001
+max_value = 1.0
+step = 0.001
+value = 0.001
+allow_greater = true
+allow_lesser = true
+nine_patch_stretch = true
+stretch_margin_left = 3
+stretch_margin_top = 3
+stretch_margin_right = 3
+stretch_margin_bottom = 3
+script = ExtResource("1_pm12o")
+snap_step = 0.1
+
+[node name="OffsetLabel" type="Label" parent="VSplitContainer/VBoxContainer/GridContainer" unique_id=1930112714]
+layout_mode = 2
+size_flags_horizontal = 3
+text = "Offset:"
+
+[node name="OffsetSlider" parent="VSplitContainer/VBoxContainer/GridContainer" unique_id=1959566497 instance=ExtResource("3_ffklk")]
+unique_name_in_owner = true
+layout_mode = 2
+min_value = Vector3(-1000, -1000, -1000)
+max_value = Vector3(1000, 1000, 1000)
+grid_columns = 3
+
+[node name="FractalOptions" type="FoldableContainer" parent="VSplitContainer/VBoxContainer" unique_id=1777417323]
+layout_mode = 2
+theme_type_variation = &"CollapsibleContainer"
+folded = true
+title = "Fractal"
+
+[node name="GridContainer" type="GridContainer" parent="VSplitContainer/VBoxContainer/FractalOptions" unique_id=555114170]
+visible = false
+layout_mode = 2
+columns = 2
+
+[node name="FractalTypeLabel" type="Label" parent="VSplitContainer/VBoxContainer/FractalOptions/GridContainer" unique_id=972479371]
+layout_mode = 2
+size_flags_horizontal = 3
+text = "Type:"
+
+[node name="FractalTypeOptionButton" type="OptionButton" parent="VSplitContainer/VBoxContainer/FractalOptions/GridContainer" unique_id=1100648949]
+unique_name_in_owner = true
+layout_mode = 2
+size_flags_horizontal = 3
+mouse_default_cursor_shape = 2
+selected = 0
+item_count = 4
+popup/item_0/text = "None"
+popup/item_0/id = 0
+popup/item_1/text = "FBM"
+popup/item_1/id = 1
+popup/item_2/text = "Ridged"
+popup/item_2/id = 2
+popup/item_3/text = "Ping-Pong"
+popup/item_3/id = 3
+
+[node name="FractalOctavesLabel" type="Label" parent="VSplitContainer/VBoxContainer/FractalOptions/GridContainer" unique_id=1398882403]
+layout_mode = 2
+size_flags_horizontal = 3
+text = "Octaves:"
+
+[node name="FractalOctavesSlider" type="TextureProgressBar" parent="VSplitContainer/VBoxContainer/FractalOptions/GridContainer" unique_id=436931400]
+unique_name_in_owner = true
+layout_mode = 2
+size_flags_horizontal = 3
+mouse_default_cursor_shape = 2
+theme_type_variation = &"ValueSlider"
+min_value = 1.0
+max_value = 10.0
+value = 5.0
+nine_patch_stretch = true
+stretch_margin_left = 3
+stretch_margin_top = 3
+stretch_margin_right = 3
+stretch_margin_bottom = 3
+script = ExtResource("1_pm12o")
+
+[node name="FractalLacunarityLabel" type="Label" parent="VSplitContainer/VBoxContainer/FractalOptions/GridContainer" unique_id=54067477]
+layout_mode = 2
+size_flags_horizontal = 3
+text = "Lacunarity:"
+
+[node name="FractalLacunaritySlider" type="TextureProgressBar" parent="VSplitContainer/VBoxContainer/FractalOptions/GridContainer" unique_id=272123281]
+unique_name_in_owner = true
+layout_mode = 2
+size_flags_horizontal = 3
+mouse_default_cursor_shape = 2
+theme_type_variation = &"ValueSlider"
+min_value = -50.0
+max_value = 50.0
+value = 2.0
+allow_greater = true
+allow_lesser = true
+nine_patch_stretch = true
+stretch_margin_left = 3
+stretch_margin_top = 3
+stretch_margin_right = 3
+stretch_margin_bottom = 3
+script = ExtResource("1_pm12o")
+
+[node name="FractalGainLabel" type="Label" parent="VSplitContainer/VBoxContainer/FractalOptions/GridContainer" unique_id=1099057449]
+layout_mode = 2
+size_flags_horizontal = 3
+text = "Gain:"
+
+[node name="FractalGainSlider" type="TextureProgressBar" parent="VSplitContainer/VBoxContainer/FractalOptions/GridContainer" unique_id=2147010372]
+unique_name_in_owner = true
+layout_mode = 2
+size_flags_horizontal = 3
+mouse_default_cursor_shape = 2
+theme_type_variation = &"ValueSlider"
+min_value = -20.0
+max_value = 20.0
+step = 0.001
+value = 0.5
+allow_greater = true
+allow_lesser = true
+nine_patch_stretch = true
+stretch_margin_left = 3
+stretch_margin_top = 3
+stretch_margin_right = 3
+stretch_margin_bottom = 3
+script = ExtResource("1_pm12o")
+snap_step = 0.01
+
+[node name="FractalWeightedStrengthLabel" type="Label" parent="VSplitContainer/VBoxContainer/FractalOptions/GridContainer" unique_id=1375273748]
+layout_mode = 2
+size_flags_horizontal = 3
+text = "Weighted Strength:"
+
+[node name="FractalWeightedStrengthSlider" type="TextureProgressBar" parent="VSplitContainer/VBoxContainer/FractalOptions/GridContainer" unique_id=1920040516]
+unique_name_in_owner = true
+layout_mode = 2
+size_flags_horizontal = 3
+mouse_default_cursor_shape = 2
+theme_type_variation = &"ValueSlider"
+max_value = 1.0
+step = 0.01
+nine_patch_stretch = true
+stretch_margin_left = 3
+stretch_margin_top = 3
+stretch_margin_right = 3
+stretch_margin_bottom = 3
+script = ExtResource("1_pm12o")
+snap_step = 0.1
+
+[node name="DomainWarpOptions" type="FoldableContainer" parent="VSplitContainer/VBoxContainer" unique_id=1982835463]
+layout_mode = 2
+theme_type_variation = &"CollapsibleContainer"
+folded = true
+title = "Domain Warp"
+
+[node name="GridContainer" type="GridContainer" parent="VSplitContainer/VBoxContainer/DomainWarpOptions" unique_id=16606317]
+visible = false
+layout_mode = 2
+columns = 2
+
+[node name="DomainWarpEnabledLabel" type="Label" parent="VSplitContainer/VBoxContainer/DomainWarpOptions/GridContainer" unique_id=1423546611]
+layout_mode = 2
+size_flags_horizontal = 3
+text = "Enabled:"
+
+[node name="DomainWarpEnabledCheckBox" type="CheckBox" parent="VSplitContainer/VBoxContainer/DomainWarpOptions/GridContainer" unique_id=321111731]
+unique_name_in_owner = true
+layout_mode = 2
+mouse_default_cursor_shape = 2
+text = "On"
+
+[node name="DomainWarpTypeLabel" type="Label" parent="VSplitContainer/VBoxContainer/DomainWarpOptions/GridContainer" unique_id=555879037]
+layout_mode = 2
+size_flags_horizontal = 3
+text = "Type:"
+
+[node name="DomainWarpTypeOptionButton" type="OptionButton" parent="VSplitContainer/VBoxContainer/DomainWarpOptions/GridContainer" unique_id=1674534477]
+unique_name_in_owner = true
+layout_mode = 2
+size_flags_horizontal = 3
+mouse_default_cursor_shape = 2
+selected = 0
+item_count = 3
+popup/item_0/text = "Simplex"
+popup/item_0/id = 0
+popup/item_1/text = "Simplex Reduced"
+popup/item_1/id = 1
+popup/item_2/text = "Basic Grid"
+popup/item_2/id = 2
+
+[node name="DomainWarpAmplitudeLabel" type="Label" parent="VSplitContainer/VBoxContainer/DomainWarpOptions/GridContainer" unique_id=1823311103]
+layout_mode = 2
+size_flags_horizontal = 3
+text = "Amplitude:"
+
+[node name="DomainWarpAmplitudeSlider" type="TextureProgressBar" parent="VSplitContainer/VBoxContainer/DomainWarpOptions/GridContainer" unique_id=1156927646]
+unique_name_in_owner = true
+layout_mode = 2
+size_flags_horizontal = 3
+mouse_default_cursor_shape = 2
+theme_type_variation = &"ValueSlider"
+value = 30.0
+allow_greater = true
+allow_lesser = true
+nine_patch_stretch = true
+stretch_margin_left = 3
+stretch_margin_top = 3
+stretch_margin_right = 3
+stretch_margin_bottom = 3
+script = ExtResource("1_pm12o")
+
+[node name="DomainWarpFrequencyLabel" type="Label" parent="VSplitContainer/VBoxContainer/DomainWarpOptions/GridContainer" unique_id=282509459]
+layout_mode = 2
+size_flags_horizontal = 3
+text = "Frequency:"
+
+[node name="DomainWarpFrequencySlider" type="TextureProgressBar" parent="VSplitContainer/VBoxContainer/DomainWarpOptions/GridContainer" unique_id=1236187205]
+unique_name_in_owner = true
+layout_mode = 2
+size_flags_horizontal = 3
+mouse_default_cursor_shape = 2
+theme_type_variation = &"ValueSlider"
+min_value = -20.0
+max_value = 20.0
+step = 0.001
+value = 0.05000000000000071
+allow_greater = true
+allow_lesser = true
+nine_patch_stretch = true
+stretch_margin_left = 3
+stretch_margin_top = 3
+stretch_margin_right = 3
+stretch_margin_bottom = 3
+script = ExtResource("1_pm12o")
+snap_step = 0.01
+
+[node name="DomainWarpFractalTypeLabel" type="Label" parent="VSplitContainer/VBoxContainer/DomainWarpOptions/GridContainer" unique_id=2012875763]
+layout_mode = 2
+size_flags_horizontal = 3
+text = "Fractal type:"
+
+[node name="DomainWarpFractalTypeOptionButton" type="OptionButton" parent="VSplitContainer/VBoxContainer/DomainWarpOptions/GridContainer" unique_id=359670898]
+unique_name_in_owner = true
+layout_mode = 2
+size_flags_horizontal = 3
+mouse_default_cursor_shape = 2
+selected = 0
+item_count = 3
+popup/item_0/text = "None"
+popup/item_0/id = 0
+popup/item_1/text = "Progressive"
+popup/item_1/id = 1
+popup/item_2/text = "Independent"
+popup/item_2/id = 2
+
+[node name="DomainWarpFractalOctavesLabel" type="Label" parent="VSplitContainer/VBoxContainer/DomainWarpOptions/GridContainer" unique_id=382820224]
+layout_mode = 2
+size_flags_horizontal = 3
+text = "Fractal octaves:"
+
+[node name="DomainWarpFractalOctavesSlider" type="TextureProgressBar" parent="VSplitContainer/VBoxContainer/DomainWarpOptions/GridContainer" unique_id=1157291151]
+unique_name_in_owner = true
+layout_mode = 2
+size_flags_horizontal = 3
+mouse_default_cursor_shape = 2
+theme_type_variation = &"ValueSlider"
+min_value = 1.0
+max_value = 10.0
+value = 5.0
+nine_patch_stretch = true
+stretch_margin_left = 3
+stretch_margin_top = 3
+stretch_margin_right = 3
+stretch_margin_bottom = 3
+script = ExtResource("1_pm12o")
+
+[node name="DomainWarpFractalLacunarityLabel" type="Label" parent="VSplitContainer/VBoxContainer/DomainWarpOptions/GridContainer" unique_id=1411465244]
+layout_mode = 2
+size_flags_horizontal = 3
+text = "Fractal lacunarity:"
+
+[node name="DomainWarpFractalLacunaritySlider" type="TextureProgressBar" parent="VSplitContainer/VBoxContainer/DomainWarpOptions/GridContainer" unique_id=1956459995]
+unique_name_in_owner = true
+layout_mode = 2
+size_flags_horizontal = 3
+mouse_default_cursor_shape = 2
+theme_type_variation = &"ValueSlider"
+min_value = -50.0
+max_value = 50.0
+value = 6.0
+allow_greater = true
+allow_lesser = true
+nine_patch_stretch = true
+stretch_margin_left = 3
+stretch_margin_top = 3
+stretch_margin_right = 3
+stretch_margin_bottom = 3
+script = ExtResource("1_pm12o")
+
+[node name="DomainWarpFractalGainLabel" type="Label" parent="VSplitContainer/VBoxContainer/DomainWarpOptions/GridContainer" unique_id=71389962]
+layout_mode = 2
+size_flags_horizontal = 3
+text = "Fractal gain:"
+
+[node name="DomainWarpFractalGainSlider" type="TextureProgressBar" parent="VSplitContainer/VBoxContainer/DomainWarpOptions/GridContainer" unique_id=1409848330]
+unique_name_in_owner = true
+layout_mode = 2
+size_flags_horizontal = 3
+mouse_default_cursor_shape = 2
+theme_type_variation = &"ValueSlider"
+min_value = -20.0
+max_value = 20.0
+step = 0.001
+value = 0.5
+allow_greater = true
+allow_lesser = true
+nine_patch_stretch = true
+stretch_margin_left = 3
+stretch_margin_top = 3
+stretch_margin_right = 3
+stretch_margin_bottom = 3
+script = ExtResource("1_pm12o")
+snap_step = 0.01
+
+[connection signal="value_changed" from="VSplitContainer/VBoxContainer/GridContainer/SizeSlider" to="." method="_on_size_slider_value_changed"]

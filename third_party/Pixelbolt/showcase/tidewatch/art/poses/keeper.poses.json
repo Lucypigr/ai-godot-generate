@@ -1,0 +1,2131 @@
+{
+  "format": "pixelforge-poses",
+  "version": 1,
+  "name": "keeper",
+  "width": 40,
+  "height": 40,
+  "palette": {
+    "$ref": "../palette.json"
+  },
+  "parts": {
+    "head-d": {
+      "rows": [
+        ".....kkkkkk.....",
+        "...kkeeeeEEkk...",
+        "..keeeeEEEEEEk..",
+        ".keeEEEEEEEEEfk.",
+        ".kEEEEEEEEEEEfk.",
+        "kEEEEEEEEEEEEEfk",
+        "kfEffffffffffEfk",
+        "kfEkzAaaaaAzkEfk",
+        "kfEkApppppPAkEfk",
+        "kffkpkppppkPkffk",
+        "kFfkpkppppkqkfFk",
+        ".kFkqPppppPqkFk.",
+        "..kkkqqqqqqkkk.."
+      ],
+      "anchor": [
+        8,
+        12
+      ]
+    },
+    "head-d-hurt": {
+      "rows": [
+        ".....kkkkkk.....",
+        "...kkeeeeEEkk...",
+        "..keeeeEEEEEEk..",
+        ".keeEEEEEEEEEfk.",
+        ".kEEEEEEEEEEEfk.",
+        "kEEEEEEEEEEEEEfk",
+        "kfEffffffffffEfk",
+        "kfEkzAaaaaAzkEfk",
+        "kfEkApppppPAkEfk",
+        "kffkpppppppPkffk",
+        "kFfkpkkppkkqkfFk",
+        ".kFkqPpkkpPqkFk.",
+        "..kkkqqqqqqkkk.."
+      ],
+      "anchor": [
+        8,
+        12
+      ]
+    },
+    "head-d-happy": {
+      "rows": [
+        ".....kkkkkk.....",
+        "...kkeeeeEEkk...",
+        "..keeeeEEEEEEk..",
+        ".keeEEEEEEEEEfk.",
+        ".kEEEEEEEEEEEfk.",
+        "kEEEEEEEEEEEEEfk",
+        "kfEffffffffffEfk",
+        "kfEkzAaaaaAzkEfk",
+        "kfEkApppppPAkEfk",
+        "kffkpkkppkkPkffk",
+        "kFfkpppppppqkfFk",
+        ".kFkqPpkkpPqkFk.",
+        "..kkkqqqqqqkkk.."
+      ],
+      "anchor": [
+        8,
+        12
+      ]
+    },
+    "body-d": {
+      "rows": [
+        "..kfEekkkkeEfk..",
+        ".kEkEeEEEEEfkfk.",
+        ".kEkeEEEEEEfkfk.",
+        ".kPkEEEEEEEfkqk.",
+        ".kPkUUUMMUUUkqk.",
+        "..kEEEEEEEEEEk..",
+        "..kfffffffffFk.."
+      ],
+      "anchor": [
+        8,
+        6
+      ],
+      "points": {
+        "neck": [
+          8,
+          -1
+        ]
+      }
+    },
+    "body-d-a": {
+      "rows": [
+        "..kfEekkkkeEfk..",
+        ".kEkEeEEEEEfkfk.",
+        ".kPkeEEEEEEfkfk.",
+        ".kPkEEEEEEEfkfk.",
+        ".kEkUUUMMUUUkqk.",
+        "..kEEEEEEEEEEqk.",
+        "..kfffffffffFk.."
+      ],
+      "anchor": [
+        8,
+        6
+      ],
+      "points": {
+        "neck": [
+          8,
+          -1
+        ]
+      }
+    },
+    "body-d-b": {
+      "rows": [
+        "..kfEekkkkeEfk..",
+        ".kEkEeEEEEEfkqk.",
+        ".kEkeEEEEEEfkqk.",
+        ".kEkEEEEEEEfkfk.",
+        ".kPkUUUMMUUUkk..",
+        ".kPEEEEEEEEEEk..",
+        "..kfffffffffFk.."
+      ],
+      "anchor": [
+        8,
+        6
+      ],
+      "points": {
+        "neck": [
+          8,
+          -1
+        ]
+      }
+    },
+    "body-d-lift": {
+      "rows": [
+        "..kfEekkkkeEfk..",
+        "...kEeEEEEEfk...",
+        "...keEEEEEEfk...",
+        "...kEEEEEEEfk...",
+        "...kUUUMMUUUk...",
+        "..kEEEEEEEEEEk..",
+        "..kfffffffffFk.."
+      ],
+      "anchor": [
+        8,
+        6
+      ],
+      "points": {
+        "neck": [
+          8,
+          -1
+        ],
+        "shoulderL": [
+          2,
+          1
+        ],
+        "shoulderR": [
+          13,
+          1
+        ],
+        "hold": [
+          8,
+          -16
+        ]
+      }
+    },
+    "arm-up-l": {
+      "rows": [
+        "kqk.",
+        "kPk.",
+        "kEk.",
+        "kfk.",
+        ".kEk",
+        ".kEk",
+        ".kfk",
+        ".kEk",
+        ".kEk",
+        ".kfk",
+        ".kEk",
+        ".kEk",
+        ".kfk",
+        ".kEk",
+        ".kEk",
+        ".kfk",
+        ".kEk"
+      ],
+      "anchor": [
+        2,
+        16
+      ]
+    },
+    "legs-d": {
+      "rows": [
+        ".kBBkkBBk.",
+        "kUUUkkUUUk"
+      ],
+      "anchor": [
+        5,
+        1
+      ],
+      "points": {
+        "hip": [
+          5,
+          -1
+        ]
+      }
+    },
+    "legs-d-cl": {
+      "rows": [
+        ".kBBkkUUUk",
+        ".kBBk.kkk.",
+        "kUUUk....."
+      ],
+      "anchor": [
+        5,
+        1
+      ],
+      "points": {
+        "hip": [
+          5,
+          -1
+        ],
+        "foot": [
+          2,
+          2
+        ]
+      }
+    },
+    "legs-d-cr": {
+      "rows": [
+        "kUUUkkBBk.",
+        ".kkk.kBBk.",
+        ".....kUUUk"
+      ],
+      "anchor": [
+        5,
+        1
+      ],
+      "points": {
+        "hip": [
+          5,
+          -1
+        ],
+        "foot": [
+          7,
+          2
+        ]
+      }
+    },
+    "legs-d-pass": {
+      "rows": [
+        ".kBBkkBBk.",
+        ".kBBkkBBk.",
+        "kUUUkkUUUk"
+      ],
+      "anchor": [
+        5,
+        2
+      ],
+      "points": {
+        "hip": [
+          5,
+          -1
+        ]
+      }
+    },
+    "legs-d-pa": {
+      "rows": [
+        ".kBBkkBBk.",
+        "kUUUkkBBk.",
+        ".kkk.kUUUk"
+      ],
+      "anchor": [
+        5,
+        2
+      ],
+      "points": {
+        "hip": [
+          5,
+          -1
+        ]
+      }
+    },
+    "legs-d-pb": {
+      "rows": [
+        ".kBBkkBBk.",
+        ".kBBkkUUUk",
+        "kUUUk.kkk."
+      ],
+      "anchor": [
+        5,
+        2
+      ],
+      "points": {
+        "hip": [
+          5,
+          -1
+        ]
+      }
+    },
+    "head-u": {
+      "rows": [
+        ".....kkkkkk.....",
+        "...kkeeeeEEkk...",
+        "..keeeeEEEEEEk..",
+        ".keeEEEEEEEEEfk.",
+        ".kEEEEEEEEEEEfk.",
+        "kEEEEEEEEEEEEEfk",
+        "keEEEEEEEEEEEEfk",
+        "kfEEEEEEEEEEEEfk",
+        "kfEEEEEEEEEEEffk",
+        "kffEEEEEEEEEfffk",
+        "kFffffffffffffFk",
+        ".kFFffffffffFFk.",
+        "..kkkkkkkkkkkk.."
+      ],
+      "anchor": [
+        8,
+        12
+      ]
+    },
+    "body-u": {
+      "rows": [
+        "..kfzAAAAAAzfk..",
+        ".kEkEeEEEEEfkfk.",
+        ".kEkeEEEEEEfkfk.",
+        ".kPkEEEEEEEfkqk.",
+        ".kPkUUUUUUUUkqk.",
+        "..kEEEEEEEEEEk..",
+        "..kfffffffffFk.."
+      ],
+      "anchor": [
+        8,
+        6
+      ],
+      "points": {
+        "neck": [
+          8,
+          -1
+        ]
+      }
+    },
+    "body-u-a": {
+      "rows": [
+        "..kfzAAAAAAzfk..",
+        ".kEkEeEEEEEfkqk.",
+        ".kEkeEEEEEEfkqk.",
+        ".kEkEEEEEEEfkfk.",
+        ".kPkUUUUUUUUkk..",
+        ".kPEEEEEEEEEEk..",
+        "..kfffffffffFk.."
+      ],
+      "anchor": [
+        8,
+        6
+      ],
+      "points": {
+        "neck": [
+          8,
+          -1
+        ]
+      }
+    },
+    "body-u-b": {
+      "rows": [
+        "..kfzAAAAAAzfk..",
+        ".kEkEeEEEEEfkfk.",
+        ".kPkeEEEEEEfkfk.",
+        ".kPkEEEEEEEfkfk.",
+        ".kEkUUUUUUUUkqk.",
+        "..kEEEEEEEEEEqk.",
+        "..kfffffffffFk.."
+      ],
+      "anchor": [
+        8,
+        6
+      ],
+      "points": {
+        "neck": [
+          8,
+          -1
+        ]
+      }
+    },
+    "head-r": {
+      "rows": [
+        ".....kkkkkkk......",
+        "...kkeeeeEEEkk....",
+        "..keeeEEEEEEEEk...",
+        ".keeEEEEEEEEEEEk..",
+        ".kEEEEEEEEEEEEEfk.",
+        "kEEEEEEEEEEEEEEEfk",
+        "kfEEEEffffffffffFk",
+        "kfEEEkzAaaappppkk.",
+        "kfEEEkzAapppkpPk..",
+        "kffEEkzAappppPPk..",
+        "kFffEkzzApppqqk...",
+        ".kFFfkkzzqqqkk....",
+        "..kkkkkkkkkkk....."
+      ],
+      "anchor": [
+        8,
+        12
+      ]
+    },
+    "head-r-hurt": {
+      "rows": [
+        ".....kkkkkkk......",
+        "...kkeeeeEEEkk....",
+        "..keeeEEEEEEEEk...",
+        ".keeEEEEEEEEEEEk..",
+        ".kEEEEEEEEEEEEEfk.",
+        "kEEEEEEEEEEEEEEEfk",
+        "kfEEEEffffffffffFk",
+        "kfEEEkzAaaappppkk.",
+        "kfEEEkzAappkkpPk..",
+        "kffEEkzAappppPPk..",
+        "kFffEkzzApppqqk...",
+        ".kFFfkkzzqqqkk....",
+        "..kkkkkkkkkkk....."
+      ],
+      "anchor": [
+        8,
+        12
+      ]
+    },
+    "body-r": {
+      "rows": [
+        "kfEEeEEfk.",
+        "kEEeEEEEfk",
+        "kEeEEEEEfk",
+        "kEEPPEEEfk",
+        "kkUUPPUUkk",
+        "kEEEEEEEEk",
+        "kfffffffFk"
+      ],
+      "anchor": [
+        5,
+        6
+      ],
+      "points": {
+        "neck": [
+          5,
+          -1
+        ]
+      }
+    },
+    "body-r-fwd": {
+      "rows": [
+        "kfEEeEEfk.",
+        "kEEeEEEEfk",
+        "kEeEEEEEfk",
+        "kEEEEPPEfk",
+        "kkUUUUPPkk",
+        "kEEEEEEEEk",
+        "kfffffffFk"
+      ],
+      "anchor": [
+        5,
+        6
+      ],
+      "points": {
+        "neck": [
+          5,
+          -1
+        ]
+      }
+    },
+    "body-r-back": {
+      "rows": [
+        "kfEEeEEfk.",
+        "kEEeEEEEfk",
+        "kEeEEEEEfk",
+        "kEPPEEEEfk",
+        "kkPPUUUUkk",
+        "kEEEEEEEEk",
+        "kfffffffFk"
+      ],
+      "anchor": [
+        5,
+        6
+      ],
+      "points": {
+        "neck": [
+          5,
+          -1
+        ]
+      }
+    },
+    "legs-r": {
+      "rows": [
+        ".kBBkBBk.",
+        "kUUUkUUUk"
+      ],
+      "anchor": [
+        4,
+        1
+      ],
+      "points": {
+        "hip": [
+          4,
+          -1
+        ]
+      }
+    },
+    "legs-r-c1": {
+      "rows": [
+        ".kVVk...kBBk.",
+        "kUUUk...kUUUk"
+      ],
+      "anchor": [
+        6,
+        1
+      ],
+      "points": {
+        "hip": [
+          6,
+          -1
+        ],
+        "foot": [
+          10,
+          1
+        ]
+      }
+    },
+    "legs-r-c2": {
+      "rows": [
+        ".kBBk...kVVk.",
+        "kUUUk...kUUUk"
+      ],
+      "anchor": [
+        6,
+        1
+      ],
+      "points": {
+        "hip": [
+          6,
+          -1
+        ],
+        "foot": [
+          10,
+          1
+        ]
+      }
+    },
+    "legs-r-pass": {
+      "rows": [
+        "...kVBBk.",
+        "...kVBBk.",
+        "..kUUUUk."
+      ],
+      "anchor": [
+        5,
+        2
+      ],
+      "points": {
+        "hip": [
+          5,
+          -1
+        ]
+      }
+    },
+    "legs-r-pa": {
+      "rows": [
+        "..kVkBBk.",
+        "..kUUkBBk",
+        "...kkUUUk"
+      ],
+      "anchor": [
+        5,
+        2
+      ],
+      "points": {
+        "hip": [
+          5,
+          -1
+        ]
+      }
+    },
+    "legs-r-pb": {
+      "rows": [
+        "...kVBBk.",
+        "...kVkUUU",
+        "..kUUUkk."
+      ],
+      "anchor": [
+        5,
+        2
+      ],
+      "points": {
+        "hip": [
+          5,
+          -1
+        ]
+      }
+    },
+    "body-d-noarm": {
+      "rows": [
+        "..kfEekkkkeEfk..",
+        ".kEkEeEEEEEfk...",
+        ".kEkeEEEEEEfk...",
+        ".kPkEEEEEEEfk...",
+        ".kPkUUUMMUUUk...",
+        "..kEEEEEEEEEEk..",
+        "..kfffffffffFk.."
+      ],
+      "anchor": [
+        8,
+        6
+      ],
+      "points": {
+        "neck": [
+          8,
+          -1
+        ],
+        "shoulder": [
+          13,
+          1
+        ]
+      }
+    },
+    "body-u-noarm": {
+      "rows": [
+        "..kfzAAAAAAzfk..",
+        "...kEeEEEEEfkfk.",
+        "...keEEEEEEfkfk.",
+        "...kEEEEEEEfkqk.",
+        "...kUUUUUUUUkqk.",
+        "..kEEEEEEEEEEk..",
+        "..kfffffffffFk.."
+      ],
+      "anchor": [
+        8,
+        6
+      ],
+      "points": {
+        "neck": [
+          8,
+          -1
+        ],
+        "shoulder": [
+          2,
+          1
+        ]
+      }
+    },
+    "body-r-noarm": {
+      "rows": [
+        "kfEEeEEfk.",
+        "kEEeEEEEfk",
+        "kEeEEEEEfk",
+        "kEEEEEEEfk",
+        "kkUUUUUUkk",
+        "kEEEEEEEEk",
+        "kfffffffFk"
+      ],
+      "anchor": [
+        5,
+        6
+      ],
+      "points": {
+        "neck": [
+          5,
+          -1
+        ],
+        "shoulder": [
+          6,
+          1
+        ]
+      }
+    },
+    "sa-d-windup": {
+      "rows": [
+        "....kk..",
+        "...kmMk.",
+        "...kmMk.",
+        "...kmMk.",
+        "...kmMk.",
+        "...kmvk.",
+        "..kiXXik",
+        "...kUUk.",
+        "...kqqk.",
+        "..kfEk..",
+        ".kfEk...",
+        "kfEk....",
+        "kEk....."
+      ],
+      "anchor": [
+        1,
+        12
+      ],
+      "points": {
+        "tip": [
+          4,
+          0
+        ]
+      }
+    },
+    "sa-d-strike": {
+      "rows": [
+        "...kEk.",
+        "..kEfk.",
+        ".kEfk..",
+        ".kqqk..",
+        "kiXXik.",
+        ".kmMk..",
+        ".kmMk..",
+        ".kmMk..",
+        ".kmMk..",
+        ".kmMk..",
+        ".kmvk..",
+        "..kk..."
+      ],
+      "anchor": [
+        4,
+        0
+      ],
+      "points": {
+        "tip": [
+          2,
+          11
+        ]
+      }
+    },
+    "sa-d-recover": {
+      "rows": [
+        "kEk....",
+        "kEfk...",
+        ".kqqk..",
+        ".kiXk..",
+        "..kmMk.",
+        "...kmMk",
+        "....kmk",
+        ".....k."
+      ],
+      "anchor": [
+        1,
+        0
+      ],
+      "points": {
+        "tip": [
+          5,
+          7
+        ]
+      }
+    },
+    "sa-u-windup": {
+      "rows": [
+        "....kEk",
+        "...kfEk",
+        "..kqqk.",
+        "..kXik.",
+        ".kMmk..",
+        "kMmk...",
+        "kmk....",
+        ".k....."
+      ],
+      "anchor": [
+        5,
+        0
+      ],
+      "points": {
+        "tip": [
+          1,
+          7
+        ]
+      }
+    },
+    "sa-u-strike": {
+      "rows": [
+        "..kk...",
+        ".kmMk..",
+        ".kmMk..",
+        ".kmMk..",
+        ".kmMk..",
+        ".kmMk..",
+        ".kmvk..",
+        "kiXXik.",
+        ".kUUk..",
+        ".kqqk..",
+        ".kEfk..",
+        "..kEfk.",
+        "...kEk."
+      ],
+      "anchor": [
+        4,
+        12
+      ],
+      "points": {
+        "tip": [
+          2,
+          0
+        ]
+      }
+    },
+    "sa-u-recover": {
+      "rows": [
+        ".k.....",
+        "kmk....",
+        "kMmk...",
+        ".kMmk..",
+        "..kXik.",
+        "..kqqk.",
+        "...kfEk",
+        "....kEk"
+      ],
+      "anchor": [
+        5,
+        7
+      ],
+      "points": {
+        "tip": [
+          1,
+          0
+        ]
+      }
+    },
+    "sa-r-windup": {
+      "rows": [
+        "..........k.kkkk.",
+        "..kkkkkkkkXkqfEEk",
+        ".kmmmmmmmmXkqqfEk",
+        ".kvMMMMMMMXkkkkk.",
+        "..kkkkkkk.k......"
+      ],
+      "anchor": [
+        16,
+        2
+      ],
+      "points": {
+        "tip": [
+          1,
+          2
+        ]
+      }
+    },
+    "sa-r-strike": {
+      "rows": [
+        ".kkkk.k..........",
+        "kEEfqkXkkkkkkkk..",
+        "kEfqqkXmmmmmmmmk.",
+        ".kkkkkXMMMMMMMvk.",
+        "......k.kkkkkkk.."
+      ],
+      "anchor": [
+        0,
+        2
+      ],
+      "points": {
+        "tip": [
+          15,
+          2
+        ]
+      }
+    },
+    "sa-r-recover": {
+      "rows": [
+        "kEk.....",
+        "kEfk....",
+        ".kqqk...",
+        ".kkXik..",
+        "...kmMk.",
+        "....kmMk",
+        ".....kmk",
+        "......k."
+      ],
+      "anchor": [
+        1,
+        0
+      ],
+      "points": {
+        "tip": [
+          6,
+          7
+        ]
+      }
+    }
+  },
+  "poses": [
+    {
+      "name": "idle-d",
+      "duration": 600,
+      "origin": [
+        20,
+        31
+      ],
+      "parts": [
+        {
+          "name": "legs",
+          "part": "legs-d"
+        },
+        {
+          "name": "body",
+          "part": "body-d",
+          "attach": {
+            "part": "legs",
+            "point": "hip"
+          }
+        },
+        {
+          "name": "head",
+          "part": "head-d",
+          "attach": {
+            "part": "body",
+            "point": "neck"
+          }
+        }
+      ]
+    },
+    {
+      "name": "breathe-d",
+      "duration": 400,
+      "origin": [
+        20,
+        31
+      ],
+      "parts": [
+        {
+          "name": "legs",
+          "part": "legs-d-pass"
+        },
+        {
+          "name": "body",
+          "part": "body-d",
+          "attach": {
+            "part": "legs",
+            "point": "hip"
+          }
+        },
+        {
+          "name": "head",
+          "part": "head-d",
+          "attach": {
+            "part": "body",
+            "point": "neck"
+          }
+        }
+      ]
+    },
+    {
+      "name": "walk-d-1",
+      "duration": 140,
+      "origin": [
+        20,
+        31
+      ],
+      "parts": [
+        {
+          "name": "legs",
+          "part": "legs-d-cl"
+        },
+        {
+          "name": "body",
+          "part": "body-d-a",
+          "attach": {
+            "part": "legs",
+            "point": "hip"
+          }
+        },
+        {
+          "name": "head",
+          "part": "head-d",
+          "attach": {
+            "part": "body",
+            "point": "neck"
+          }
+        }
+      ],
+      "markers": [
+        {
+          "name": "step",
+          "part": "legs",
+          "point": "foot"
+        }
+      ]
+    },
+    {
+      "name": "walk-d-2",
+      "duration": 120,
+      "origin": [
+        20,
+        31
+      ],
+      "parts": [
+        {
+          "name": "legs",
+          "part": "legs-d-pb"
+        },
+        {
+          "name": "body",
+          "part": "body-d",
+          "attach": {
+            "part": "legs",
+            "point": "hip"
+          }
+        },
+        {
+          "name": "head",
+          "part": "head-d",
+          "attach": {
+            "part": "body",
+            "point": "neck"
+          }
+        }
+      ]
+    },
+    {
+      "name": "walk-d-3",
+      "duration": 140,
+      "origin": [
+        20,
+        31
+      ],
+      "parts": [
+        {
+          "name": "legs",
+          "part": "legs-d-cr"
+        },
+        {
+          "name": "body",
+          "part": "body-d-b",
+          "attach": {
+            "part": "legs",
+            "point": "hip"
+          }
+        },
+        {
+          "name": "head",
+          "part": "head-d",
+          "attach": {
+            "part": "body",
+            "point": "neck"
+          }
+        }
+      ],
+      "markers": [
+        {
+          "name": "step",
+          "part": "legs",
+          "point": "foot"
+        }
+      ]
+    },
+    {
+      "name": "walk-d-4",
+      "duration": 120,
+      "origin": [
+        20,
+        31
+      ],
+      "parts": [
+        {
+          "name": "legs",
+          "part": "legs-d-pa"
+        },
+        {
+          "name": "body",
+          "part": "body-d",
+          "attach": {
+            "part": "legs",
+            "point": "hip"
+          }
+        },
+        {
+          "name": "head",
+          "part": "head-d",
+          "attach": {
+            "part": "body",
+            "point": "neck"
+          }
+        }
+      ]
+    },
+    {
+      "name": "idle-u",
+      "duration": 600,
+      "origin": [
+        20,
+        31
+      ],
+      "parts": [
+        {
+          "name": "legs",
+          "part": "legs-d"
+        },
+        {
+          "name": "body",
+          "part": "body-u",
+          "attach": {
+            "part": "legs",
+            "point": "hip"
+          }
+        },
+        {
+          "name": "head",
+          "part": "head-u",
+          "attach": {
+            "part": "body",
+            "point": "neck"
+          }
+        }
+      ]
+    },
+    {
+      "name": "breathe-u",
+      "duration": 400,
+      "origin": [
+        20,
+        31
+      ],
+      "parts": [
+        {
+          "name": "legs",
+          "part": "legs-d-pass"
+        },
+        {
+          "name": "body",
+          "part": "body-u",
+          "attach": {
+            "part": "legs",
+            "point": "hip"
+          }
+        },
+        {
+          "name": "head",
+          "part": "head-u",
+          "attach": {
+            "part": "body",
+            "point": "neck"
+          }
+        }
+      ]
+    },
+    {
+      "name": "walk-u-1",
+      "duration": 140,
+      "origin": [
+        20,
+        31
+      ],
+      "parts": [
+        {
+          "name": "legs",
+          "part": "legs-d-cr"
+        },
+        {
+          "name": "body",
+          "part": "body-u-a",
+          "attach": {
+            "part": "legs",
+            "point": "hip"
+          }
+        },
+        {
+          "name": "head",
+          "part": "head-u",
+          "attach": {
+            "part": "body",
+            "point": "neck"
+          }
+        }
+      ],
+      "markers": [
+        {
+          "name": "step",
+          "part": "legs",
+          "point": "foot"
+        }
+      ]
+    },
+    {
+      "name": "walk-u-2",
+      "duration": 120,
+      "origin": [
+        20,
+        31
+      ],
+      "parts": [
+        {
+          "name": "legs",
+          "part": "legs-d-pa"
+        },
+        {
+          "name": "body",
+          "part": "body-u",
+          "attach": {
+            "part": "legs",
+            "point": "hip"
+          }
+        },
+        {
+          "name": "head",
+          "part": "head-u",
+          "attach": {
+            "part": "body",
+            "point": "neck"
+          }
+        }
+      ]
+    },
+    {
+      "name": "walk-u-3",
+      "duration": 140,
+      "origin": [
+        20,
+        31
+      ],
+      "parts": [
+        {
+          "name": "legs",
+          "part": "legs-d-cl"
+        },
+        {
+          "name": "body",
+          "part": "body-u-b",
+          "attach": {
+            "part": "legs",
+            "point": "hip"
+          }
+        },
+        {
+          "name": "head",
+          "part": "head-u",
+          "attach": {
+            "part": "body",
+            "point": "neck"
+          }
+        }
+      ],
+      "markers": [
+        {
+          "name": "step",
+          "part": "legs",
+          "point": "foot"
+        }
+      ]
+    },
+    {
+      "name": "walk-u-4",
+      "duration": 120,
+      "origin": [
+        20,
+        31
+      ],
+      "parts": [
+        {
+          "name": "legs",
+          "part": "legs-d-pb"
+        },
+        {
+          "name": "body",
+          "part": "body-u",
+          "attach": {
+            "part": "legs",
+            "point": "hip"
+          }
+        },
+        {
+          "name": "head",
+          "part": "head-u",
+          "attach": {
+            "part": "body",
+            "point": "neck"
+          }
+        }
+      ]
+    },
+    {
+      "name": "idle-r",
+      "duration": 600,
+      "origin": [
+        20,
+        31
+      ],
+      "parts": [
+        {
+          "name": "legs",
+          "part": "legs-r"
+        },
+        {
+          "name": "body",
+          "part": "body-r",
+          "attach": {
+            "part": "legs",
+            "point": "hip"
+          }
+        },
+        {
+          "name": "head",
+          "part": "head-r",
+          "attach": {
+            "part": "body",
+            "point": "neck"
+          }
+        }
+      ]
+    },
+    {
+      "name": "breathe-r",
+      "duration": 400,
+      "origin": [
+        20,
+        31
+      ],
+      "parts": [
+        {
+          "name": "legs",
+          "part": "legs-r-pass"
+        },
+        {
+          "name": "body",
+          "part": "body-r",
+          "attach": {
+            "part": "legs",
+            "point": "hip"
+          }
+        },
+        {
+          "name": "head",
+          "part": "head-r",
+          "attach": {
+            "part": "body",
+            "point": "neck"
+          }
+        }
+      ]
+    },
+    {
+      "name": "walk-r-1",
+      "duration": 140,
+      "origin": [
+        20,
+        31
+      ],
+      "parts": [
+        {
+          "name": "legs",
+          "part": "legs-r-c1"
+        },
+        {
+          "name": "body",
+          "part": "body-r-back",
+          "attach": {
+            "part": "legs",
+            "point": "hip"
+          }
+        },
+        {
+          "name": "head",
+          "part": "head-r",
+          "attach": {
+            "part": "body",
+            "point": "neck"
+          }
+        }
+      ],
+      "markers": [
+        {
+          "name": "step",
+          "part": "legs",
+          "point": "foot"
+        }
+      ]
+    },
+    {
+      "name": "walk-r-2",
+      "duration": 120,
+      "origin": [
+        20,
+        31
+      ],
+      "parts": [
+        {
+          "name": "legs",
+          "part": "legs-r-pb"
+        },
+        {
+          "name": "body",
+          "part": "body-r",
+          "attach": {
+            "part": "legs",
+            "point": "hip"
+          }
+        },
+        {
+          "name": "head",
+          "part": "head-r",
+          "attach": {
+            "part": "body",
+            "point": "neck"
+          }
+        }
+      ]
+    },
+    {
+      "name": "walk-r-3",
+      "duration": 140,
+      "origin": [
+        20,
+        31
+      ],
+      "parts": [
+        {
+          "name": "legs",
+          "part": "legs-r-c2"
+        },
+        {
+          "name": "body",
+          "part": "body-r-fwd",
+          "attach": {
+            "part": "legs",
+            "point": "hip"
+          }
+        },
+        {
+          "name": "head",
+          "part": "head-r",
+          "attach": {
+            "part": "body",
+            "point": "neck"
+          }
+        }
+      ],
+      "markers": [
+        {
+          "name": "step",
+          "part": "legs",
+          "point": "foot"
+        }
+      ]
+    },
+    {
+      "name": "walk-r-4",
+      "duration": 120,
+      "origin": [
+        20,
+        31
+      ],
+      "parts": [
+        {
+          "name": "legs",
+          "part": "legs-r-pa"
+        },
+        {
+          "name": "body",
+          "part": "body-r",
+          "attach": {
+            "part": "legs",
+            "point": "hip"
+          }
+        },
+        {
+          "name": "head",
+          "part": "head-r",
+          "attach": {
+            "part": "body",
+            "point": "neck"
+          }
+        }
+      ]
+    },
+    {
+      "name": "idle-l",
+      "mirror": "idle-r"
+    },
+    {
+      "name": "breathe-l",
+      "mirror": "breathe-r"
+    },
+    {
+      "name": "walk-l-1",
+      "mirror": "walk-r-1"
+    },
+    {
+      "name": "walk-l-2",
+      "mirror": "walk-r-2"
+    },
+    {
+      "name": "walk-l-3",
+      "mirror": "walk-r-3"
+    },
+    {
+      "name": "walk-l-4",
+      "mirror": "walk-r-4"
+    },
+    {
+      "name": "hurt-d",
+      "duration": 300,
+      "origin": [
+        20,
+        31
+      ],
+      "parts": [
+        {
+          "name": "legs",
+          "part": "legs-d"
+        },
+        {
+          "name": "body",
+          "part": "body-d",
+          "attach": {
+            "part": "legs",
+            "point": "hip"
+          }
+        },
+        {
+          "name": "head",
+          "part": "head-d-hurt",
+          "attach": {
+            "part": "body",
+            "point": "neck"
+          }
+        }
+      ]
+    },
+    {
+      "name": "hurt-r",
+      "duration": 300,
+      "origin": [
+        20,
+        31
+      ],
+      "parts": [
+        {
+          "name": "legs",
+          "part": "legs-r"
+        },
+        {
+          "name": "body",
+          "part": "body-r",
+          "attach": {
+            "part": "legs",
+            "point": "hip"
+          }
+        },
+        {
+          "name": "head",
+          "part": "head-r-hurt",
+          "attach": {
+            "part": "body",
+            "point": "neck"
+          }
+        }
+      ]
+    },
+    {
+      "name": "hurt-l",
+      "mirror": "hurt-r"
+    },
+    {
+      "name": "attack-d-1",
+      "duration": 70,
+      "origin": [
+        20,
+        31
+      ],
+      "parts": [
+        {
+          "name": "legs",
+          "part": "legs-d"
+        },
+        {
+          "name": "body",
+          "part": "body-d-noarm",
+          "attach": {
+            "part": "legs",
+            "point": "hip"
+          }
+        },
+        {
+          "name": "head",
+          "part": "head-d",
+          "attach": {
+            "part": "body",
+            "point": "neck"
+          }
+        },
+        {
+          "name": "sword",
+          "part": "sa-d-windup",
+          "attach": {
+            "part": "body",
+            "point": "shoulder"
+          }
+        }
+      ],
+      "markers": [
+        {
+          "name": "blade",
+          "part": "sword",
+          "point": "tip"
+        }
+      ]
+    },
+    {
+      "name": "attack-d-2",
+      "duration": 150,
+      "origin": [
+        20,
+        31
+      ],
+      "parts": [
+        {
+          "name": "legs",
+          "part": "legs-d"
+        },
+        {
+          "name": "body",
+          "part": "body-d-noarm",
+          "attach": {
+            "part": "legs",
+            "point": "hip"
+          }
+        },
+        {
+          "name": "head",
+          "part": "head-d",
+          "attach": {
+            "part": "body",
+            "point": "neck"
+          }
+        },
+        {
+          "name": "sword",
+          "part": "sa-d-strike",
+          "attach": {
+            "part": "body",
+            "point": "shoulder"
+          }
+        }
+      ],
+      "markers": [
+        {
+          "name": "hit",
+          "part": "sword",
+          "point": "tip"
+        }
+      ]
+    },
+    {
+      "name": "attack-d-3",
+      "duration": 90,
+      "origin": [
+        20,
+        31
+      ],
+      "parts": [
+        {
+          "name": "legs",
+          "part": "legs-d"
+        },
+        {
+          "name": "body",
+          "part": "body-d-noarm",
+          "attach": {
+            "part": "legs",
+            "point": "hip"
+          }
+        },
+        {
+          "name": "head",
+          "part": "head-d",
+          "attach": {
+            "part": "body",
+            "point": "neck"
+          }
+        },
+        {
+          "name": "sword",
+          "part": "sa-d-recover",
+          "attach": {
+            "part": "body",
+            "point": "shoulder"
+          }
+        }
+      ],
+      "markers": [
+        {
+          "name": "blade",
+          "part": "sword",
+          "point": "tip"
+        }
+      ]
+    },
+    {
+      "name": "attack-u-1",
+      "duration": 70,
+      "origin": [
+        20,
+        31
+      ],
+      "parts": [
+        {
+          "name": "legs",
+          "part": "legs-d"
+        },
+        {
+          "name": "body",
+          "part": "body-u-noarm",
+          "attach": {
+            "part": "legs",
+            "point": "hip"
+          }
+        },
+        {
+          "name": "head",
+          "part": "head-u",
+          "attach": {
+            "part": "body",
+            "point": "neck"
+          }
+        },
+        {
+          "name": "sword",
+          "part": "sa-u-windup",
+          "attach": {
+            "part": "body",
+            "point": "shoulder"
+          }
+        }
+      ],
+      "markers": [
+        {
+          "name": "blade",
+          "part": "sword",
+          "point": "tip"
+        }
+      ]
+    },
+    {
+      "name": "attack-u-2",
+      "duration": 150,
+      "origin": [
+        20,
+        31
+      ],
+      "parts": [
+        {
+          "name": "legs",
+          "part": "legs-d"
+        },
+        {
+          "name": "body",
+          "part": "body-u-noarm",
+          "attach": {
+            "part": "legs",
+            "point": "hip"
+          }
+        },
+        {
+          "name": "sword",
+          "part": "sa-u-strike",
+          "attach": {
+            "part": "body",
+            "point": "shoulder"
+          }
+        },
+        {
+          "name": "head",
+          "part": "head-u",
+          "attach": {
+            "part": "body",
+            "point": "neck"
+          }
+        }
+      ],
+      "markers": [
+        {
+          "name": "hit",
+          "part": "sword",
+          "point": "tip"
+        }
+      ]
+    },
+    {
+      "name": "attack-u-3",
+      "duration": 90,
+      "origin": [
+        20,
+        31
+      ],
+      "parts": [
+        {
+          "name": "legs",
+          "part": "legs-d"
+        },
+        {
+          "name": "body",
+          "part": "body-u-noarm",
+          "attach": {
+            "part": "legs",
+            "point": "hip"
+          }
+        },
+        {
+          "name": "sword",
+          "part": "sa-u-recover",
+          "attach": {
+            "part": "body",
+            "point": "shoulder"
+          }
+        },
+        {
+          "name": "head",
+          "part": "head-u",
+          "attach": {
+            "part": "body",
+            "point": "neck"
+          }
+        }
+      ],
+      "markers": [
+        {
+          "name": "blade",
+          "part": "sword",
+          "point": "tip"
+        }
+      ]
+    },
+    {
+      "name": "attack-r-1",
+      "duration": 70,
+      "origin": [
+        20,
+        31
+      ],
+      "parts": [
+        {
+          "name": "legs",
+          "part": "legs-r"
+        },
+        {
+          "name": "body",
+          "part": "body-r-noarm",
+          "attach": {
+            "part": "legs",
+            "point": "hip"
+          }
+        },
+        {
+          "name": "head",
+          "part": "head-r",
+          "attach": {
+            "part": "body",
+            "point": "neck"
+          }
+        },
+        {
+          "name": "sword",
+          "part": "sa-r-windup",
+          "attach": {
+            "part": "body",
+            "point": "shoulder"
+          }
+        }
+      ],
+      "markers": [
+        {
+          "name": "blade",
+          "part": "sword",
+          "point": "tip"
+        }
+      ]
+    },
+    {
+      "name": "attack-r-2",
+      "duration": 150,
+      "origin": [
+        20,
+        31
+      ],
+      "parts": [
+        {
+          "name": "legs",
+          "part": "legs-r"
+        },
+        {
+          "name": "body",
+          "part": "body-r-noarm",
+          "attach": {
+            "part": "legs",
+            "point": "hip"
+          }
+        },
+        {
+          "name": "head",
+          "part": "head-r",
+          "attach": {
+            "part": "body",
+            "point": "neck"
+          }
+        },
+        {
+          "name": "sword",
+          "part": "sa-r-strike",
+          "attach": {
+            "part": "body",
+            "point": "shoulder"
+          }
+        }
+      ],
+      "markers": [
+        {
+          "name": "hit",
+          "part": "sword",
+          "point": "tip"
+        }
+      ]
+    },
+    {
+      "name": "attack-r-3",
+      "duration": 90,
+      "origin": [
+        20,
+        31
+      ],
+      "parts": [
+        {
+          "name": "legs",
+          "part": "legs-r"
+        },
+        {
+          "name": "body",
+          "part": "body-r-noarm",
+          "attach": {
+            "part": "legs",
+            "point": "hip"
+          }
+        },
+        {
+          "name": "head",
+          "part": "head-r",
+          "attach": {
+            "part": "body",
+            "point": "neck"
+          }
+        },
+        {
+          "name": "sword",
+          "part": "sa-r-recover",
+          "attach": {
+            "part": "body",
+            "point": "shoulder"
+          }
+        }
+      ],
+      "markers": [
+        {
+          "name": "blade",
+          "part": "sword",
+          "point": "tip"
+        }
+      ]
+    },
+    {
+      "name": "attack-l-1",
+      "mirror": "attack-r-1"
+    },
+    {
+      "name": "attack-l-2",
+      "mirror": "attack-r-2"
+    },
+    {
+      "name": "attack-l-3",
+      "mirror": "attack-r-3"
+    },
+    {
+      "name": "hold-up",
+      "duration": 900,
+      "origin": [
+        20,
+        31
+      ],
+      "parts": [
+        {
+          "name": "legs",
+          "part": "legs-d"
+        },
+        {
+          "name": "body",
+          "part": "body-d-lift",
+          "attach": {
+            "part": "legs",
+            "point": "hip"
+          }
+        },
+        {
+          "name": "head",
+          "part": "head-d-happy",
+          "attach": {
+            "part": "body",
+            "point": "neck"
+          }
+        },
+        {
+          "name": "armL",
+          "part": "arm-up-l",
+          "attach": {
+            "part": "body",
+            "point": "shoulderL"
+          }
+        },
+        {
+          "name": "armR",
+          "part": "arm-up-l",
+          "flipX": true,
+          "attach": {
+            "part": "body",
+            "point": "shoulderR"
+          }
+        }
+      ],
+      "markers": [
+        {
+          "name": "item",
+          "part": "body",
+          "point": "hold"
+        }
+      ]
+    }
+  ],
+  "animations": {
+    "idle-d": {
+      "frames": [
+        "idle-d",
+        "breathe-d"
+      ]
+    },
+    "walk-d": {
+      "frames": [
+        "walk-d-1",
+        "walk-d-2",
+        "walk-d-3",
+        "walk-d-4"
+      ]
+    },
+    "idle-u": {
+      "frames": [
+        "idle-u",
+        "breathe-u"
+      ]
+    },
+    "walk-u": {
+      "frames": [
+        "walk-u-1",
+        "walk-u-2",
+        "walk-u-3",
+        "walk-u-4"
+      ]
+    },
+    "idle-r": {
+      "frames": [
+        "idle-r",
+        "breathe-r"
+      ]
+    },
+    "walk-r": {
+      "frames": [
+        "walk-r-1",
+        "walk-r-2",
+        "walk-r-3",
+        "walk-r-4"
+      ]
+    },
+    "idle-l": {
+      "frames": [
+        "idle-l",
+        "breathe-l"
+      ]
+    },
+    "walk-l": {
+      "frames": [
+        "walk-l-1",
+        "walk-l-2",
+        "walk-l-3",
+        "walk-l-4"
+      ]
+    },
+    "attack-d": {
+      "frames": [
+        "attack-d-1",
+        "attack-d-2",
+        "attack-d-3"
+      ],
+      "loop": false
+    },
+    "attack-u": {
+      "frames": [
+        "attack-u-1",
+        "attack-u-2",
+        "attack-u-3"
+      ],
+      "loop": false
+    },
+    "attack-r": {
+      "frames": [
+        "attack-r-1",
+        "attack-r-2",
+        "attack-r-3"
+      ],
+      "loop": false
+    },
+    "attack-l": {
+      "frames": [
+        "attack-l-1",
+        "attack-l-2",
+        "attack-l-3"
+      ],
+      "loop": false
+    },
+    "hurt-d": {
+      "frames": [
+        "hurt-d"
+      ],
+      "loop": false
+    },
+    "hold-up": {
+      "frames": [
+        "hold-up"
+      ],
+      "loop": false
+    }
+  },
+  "sheet": {
+    "columns": 8,
+    "trim": true
+  }
+}

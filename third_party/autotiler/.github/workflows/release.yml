@@ -1,0 +1,102 @@
+name: Release
+
+# Builds the desktop apps into a *draft* GitHub Release for the version in package.json (tag `v<version>`).
+# Push the tag (`git tag -a v2.0.0 -m "Autotiler 2.0.0" && git push origin v2.0.0`) or run it by hand, then review
+# and publish the draft; publishing also pushes the builds to itch.io (itch.yml).
+
+on:
+  push:
+    tags: ["v*"]
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  # One draft for every platform. Left to itself, each build job looks the draft up and creates it when missing,
+  # so two jobs finishing at the same moment could create two drafts.
+  draft:
+    runs-on: ubuntu-latest
+    outputs:
+      id: ${{ steps.release.outputs.id }}
+    steps:
+      - uses: actions/checkout@v7
+      - id: release
+        env:
+          GH_TOKEN: ${{ github.token }}
+          BODY: |
+            See [CHANGELOG.md](https://github.com/itsjavi/autotiler/blob/main/CHANGELOG.md) for what's new.
+
+            - **macOS** (Apple Silicon and Intel, macOS 13+): `Autotiler_*_universal.dmg`. The app isn't notarized:
+              the first time, open it, then allow it in *System Settings → Privacy & Security → Open Anyway*.
+            - **Windows**: `Autotiler_*_x64-setup.exe` (or the `.msi`).
+            - **Linux**: `.AppImage`, `.deb` or `.rpm`.
+            - **No install**: the web version at https://itsjavi.com/autotiler/
+        run: |
+          version=$(jq -r .version package.json)
+          tag="v$version"
+          crate=$(grep -m1 '^version' src-tauri/Cargo.toml | cut -d '"' -f2)
+          # the builds take their version from package.json: a tag that disagrees would release the wrong version
+          if [ "$GITHUB_REF_TYPE" = tag ] && [ "$GITHUB_REF_NAME" != "$tag" ]; then
+            echo "::error::Tag $GITHUB_REF_NAME doesn't match package.json ($version). Use pnpm release-version to cut releases."
+            exit 1
+          fi
+          if [ "$crate" != "$version" ]; then
+            echo "::error::src-tauri/Cargo.toml has $crate, package.json has $version. Use pnpm release-version to cut releases."
+            exit 1
+          fi
+          # a re-run reuses the draft of the same version
+          id=$(gh api "repos/$GITHUB_REPOSITORY/releases" \
+            --jq "map(select(.draft and .tag_name == \"$tag\")) | first | .id // empty")
+          if [ -z "$id" ]; then
+            id=$(gh api "repos/$GITHUB_REPOSITORY/releases" -f tag_name="$tag" -f target_commitish="$GITHUB_SHA" \
+              -f name="Autotiler $tag" -f body="$BODY" -F draft=true --jq .id)
+          fi
+          echo "id=$id" >> "$GITHUB_OUTPUT"
+
+  desktop:
+    needs: draft
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - os: macos-latest
+            args: --target universal-apple-darwin
+            rust-targets: aarch64-apple-darwin,x86_64-apple-darwin
+          - os: windows-latest
+            args: ""
+            rust-targets: ""
+          # the oldest supported Ubuntu keeps the glibc requirement of the Linux bundles low
+          - os: ubuntu-22.04
+            args: ""
+            rust-targets: ""
+    runs-on: ${{ matrix.os }}
+    steps:
+      - uses: actions/checkout@v7
+      - name: Linux build dependencies
+        if: runner.os == 'Linux'
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y libwebkit2gtk-4.1-dev libappindicator3-dev librsvg2-dev patchelf xdg-utils
+      - uses: pnpm/action-setup@v6
+      - uses: actions/setup-node@v7
+        with:
+          node-version-file: .node-version
+          cache: pnpm
+      - uses: dtolnay/rust-toolchain@stable
+        with:
+          targets: ${{ matrix.rust-targets }}
+      - uses: Swatinem/rust-cache@v2
+        with:
+          workspaces: src-tauri -> target
+      - run: pnpm install --frozen-lockfile
+      - uses: tauri-apps/tauri-action@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          # macOS apps are ad-hoc signed (`signingIdentity: "-"`). With an Apple Developer account, add these
+          # secrets to sign and notarize instead: APPLE_CERTIFICATE, APPLE_CERTIFICATE_PASSWORD,
+          # APPLE_SIGNING_IDENTITY, APPLE_API_ISSUER, APPLE_API_KEY, APPLE_API_KEY_PATH.
+        with:
+          releaseId: ${{ needs.draft.outputs.id }}
+          uploadUpdaterJson: false
+          args: ${{ matrix.args }}

@@ -1,0 +1,776 @@
+{
+  "format": "pixelforge-poses",
+  "version": 1,
+  "name": "crab",
+  "width": 32,
+  "height": 24,
+  "palette": {
+    "$ref": "../palette.json"
+  },
+  "parts": {
+    "shell": {
+      "rows": [
+        "....kkkkkkkk....",
+        "..kk11111122kk..",
+        ".k111711122222k.",
+        "k11111122222233k",
+        "k1211122222k233k",
+        "k222k22222k3333k",
+        ".k32kk222kk333k.",
+        "..kk33333333kk..",
+        "....kkkkkkkk...."
+      ],
+      "anchor": [
+        8,
+        8
+      ],
+      "points": {
+        "clawL": [
+          0,
+          3
+        ],
+        "clawR": [
+          15,
+          3
+        ],
+        "eyes": [
+          8,
+          0
+        ],
+        "legs": [
+          8,
+          6
+        ]
+      }
+    },
+    "eyes-open": {
+      "rows": [
+        ".kkk..kkk.",
+        ".k7k..k7k.",
+        ".kkk..kkk.",
+        "..k....k.."
+      ],
+      "anchor": [
+        5,
+        3
+      ]
+    },
+    "eyes-blink": {
+      "rows": [
+        "..........",
+        ".kkk..kkk.",
+        ".kkk..kkk.",
+        "..k....k.."
+      ],
+      "anchor": [
+        5,
+        3
+      ]
+    },
+    "eyes-angry": {
+      "rows": [
+        "kk......kk",
+        ".kkk..kkk.",
+        ".k2k..k2k.",
+        "..k....k.."
+      ],
+      "anchor": [
+        5,
+        3
+      ]
+    },
+    "claw-l-open": {
+      "rows": [
+        "kk..kk.",
+        "k1k.k2k",
+        "k11k12k",
+        ".k1122k",
+        "..k22kk",
+        "...kk2k",
+        "....kk."
+      ],
+      "anchor": [
+        6,
+        5
+      ]
+    },
+    "claw-l-closed": {
+      "rows": [
+        ".kkkk..",
+        "k1112k.",
+        "k11122k",
+        ".k1122k",
+        "..k22kk",
+        "...kk2k",
+        "....kk."
+      ],
+      "anchor": [
+        6,
+        5
+      ],
+      "points": {
+        "tip": [
+          1,
+          0
+        ]
+      }
+    },
+    "claw-l-raised": {
+      "rows": [
+        "kk.kk..",
+        "k1kk2k.",
+        "k11k2k.",
+        "k1122k.",
+        ".k122k.",
+        "..k22k.",
+        "..k22kk",
+        "...kk2k",
+        "....kk."
+      ],
+      "anchor": [
+        6,
+        7
+      ],
+      "points": {
+        "tip": [
+          1,
+          0
+        ]
+      }
+    },
+    "legs-a": {
+      "rows": [
+        "kk..................kk",
+        "k2k................k2k",
+        ".k2kk.k..........kk2k.",
+        "..kk2k2k.......k2kk2k.",
+        "....kk.k2k...k2k.kk...",
+        "........kk...kk......."
+      ],
+      "anchor": [
+        11,
+        0
+      ]
+    },
+    "legs-b": {
+      "rows": [
+        ".kk................kk.",
+        ".k2k..............k2k.",
+        "k2kk.k............kk2k",
+        "kk.k2k2k........k2k.kk",
+        "....kk.k2k....k2kk....",
+        "........kk....kk......"
+      ],
+      "anchor": [
+        11,
+        0
+      ]
+    }
+  },
+  "poses": [
+    {
+      "name": "idle-0",
+      "duration": 900,
+      "origin": [
+        16,
+        19
+      ],
+      "parts": [
+        {
+          "name": "legs",
+          "part": "legs-a",
+          "at": [
+            0,
+            -3
+          ]
+        },
+        {
+          "name": "shell",
+          "part": "shell",
+          "at": [
+            0,
+            -1
+          ]
+        },
+        {
+          "name": "eyes",
+          "part": "eyes-open",
+          "attach": {
+            "part": "shell",
+            "point": "eyes"
+          }
+        },
+        {
+          "name": "clawL",
+          "part": "claw-l-closed",
+          "attach": {
+            "part": "shell",
+            "point": "clawL"
+          }
+        },
+        {
+          "name": "clawR",
+          "part": "claw-l-closed",
+          "flipX": true,
+          "attach": {
+            "part": "shell",
+            "point": "clawR"
+          }
+        }
+      ]
+    },
+    {
+      "name": "idle-1",
+      "duration": 140,
+      "origin": [
+        16,
+        19
+      ],
+      "parts": [
+        {
+          "name": "legs",
+          "part": "legs-a",
+          "at": [
+            0,
+            -3
+          ]
+        },
+        {
+          "name": "shell",
+          "part": "shell",
+          "at": [
+            0,
+            -1
+          ]
+        },
+        {
+          "name": "eyes",
+          "part": "eyes-blink",
+          "attach": {
+            "part": "shell",
+            "point": "eyes"
+          }
+        },
+        {
+          "name": "clawL",
+          "part": "claw-l-closed",
+          "attach": {
+            "part": "shell",
+            "point": "clawL"
+          }
+        },
+        {
+          "name": "clawR",
+          "part": "claw-l-closed",
+          "flipX": true,
+          "attach": {
+            "part": "shell",
+            "point": "clawR"
+          }
+        }
+      ]
+    },
+    {
+      "name": "idle-2",
+      "duration": 500,
+      "origin": [
+        16,
+        19
+      ],
+      "parts": [
+        {
+          "name": "legs",
+          "part": "legs-a",
+          "at": [
+            0,
+            -3
+          ]
+        },
+        {
+          "name": "shell",
+          "part": "shell",
+          "at": [
+            0,
+            -1
+          ]
+        },
+        {
+          "name": "eyes",
+          "part": "eyes-open",
+          "attach": {
+            "part": "shell",
+            "point": "eyes"
+          }
+        },
+        {
+          "name": "clawL",
+          "part": "claw-l-open",
+          "attach": {
+            "part": "shell",
+            "point": "clawL"
+          }
+        },
+        {
+          "name": "clawR",
+          "part": "claw-l-open",
+          "flipX": true,
+          "attach": {
+            "part": "shell",
+            "point": "clawR"
+          }
+        }
+      ]
+    },
+    {
+      "name": "walk-0",
+      "duration": 110,
+      "origin": [
+        16,
+        19
+      ],
+      "parts": [
+        {
+          "name": "legs",
+          "part": "legs-a",
+          "at": [
+            0,
+            -3
+          ]
+        },
+        {
+          "name": "shell",
+          "part": "shell",
+          "at": [
+            0,
+            -1
+          ]
+        },
+        {
+          "name": "eyes",
+          "part": "eyes-open",
+          "attach": {
+            "part": "shell",
+            "point": "eyes"
+          }
+        },
+        {
+          "name": "clawL",
+          "part": "claw-l-closed",
+          "attach": {
+            "part": "shell",
+            "point": "clawL"
+          }
+        },
+        {
+          "name": "clawR",
+          "part": "claw-l-closed",
+          "flipX": true,
+          "attach": {
+            "part": "shell",
+            "point": "clawR"
+          }
+        }
+      ]
+    },
+    {
+      "name": "walk-1",
+      "duration": 110,
+      "origin": [
+        16,
+        19
+      ],
+      "parts": [
+        {
+          "name": "legs",
+          "part": "legs-b",
+          "at": [
+            0,
+            -4
+          ]
+        },
+        {
+          "name": "shell",
+          "part": "shell",
+          "at": [
+            0,
+            -2
+          ]
+        },
+        {
+          "name": "eyes",
+          "part": "eyes-open",
+          "attach": {
+            "part": "shell",
+            "point": "eyes"
+          }
+        },
+        {
+          "name": "clawL",
+          "part": "claw-l-closed",
+          "attach": {
+            "part": "shell",
+            "point": "clawL"
+          }
+        },
+        {
+          "name": "clawR",
+          "part": "claw-l-closed",
+          "flipX": true,
+          "attach": {
+            "part": "shell",
+            "point": "clawR"
+          }
+        }
+      ]
+    },
+    {
+      "name": "walk-2",
+      "duration": 110,
+      "origin": [
+        16,
+        19
+      ],
+      "parts": [
+        {
+          "name": "legs",
+          "part": "legs-a",
+          "at": [
+            0,
+            -3
+          ]
+        },
+        {
+          "name": "shell",
+          "part": "shell",
+          "at": [
+            0,
+            -1
+          ]
+        },
+        {
+          "name": "eyes",
+          "part": "eyes-open",
+          "attach": {
+            "part": "shell",
+            "point": "eyes"
+          }
+        },
+        {
+          "name": "clawL",
+          "part": "claw-l-open",
+          "attach": {
+            "part": "shell",
+            "point": "clawL"
+          }
+        },
+        {
+          "name": "clawR",
+          "part": "claw-l-open",
+          "flipX": true,
+          "attach": {
+            "part": "shell",
+            "point": "clawR"
+          }
+        }
+      ]
+    },
+    {
+      "name": "walk-3",
+      "duration": 110,
+      "origin": [
+        16,
+        19
+      ],
+      "parts": [
+        {
+          "name": "legs",
+          "part": "legs-b",
+          "at": [
+            0,
+            -4
+          ]
+        },
+        {
+          "name": "shell",
+          "part": "shell",
+          "at": [
+            0,
+            -2
+          ]
+        },
+        {
+          "name": "eyes",
+          "part": "eyes-open",
+          "attach": {
+            "part": "shell",
+            "point": "eyes"
+          }
+        },
+        {
+          "name": "clawL",
+          "part": "claw-l-open",
+          "attach": {
+            "part": "shell",
+            "point": "clawL"
+          }
+        },
+        {
+          "name": "clawR",
+          "part": "claw-l-open",
+          "flipX": true,
+          "attach": {
+            "part": "shell",
+            "point": "clawR"
+          }
+        }
+      ]
+    },
+    {
+      "name": "snap-0",
+      "duration": 220,
+      "origin": [
+        16,
+        19
+      ],
+      "parts": [
+        {
+          "name": "legs",
+          "part": "legs-a",
+          "at": [
+            0,
+            -4
+          ]
+        },
+        {
+          "name": "shell",
+          "part": "shell",
+          "at": [
+            0,
+            -2
+          ]
+        },
+        {
+          "name": "eyes",
+          "part": "eyes-angry",
+          "attach": {
+            "part": "shell",
+            "point": "eyes"
+          }
+        },
+        {
+          "name": "clawL",
+          "part": "claw-l-raised",
+          "attach": {
+            "part": "shell",
+            "point": "clawL"
+          }
+        },
+        {
+          "name": "clawR",
+          "part": "claw-l-raised",
+          "flipX": true,
+          "attach": {
+            "part": "shell",
+            "point": "clawR"
+          }
+        }
+      ]
+    },
+    {
+      "name": "snap-1",
+      "duration": 90,
+      "origin": [
+        16,
+        19
+      ],
+      "parts": [
+        {
+          "name": "legs",
+          "part": "legs-a",
+          "at": [
+            0,
+            -5
+          ]
+        },
+        {
+          "name": "shell",
+          "part": "shell",
+          "at": [
+            0,
+            -3
+          ]
+        },
+        {
+          "name": "eyes",
+          "part": "eyes-angry",
+          "attach": {
+            "part": "shell",
+            "point": "eyes"
+          }
+        },
+        {
+          "name": "clawL",
+          "part": "claw-l-open",
+          "attach": {
+            "part": "shell",
+            "point": "clawL"
+          }
+        },
+        {
+          "name": "clawR",
+          "part": "claw-l-open",
+          "flipX": true,
+          "attach": {
+            "part": "shell",
+            "point": "clawR"
+          }
+        }
+      ]
+    },
+    {
+      "name": "snap-2",
+      "duration": 160,
+      "origin": [
+        16,
+        19
+      ],
+      "parts": [
+        {
+          "name": "legs",
+          "part": "legs-a",
+          "at": [
+            0,
+            -3
+          ]
+        },
+        {
+          "name": "shell",
+          "part": "shell",
+          "at": [
+            0,
+            -1
+          ]
+        },
+        {
+          "name": "eyes",
+          "part": "eyes-angry",
+          "attach": {
+            "part": "shell",
+            "point": "eyes"
+          }
+        },
+        {
+          "name": "clawL",
+          "part": "claw-l-closed",
+          "attach": {
+            "part": "shell",
+            "point": "clawL"
+          }
+        },
+        {
+          "name": "clawR",
+          "part": "claw-l-closed",
+          "flipX": true,
+          "attach": {
+            "part": "shell",
+            "point": "clawR"
+          }
+        }
+      ],
+      "markers": [
+        {
+          "name": "hit",
+          "part": "clawL",
+          "point": "tip"
+        }
+      ]
+    },
+    {
+      "name": "hurt",
+      "duration": 200,
+      "origin": [
+        16,
+        19
+      ],
+      "parts": [
+        {
+          "name": "legs",
+          "part": "legs-a",
+          "at": [
+            0,
+            -5
+          ]
+        },
+        {
+          "name": "shell",
+          "part": "shell",
+          "at": [
+            0,
+            -3
+          ]
+        },
+        {
+          "name": "eyes",
+          "part": "eyes-blink",
+          "attach": {
+            "part": "shell",
+            "point": "eyes"
+          }
+        },
+        {
+          "name": "clawL",
+          "part": "claw-l-open",
+          "attach": {
+            "part": "shell",
+            "point": "clawL"
+          }
+        },
+        {
+          "name": "clawR",
+          "part": "claw-l-open",
+          "flipX": true,
+          "attach": {
+            "part": "shell",
+            "point": "clawR"
+          }
+        }
+      ]
+    }
+  ],
+  "animations": {
+    "idle": {
+      "frames": [
+        "idle-0",
+        "idle-1",
+        "idle-0",
+        "idle-2"
+      ]
+    },
+    "walk": {
+      "frames": [
+        "walk-0",
+        "walk-1",
+        "walk-2",
+        "walk-3"
+      ]
+    },
+    "snap": {
+      "frames": [
+        "snap-0",
+        "snap-1",
+        "snap-2"
+      ],
+      "loop": false
+    },
+    "hurt": {
+      "frames": [
+        "hurt"
+      ],
+      "loop": false
+    }
+  },
+  "sheet": {
+    "columns": 6,
+    "trim": true
+  }
+}

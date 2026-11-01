@@ -1,0 +1,59 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <meta name="color-scheme" content="dark">
+  <title>Tidewatch · a Pixelbolt showcase</title>
+  <meta name="description" content="Tidewatch is a small top-down adventure whose every sprite, tile, effect and letter was authored as a Pixelbolt recipe.">
+  <link rel="stylesheet" href="./style.css">
+</head>
+<body>
+  <header class="masthead">
+    <p class="kicker">Pixelbolt showcase</p>
+    <h1>Tidewatch</h1>
+    <p class="lede">Relight the island's lighthouse before nightfall. Every tile, sprite, effect and glyph below started as an editable Pixelbolt recipe; the night lighting uses the same aligned normal and emissive passes Pixelbolt exports.</p>
+  </header>
+  <main>
+    <section id="stage" class="stage" aria-label="Game">
+      <canvas id="game" width="240" height="160" tabindex="0" aria-label="Tidewatch game. Arrow keys or WASD move, J or Space swings, E talks."></canvas>
+      <p id="status" class="status" role="status">Loading the island…</p>
+      <div class="touch" aria-hidden="true">
+        <div class="pad">
+          <button data-key="up" class="up">▲</button><button data-key="left" class="left">◀</button>
+          <button data-key="right" class="right">▶</button><button data-key="down" class="down">▼</button>
+        </div>
+        <div class="buttons"><button data-key="act" class="act">E</button><button data-key="attack" class="attack">⚔</button></div>
+      </div>
+    </section>
+    <div class="toolbar">
+      <button id="sound" type="button" aria-pressed="false">Sound</button>
+      <button id="fullscreen" type="button">Fullscreen</button>
+      <p class="keys"><kbd>WASD</kbd>/<kbd>↑↓←→</kbd> move · <kbd>J</kbd>/<kbd>Space</kbd> cutlass · <kbd>E</kbd> talk / open · <kbd>P</kbd> pause · <kbd>M</kbd> sound · <kbd>F</kbd> fullscreen</p>
+    </div>
+    <section class="notes">
+      <h2>How it was made</h2>
+      <div class="columns">
+        <div>
+          <h3>Recipes, not bitmaps</h3>
+          <p>The island is 29 Pixelbolt recipes: blob autotiles for sand and grass composed from hand-drawn 8×8 quarter symbols, water and surf animated by palette cycling, a keeper compiled from pose parts with sword and foot markers, and props drawn as palette grids.</p>
+        </div>
+        <div>
+          <h3>Light from the art</h3>
+          <p>The lighthouse, cottage and lamps ship aligned normal and emissive atlases; the sunflint has an emissive pass. At dusk and night the game composites colour × banded point lights + emission per pixel at 240×160, so the glow stays pixel-sharp.</p>
+        </div>
+        <div>
+          <h3>Honest limits</h3>
+          <p>Some things Pixelbolt could not express were handled in code: sprite pivots, glyph widths, tilemaps and the rotating beam. They are listed in the findings report alongside the bugs found while building this.</p>
+        </div>
+      </div>
+      <h2>From the workshop</h2>
+      <p class="caption">Animated PNGs exported by Pixelbolt's own encoder, at integer scale.</p>
+      <div class="gallery" id="gallery"></div>
+    </section>
+  </main>
+  <footer><p>Original art and code, MIT licensed. Built with <a href="https://github.com/skulitom/Pixelbolt">Pixelbolt</a>.</p></footer>
+  <script type="module" src="./src/main.js"></script>
+  <script type="module" src="./src/gallery.js"></script>
+</body>
+</html>

@@ -1,0 +1,148 @@
+{
+  "format": "pixelforge-scene",
+  "version": 1,
+  "width": 160,
+  "height": 128,
+  "duration": 2400,
+  "background": "#0d0f16",
+  "cues": { "strike": 1200 },
+  "assets": {
+    "room": "room.json",
+    "falls": "falls.json",
+    "props": "props.json",
+    "hero": "hero.json",
+    "shadow": "shadow.json",
+    "slash": "slash.json",
+    "shards": "shards.json"
+  },
+  "instances": [
+    { "name": "room", "asset": "room", "animation": "water", "at": [8, 6] },
+    {
+      "name": "falls",
+      "asset": "falls",
+      "at": [8, 6],
+      "tilemap": {
+        "rows": [
+          ".......WWWW.......",
+          "..WWWWWWVVWWWWWW..",
+          "..WFFFFFPPFFFFFW..",
+          "WWWFFFFFPPFFFFFWWW",
+          "WFFFFFFFPPFFFFFFFW",
+          "WFFFFFPPPPPPFFFFFW",
+          "WFFFFFPPPPPPFFFFFW",
+          "WFFFFFFFFFFFFFFFFW",
+          "WWWFFFFFFFFFFFFWWW",
+          "..WFFFFFFFFFFFFW..",
+          "..WWWWWFFFFWWWWW..",
+          "......WFFFFW......",
+          "......WWWWWW......",
+          ".................."
+        ],
+        "legend": {
+          "V": {
+            "rules": [
+              { "where": ["...", "V..", "..."], "animation": "fall-r", "stop": true },
+              { "animation": "fall-l" }
+            ]
+          },
+          "W": null,
+          "F": null,
+          "P": null
+        }
+      }
+    },
+    { "name": "foam", "asset": "props", "animation": "foam", "at": [80, 24], "anchor": "frame" },
+    { "name": "torch-left", "asset": "props", "animation": "torch", "at": [52, 23], "anchor": "frame" },
+    { "name": "torch-right", "asset": "props", "animation": "torch", "at": [108, 23], "anchor": "frame" },
+    {
+      "name": "hero-shadow",
+      "asset": "shadow",
+      "frame": "feet",
+      "at": [0, 0],
+      "anchor": "frame",
+      "attach": { "instance": "hero", "point": "feet" },
+      "shade": -1
+    },
+    { "name": "pillar", "asset": "props", "frame": "pillar", "at": [36, 30], "anchor": "frame", "sort": "ground" },
+    { "name": "pillar", "asset": "props", "frame": "pillar", "at": [124, 30], "anchor": "frame", "sort": "ground" },
+    { "name": "barrel", "asset": "props", "frame": "barrel", "at": [20, 45], "anchor": "frame", "sort": "ground" },
+    { "name": "barrel", "asset": "props", "frame": "barrel", "at": [21, 54], "anchor": "frame", "sort": "ground" },
+    { "name": "pot", "asset": "props", "frame": "pot", "at": [30, 45], "anchor": "frame", "sort": "ground" },
+    { "name": "crate", "asset": "props", "frame": "crate", "at": [140, 69], "anchor": "frame", "sort": "ground" },
+    { "name": "pot", "asset": "props", "frame": "pot", "at": [140, 45], "anchor": "frame", "sort": "ground" },
+    { "name": "urn", "asset": "props", "frame": "urn", "at": [140, 53], "anchor": "frame", "sort": "ground" },
+    { "name": "pot", "asset": "props", "frame": "pot", "at": [133, 44], "anchor": "frame", "sort": "ground" },
+    { "name": "barrel", "asset": "props", "frame": "barrel", "at": [36, 85], "anchor": "frame", "sort": "ground" },
+    { "name": "pot", "asset": "props", "frame": "pot", "at": [46, 86], "anchor": "frame", "sort": "ground" },
+    { "name": "crate", "asset": "props", "frame": "crate", "at": [124, 85], "anchor": "frame", "sort": "ground" },
+    { "name": "pot", "asset": "props", "frame": "pot", "at": [117, 86], "anchor": "frame", "sort": "ground" },
+    {
+      "name": "candles-right",
+      "asset": "props",
+      "frame": "candles",
+      "at": [90, 100],
+      "anchor": "frame",
+      "sort": "ground"
+    },
+    {
+      "name": "candles-left",
+      "asset": "props",
+      "frame": "candles",
+      "at": [66, 100],
+      "anchor": "frame",
+      "sort": "ground"
+    },
+    { "name": "barrel", "asset": "props", "frame": "barrel", "at": [68, 81], "anchor": "frame", "sort": "ground" },
+    {
+      "name": "chest",
+      "asset": "props",
+      "frame": "chest",
+      "at": [80, 100],
+      "anchor": "frame",
+      "sort": "ground",
+      "sequence": [{ "time": "strike+800", "animation": "chest-open" }]
+    },
+    {
+      "name": "target-pot",
+      "asset": "props",
+      "frame": "pot",
+      "at": [107, 75],
+      "anchor": "frame",
+      "sort": "ground",
+      "sequence": [{ "time": "strike+90", "animation": "pot-break" }]
+    },
+    {
+      "name": "hero",
+      "asset": "hero",
+      "animation": "right",
+      "at": [93, 75],
+      "anchor": "frame",
+      "sort": "ground",
+      "trajectory": [{ "time": 0, "at": [44, 75] }, { "time": "strike", "at": [93, 75] }],
+      "sequence": [{ "time": "strike", "animation": "attack" }, { "time": "strike+700", "animation": "idle" }]
+    },
+    {
+      "name": "slash",
+      "asset": "slash",
+      "at": [0, 0],
+      "anchor": "frame",
+      "hidden": true,
+      "attach": { "instance": "hero", "point": "blade" },
+      "sequence": [{ "time": "strike+70", "animation": "slash" }, { "time": "strike+250", "hide": true }]
+    },
+    {
+      "name": "shards",
+      "asset": "shards",
+      "at": [91, 54],
+      "hidden": true,
+      "sequence": [{ "time": "strike+90", "animation": "burst" }, { "time": "strike+590", "hide": true }]
+    },
+    { "name": "chain", "asset": "props", "frame": "chain", "at": [35, 102], "anchor": "frame" },
+    { "name": "chain", "asset": "props", "frame": "chain", "at": [115, 102], "anchor": "frame" },
+    { "name": "chain", "asset": "props", "frame": "chain", "at": [75, 118], "anchor": "frame" },
+    { "name": "chain", "asset": "props", "frame": "chain", "at": [91, 118], "anchor": "frame" },
+    { "name": "banner", "asset": "props", "frame": "banner", "at": [44, 99], "anchor": "frame" }
+  ],
+  "name": "diorama-blue",
+  "palette": "palette-blue.json"
+}

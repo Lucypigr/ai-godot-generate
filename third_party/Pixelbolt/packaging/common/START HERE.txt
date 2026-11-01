@@ -1,0 +1,164 @@
+Pixelbolt Studio
+=================
+
+The pixel-art tool your coding agent can drive. Sprites and animations are
+editable JSON recipes; Pixelbolt turns them into PNG sprite sheets, animated
+PNGs and atlas metadata, the same way every time. There are three ways in:
+a studio in your browser, a command line, and an MCP server for agents.
+
+This folder is self-contained. It brings its own copy of Node.js, so there is
+nothing to install, no account and no image model. Keep the folder's contents
+together. To remove Pixelbolt Studio, stop it and delete the folder.
+
+
+1. Open the studio
+------------------
+
+#if windows
+Double-click "Pixelbolt Studio.cmd".
+
+A console window opens, prints the studio's address and opens it in your
+default browser. Close the console window to stop the studio.
+
+Windows may ask before it runs a file that came from the internet.
+"Pixelbolt Studio.cmd" is a short text script; you can read it in Notepad.
+
+To open a recipe of your own, drag its .json file onto "Pixelbolt Studio.cmd".
+The studio starts with that recipe loaded.
+#endif
+#if macos
+Double-click "Pixelbolt Studio.command".
+
+A Terminal window opens, prints the studio's address and opens it in your
+default browser. Press Ctrl+C in that window, or close it, to stop the studio.
+
+macOS may ask you to confirm, or refuse, when you open a script that came from
+the internet. "Pixelbolt Studio.command" is a short text script; you can read
+it in TextEdit. You can also start the studio from Terminal: type cd and a
+space, drag this folder into the Terminal window, press Return, then run
+
+    ./pixelbolt-studio
+
+To open a recipe of your own, name it after the command, for example
+"./pixelbolt-studio hero.pixel.json".
+#endif
+#if linux
+Open a terminal in this folder and run
+
+    ./pixelbolt-studio
+
+It prints the studio's address and opens it in your default browser. Press
+Ctrl+C in that terminal, or close it, to stop the studio.
+
+To open a recipe of your own, name it after the command, for example
+"./pixelbolt-studio hero.pixel.json".
+#endif
+
+The address is normally http://127.0.0.1:4747/; if that port is busy, for
+example because a second copy is running, another one is used. The studio
+listens on this computer only.
+
+In the studio, pick a sample on the left and edit its JSON on the right. The
+preview updates as you type. "Save JSON" downloads your recipe and "Open
+project" loads it again. "Export assets" downloads a ZIP with the sprite
+sheet, every frame, the animations and a preview.html that plays from disk.
+"GIF" downloads the current animation at the current zoom, for sharing.
+
+Unsaved edits are kept as a draft in your browser and offered back the next
+time the studio opens at the same address. The draft is a safety net, not a
+file: it is gone if you clear the browser's site data, and it is not shown
+when the studio had to use another port. Use "Save JSON" to keep your work.
+
+The studio inspects and edits recipes. It is not a paint program.
+
+
+2. Use the command line
+-----------------------
+
+#if windows
+Open a terminal in this folder: in File Explorer, click the address bar, type
+cmd and press Enter. The commands below work in Command Prompt and PowerShell.
+
+    .\pixelbolt init hero.pixel.json
+    .\pixelbolt validate hero.pixel.json
+    .\pixelbolt inspect hero.pixel.json --out hero-frames.png
+    .\pixelbolt patch hero.pixel.json --changes first-edit.json --out hero-v2.pixel.json
+    .\pixelbolt render hero-v2.pixel.json --out output\hero
+    .\pixelbolt gif hero-v2.pixel.json --out hero.gif
+#endif
+#if macos
+Open Terminal in this folder: type cd and a space, drag this folder into the
+Terminal window and press Return. Then:
+#endif
+#if linux
+Open a terminal in this folder. Then:
+#endif
+#if macos linux
+
+    ./pixelbolt init hero.pixel.json
+    ./pixelbolt validate hero.pixel.json
+    ./pixelbolt inspect hero.pixel.json --out hero-frames.png
+    ./pixelbolt patch hero.pixel.json --changes first-edit.json --out hero-v2.pixel.json
+    ./pixelbolt render hero-v2.pixel.json --out output/hero
+    ./pixelbolt gif hero-v2.pixel.json --out hero.gif
+#endif
+
+init writes an editable copy of the forest spirit sample. validate checks it.
+inspect saves a contact sheet of every frame. patch applies the two small
+changes in first-edit.json, lists every pixel they alter and saves the result
+as a new recipe. render exports the complete asset bundle; open the
+preview.html it writes to watch it play. gif saves one animation as a GIF you
+can post anywhere; --scale and --background change its size or blend it onto
+a colour.
+
+For a video editor, the same command with "sequence hero-v2.pixel.json --fps 30
+--size 1080p --out shots" writes numbered PNG frames with alpha, and a README
+that says how to import them; the studio's Frames button saves the same
+files as one ZIP. With "preview hero-v2.pixel.json --open" it shows a
+recipe in the studio, and with "help" it lists every command. Existing files
+are never replaced unless you add --force.
+
+
+3. Connect your coding agent
+----------------------------
+
+#if windows
+Double-click "Connect your agent.cmd".
+#endif
+#if macos
+Double-click "Connect your agent.command", or run ./connect-your-agent in
+Terminal.
+#endif
+#if linux
+Run ./connect-your-agent in a terminal.
+#endif
+
+It prints MCP settings for Claude Code, Claude Desktop, Codex and Cursor with
+this folder's paths already filled in. Copy the block for your agent into its
+settings. For Claude Code and Codex it also prints one line you can run in a
+terminal instead. The helper itself only prints: it never changes a
+configuration file. If you move this folder, run it again.
+
+Then ask your agent to call pixel_help. What the agent renders is saved in the
+"output" folder here.
+
+
+More
+----
+
+In the "app" folder:
+
+    docs/agent-guide.md          recipe format and limits
+    skills/pixel-art/SKILL.md    a skill for agents
+    examples                     the samples
+    README.md                    full documentation
+
+Pixelbolt is for small sprites, tiles and effects: up to 256 x 256 pixels and
+256 frames per recipe.
+
+Source code and issues: https://github.com/skulitom/Pixelbolt
+
+Pixelbolt is MIT licensed (LICENSE in the "app" folder). The Node.js runtime
+in the "runtime" folder has its own license, NODE-LICENSE.txt beside it; see
+THIRD-PARTY-NOTICES.txt. BUILD-INFO.txt names the exact source commit and
+runtime this build was made from.

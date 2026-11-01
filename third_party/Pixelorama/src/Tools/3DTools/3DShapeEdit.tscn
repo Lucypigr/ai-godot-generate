@@ -1,0 +1,7 @@
+[gd_scene format=3 uid="uid://cg7d36746on67"]
+
+[ext_resource type="PackedScene" uid="uid://ctfgfelg0sho8" path="res://src/Tools/BaseTool.tscn" id="1"]
+[ext_resource type="Script" uid="uid://d3my38wgqe4hq" path="res://src/Tools/3DTools/3DShapeEdit.gd" id="2"]
+
+[node name="3DShapeEdit" unique_id=2145680012 instance=ExtResource("1")]
+script = ExtResource("2")

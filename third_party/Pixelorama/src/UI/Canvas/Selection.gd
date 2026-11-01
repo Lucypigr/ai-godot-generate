@@ -1,0 +1,706 @@
+class_name SelectionNode
+extends Node2D
+
+signal transformation_confirmed
+signal transformation_canceled
+
+enum SelectionOperation { ADD, SUBTRACT, INTERSECT }
+const CLIPBOARD_FILE_PATH := "user://clipboard.txt"
+
+# flags (additional properties of selection that can be toggled)
+static var flag_tilemode := false
+
+var undo_data: Dictionary
+var is_pasting := false
+
+var preview_selection_map := SelectionMap.new()
+var preview_selection_texture := ImageTexture.new()
+var _marching_ants_time_elapsed := 0.0
+
+@onready var canvas := get_parent() as Canvas
+@onready var transformation_handles := $TransformationHandles as TransformationHandles
+@onready var marching_ants_outline := $MarchingAntsOutline as Sprite2D
+
+
+func _ready() -> void:
+	set_process(false)
+	_on_selection_properties_updated()
+	# Ensure to only call _input() if the cursor is inside the main canvas viewport
+	Global.main_viewport.mouse_entered.connect(set_process_input.bind(true))
+	Global.main_viewport.mouse_exited.connect(set_process_input.bind(false))
+	marching_ants_outline.texture = preview_selection_texture
+	transformation_handles.preview_transform_changed.connect(_update_marching_ants)
+	Global.project_switched.connect(_project_switched)
+	Global.transform_content_confirmed.connect(transform_content_confirm)
+	Global.transform_content_canceled.connect(transform_content_cancel)
+	Global.selection_properties_updated.connect(_on_selection_properties_updated)
+	Global.camera.zoom_changed.connect(_update_on_zoom)
+
+
+func _process(delta: float) -> void:
+	_marching_ants_time_elapsed += delta
+	marching_ants_outline.material.set_shader_parameter("time", _marching_ants_time_elapsed)
+
+
+func _input(event: InputEvent) -> void:
+	if transformation_handles.is_transforming():
+		if event.is_action_pressed(&"transformation_confirm"):
+			transform_content_confirm()
+		elif event.is_action_pressed(&"transformation_cancel"):
+			transform_content_cancel()
+
+
+func _draw() -> void:
+	marching_ants_outline.visible = Global.current_project.has_selection
+	if Global.current_project.has_selection and Global.selection_animated_borders:
+		set_process(true)
+	else:
+		set_process(false)
+	transformation_handles.queue_redraw()
+
+
+func _on_selection_properties_updated() -> void:
+	var mat := marching_ants_outline.material as ShaderMaterial
+	mat.set_shader_parameter(&"animated", Global.selection_animated_borders)
+	mat.set_shader_parameter(&"first_color", Global.selection_border_color_1)
+	mat.set_shader_parameter(&"second_color", Global.selection_border_color_2)
+	queue_redraw()
+
+
+func _update_on_zoom() -> void:
+	var zoom := Global.camera.zoom.x
+	var size := maxi(
+		Global.current_project.selection_map.get_size().x,
+		Global.current_project.selection_map.get_size().y
+	)
+	marching_ants_outline.material.set_shader_parameter("width", 1.0 / zoom)
+	marching_ants_outline.material.set_shader_parameter("frequency", zoom * 10 * size / 64)
+
+
+func select_rect(rect: Rect2i, operation := SelectionOperation.ADD) -> void:
+	var project := Global.current_project
+	# Used only if the selection is outside of the canvas boundaries,
+	# on the left and/or above (negative coords)
+	var offset_position := Vector2i.ZERO
+	if project.selection_offset.x < 0:
+		rect.position.x -= project.selection_offset.x
+		offset_position.x = project.selection_offset.x
+	if project.selection_offset.y < 0:
+		rect.position.y -= project.selection_offset.y
+		offset_position.y = project.selection_offset.y
+
+	if offset_position != Vector2i.ZERO:
+		project.selection_map.move_bitmap_values(project)
+
+	if operation == SelectionOperation.ADD:
+		project.selection_map.fill_rect(rect, Color(1, 1, 1, 1))
+	elif operation == SelectionOperation.SUBTRACT:
+		project.selection_map.fill_rect(rect, Color(0))
+	elif operation == SelectionOperation.INTERSECT:
+		var previous_selection_map := SelectionMap.new()
+		previous_selection_map.copy_from(project.selection_map)
+		project.selection_map.clear()
+		for x in range(rect.position.x, rect.end.x):
+			for y in range(rect.position.y, rect.end.y):
+				var pos := Vector2i(x, y)
+				if !Rect2i(Vector2i.ZERO, previous_selection_map.get_size()).has_point(pos):
+					continue
+				project.selection_map.select_pixel(
+					pos, previous_selection_map.is_pixel_selected(pos, false)
+				)
+
+	if offset_position != Vector2i.ZERO and project.has_selection:
+		project.selection_map.move_bitmap_values(project)
+
+
+func transform_content_confirm(
+	project := Global.current_project, should_emit_signal := true
+) -> void:
+	if not transformation_handles.is_transforming():
+		return
+	var preview_image := transformation_handles.pre_transformed_image
+	var original_selection_rect = project.selection_map.get_selection_rect(project)
+	transformation_handles.bake_transform_to_selection(project.selection_map, true)
+	var bounds := DrawingAlgos.get_transformed_bounds(
+		original_selection_rect.size, transformation_handles.preview_transform
+	)
+	bounds.position -= bounds.position
+	for cel in get_selected_draw_cels():
+		var cel_image := cel.get_image()
+		var src := Image.new()
+		src.copy_from(preview_image)
+		if not is_pasting:
+			if not is_instance_valid(cel.transformed_content):
+				continue
+			src.copy_from(cel.transformed_content)
+			cel.transformed_content = null
+		var transformation_origin := transformation_handles.get_transform_top_left(src.get_size())
+		if Tools.is_placing_tiles() and not is_pasting:
+			if cel is not CelTileMap:
+				continue
+			var tilemap := cel as CelTileMap
+			@warning_ignore("integer_division")
+			var horizontal_size := bounds.size.x / tilemap.get_tile_size().x
+			@warning_ignore("integer_division")
+			var vertical_size := bounds.size.y / tilemap.get_tile_size().y
+			var selected_cells := tilemap.resize_selection(
+				transformation_handles.pre_transform_tilemap_cells, horizontal_size, vertical_size
+			)
+			src.crop(bounds.size.x, bounds.size.y)
+			tilemap.apply_resizing_to_image(src, selected_cells, bounds, true)
+		else:
+			transformation_handles.bake_transform_to_image(src, bounds)
+
+		cel.ensure_canvas_rect_in_bounds(transformation_origin, bounds.size)
+		if Tools.is_placing_tiles():
+			if cel.get_tile_shape() != TileSet.TILE_SHAPE_SQUARE:
+				continue
+			cel_image.blit_rect(src, bounds, transformation_origin - Vector2(cel.offset))
+		else:
+			cel_image.blit_rect_mask(src, src, bounds, transformation_origin - Vector2(cel.offset))
+		cel.shrink_to_content()
+		cel_image.convert_rgb_to_indexed()
+	commit_undo("Move Selection", undo_data)
+
+	is_pasting = false
+	transformation_handles.only_transforms_selection = false
+	queue_redraw()
+	canvas.queue_redraw()
+	if should_emit_signal:
+		transformation_confirmed.emit()
+
+
+func transform_content_cancel(project := Global.current_project) -> void:
+	if not transformation_handles.is_transforming():
+		return
+	project.selection_offset = transformation_handles.pre_transform_selection_offset
+	project.selection_map_changed()
+	for cel in get_selected_draw_cels():
+		var cel_image := cel.get_image()
+		if !is_pasting and cel.transformed_content:
+			cel_image.blit_rect_mask(
+				cel.transformed_content,
+				cel.transformed_content,
+				Rect2i(Vector2i.ZERO, Global.current_project.selection_map.get_size()),
+				project.selection_map.get_selection_rect(project).position - cel.offset
+			)
+			cel.transformed_content = null
+	for cel_index in project.selected_cels:
+		canvas.update_texture(cel_index[1])
+	is_pasting = false
+	transformation_handles.only_transforms_selection = false
+	queue_redraw()
+	canvas.queue_redraw()
+	transformation_canceled.emit()
+
+
+func commit_undo(action: String, undo_data_tmp: Dictionary) -> void:
+	if !undo_data_tmp:
+		print("No undo data found!")
+		return
+	var project := Global.current_project
+	if Tools.is_placing_tiles() and not is_pasting:
+		for cel in undo_data_tmp:
+			if cel is CelTileMap:
+				(cel as CelTileMap).re_index_all_cells(true)
+	else:
+		project.update_tilemaps(undo_data_tmp, TileSetPanel.TileEditingMode.AUTO)
+	var redo_data := get_undo_data(undo_data_tmp["undo_image"])
+	project.undo_redo.create_action(action)
+	project.deserialize_cel_undo_data(redo_data, undo_data_tmp)
+	project.undo_redo.add_do_property(project, "selection_offset", redo_data["outline_offset"])
+
+	project.undo_redo.add_undo_property(
+		project, "selection_offset", undo_data_tmp["outline_offset"]
+	)
+
+	project.undo_redo.add_do_method(Global.undo_or_redo.bind(false))
+	project.undo_redo.add_do_method(project.selection_map_changed)
+	project.undo_redo.add_undo_method(Global.undo_or_redo.bind(true))
+	project.undo_redo.add_undo_method(project.selection_map_changed)
+	project.undo_redo.commit_action()
+
+	undo_data.clear()
+
+
+func get_undo_data(undo_image: bool) -> Dictionary:
+	var data := {}
+	var project := Global.current_project
+	data[project.selection_map] = project.selection_map.data
+	data["outline_offset"] = project.selection_offset
+	data["undo_image"] = undo_image
+
+	if undo_image:
+		project.serialize_cel_undo_data(get_selected_draw_cels(), data)
+	return data
+
+
+func _update_marching_ants() -> void:
+	preview_selection_map.copy_from(Global.current_project.selection_map)
+	if is_instance_valid(transformation_handles.transformed_selection_map):
+		transformation_handles.bake_transform_to_selection(preview_selection_map)
+	preview_selection_texture.set_image(preview_selection_map)
+
+
+# TODO: Change BaseCel to PixelCel if Godot ever fixes issues
+# with typed arrays being cast into other types.
+func get_selected_draw_cels() -> Array[BaseCel]:
+	var cels: Array[BaseCel] = []
+	var project := Global.current_project
+	for cel_index in project.selected_cels:
+		var cel: BaseCel = project.frames[cel_index[0]].cels[cel_index[1]]
+		if not cel is PixelCel:
+			continue
+		if project.layers[cel_index[1]].can_layer_get_drawn():
+			cels.append(cel)
+	return cels
+
+
+func _get_selected_draw_images() -> Dictionary[Image, BaseCel]:
+	var images: Dictionary[Image, BaseCel]
+	var project := Global.current_project
+	for cel_index in project.selected_cels:
+		var cel: BaseCel = project.frames[cel_index[0]].cels[cel_index[1]]
+		if not cel is PixelCel:
+			continue
+		if project.layers[cel_index[1]].can_layer_get_drawn():
+			var image := cel.get_image()
+			if is_instance_valid(image) and image is ImageExtended:  # Avoid type conflicts
+				images[cel.get_image()] = cel
+	return images
+
+
+## Returns the portion of current cel's image enclosed by the selection.
+func get_enclosed_image() -> Image:
+	var project := Global.current_project
+	if not project.has_selection:
+		return
+
+	var enclosed_img := Image.new()
+	if transformation_handles.is_transforming():
+		enclosed_img.copy_from(transformation_handles.transformed_image)
+	else:
+		var cel := project.get_current_cel()
+		var image := project.crop_image_to_project_size(cel.get_image(), cel.offset)
+		enclosed_img = get_selected_image(image)
+	return enclosed_img
+
+
+func cut() -> void:
+	var project := Global.current_project
+	if !project.layers[project.current_layer].can_layer_get_drawn():
+		return
+	copy()
+	delete(false)
+
+
+## Copies the selection content (works in or between pixelorama instances only).
+func copy() -> void:
+	var project := Global.current_project
+	var cl_image := Image.new()
+	var cl_selection_map := SelectionMap.new()
+	var cl_big_bounding_rectangle := Rect2()
+	var cl_selection_offset := Vector2.ZERO
+
+	var to_copy := Image.new()
+	if not project.has_selection:
+		var cel := project.get_current_cel()
+		var image := cel.get_image()
+		to_copy.copy_from(image)
+		cl_big_bounding_rectangle = cel.get_cel_rect()
+		cl_selection_map.copy_from(project.selection_map)
+		cl_selection_map.select_rect(cl_big_bounding_rectangle)
+	else:
+		var selection_rect := project.selection_map.get_selection_rect(project)
+		if transformation_handles.is_transforming():
+			if transformation_handles.only_transforms_selection:
+				transform_content_confirm()
+				selection_rect = project.selection_map.get_selection_rect(project)
+		to_copy = get_enclosed_image()
+		if transformation_handles.is_transforming():
+			cl_selection_map = preview_selection_map
+		else:
+			cl_selection_map.copy_from(project.selection_map)
+		cl_big_bounding_rectangle = selection_rect
+	cl_selection_offset = project.selection_offset
+
+	cl_image = to_copy
+	var transfer_clipboard := {
+		"image": cl_image,
+		"selection_map": cl_selection_map.data,
+		"big_bounding_rectangle": cl_big_bounding_rectangle,
+		"selection_offset": cl_selection_offset,
+	}
+
+	var clipboard_file := FileAccess.open(CLIPBOARD_FILE_PATH, FileAccess.WRITE)
+	clipboard_file.store_var(transfer_clipboard, true)
+	clipboard_file.close()
+
+	if !to_copy.is_empty():
+		var pattern: Patterns.Pattern = Global.patterns_popup.get_pattern(0)
+		pattern.image = to_copy
+		var tex := ImageTexture.create_from_image(to_copy)
+		var container = Global.patterns_popup.get_node("ScrollContainer/PatternContainer")
+		container.get_child(0).get_child(0).texture = tex
+
+
+static func has_app_clipboard() -> bool:
+	return FileAccess.file_exists(CLIPBOARD_FILE_PATH)
+
+
+static func has_system_clipboard() -> bool:
+	return DisplayServer.clipboard_has_image()
+
+
+static func get_clipboard_size(app_clipboard: bool) -> Vector2i:
+	var image := get_clipboard_image(app_clipboard)
+	if is_instance_valid(image) and not image.is_empty():
+		return image.get_size()
+	return Vector2i.ONE  # The minimum valid size of an image
+
+
+static func get_clipboard_image(app_clipboard: bool) -> Image:
+	var image: Image
+	if app_clipboard:
+		if has_app_clipboard():
+			var clipboard_file := FileAccess.open(CLIPBOARD_FILE_PATH, FileAccess.READ)
+			var clipboard = clipboard_file.get_var(true)
+			clipboard_file.close()
+			if (
+				typeof(clipboard) == TYPE_DICTIONARY
+				and clipboard.has_all(
+					["image", "selection_map", "big_bounding_rectangle", "selection_offset"]
+				)
+				and not clipboard.image.is_empty()
+			):
+				image = clipboard.image
+	else:
+		if has_system_clipboard():
+			image = DisplayServer.clipboard_get_image()
+	return image
+
+
+## Pastes the selection content.
+func paste(in_place := false) -> void:
+	if !FileAccess.file_exists(CLIPBOARD_FILE_PATH):
+		return
+	var clipboard_file := FileAccess.open(CLIPBOARD_FILE_PATH, FileAccess.READ)
+	var clipboard = clipboard_file.get_var(true)
+	clipboard_file.close()
+
+	# Sanity checks
+	if typeof(clipboard) != TYPE_DICTIONARY:
+		return
+	if !clipboard.has_all(["image", "selection_map", "big_bounding_rectangle", "selection_offset"]):
+		return
+	if clipboard.image.is_empty():
+		return
+
+	if transformation_handles.is_transforming():
+		transform_content_confirm()
+	undo_data = get_undo_data(true)
+	clear_selection()
+	var project := Global.current_project
+
+	var clip_map := SelectionMap.new()
+	clip_map.data = clipboard.selection_map
+	var max_size := Vector2i(
+		maxi(clip_map.get_size().x, project.selection_map.get_size().x),
+		maxi(clip_map.get_size().y, project.selection_map.get_size().y)
+	)
+
+	project.selection_map.copy_from(clip_map)
+	project.selection_map.crop(max_size.x, max_size.y)
+	var selection_rect := project.selection_map.get_selection_rect(project)
+	project.selection_offset = clipboard.selection_offset
+	var transform_origin: Vector2 = clipboard.big_bounding_rectangle.position
+	var grid_size := Global.grids[0].grid_size
+	var grid_offset := Global.grids[0].grid_offset
+	if not in_place:  # If "Paste" is selected, and not "Paste in Place"
+		var camera_center := Global.camera.camera_screen_center
+		camera_center -= Vector2(selection_rect.size) / 2.0
+		var max_pos := project.size - selection_rect.size
+		if max_pos.x >= 0:
+			camera_center.x = clampf(camera_center.x, 0, max_pos.x)
+		else:
+			camera_center.x = 0
+		if max_pos.y >= 0:
+			camera_center.y = clampf(camera_center.y, 0, max_pos.y)
+		else:
+			camera_center.y = 0
+		transform_origin = Vector2i(camera_center.floor())
+		if Tools.is_placing_tiles():
+			var tilemap_cel := Global.current_project.get_current_cel() as CelTileMap
+			var tile_size := tilemap_cel.get_tile_size()
+			var offset := tilemap_cel.offset % tile_size
+			transform_origin = Vector2i(
+				Tools.snap_to_rectangular_grid_boundary(transform_origin, tile_size, offset)
+			)
+		elif Global.snap_to_rectangular_grid_center:
+			# Offset the selection so that the center of selection falls above the center of grid.
+			transform_origin = (
+				Vector2i(
+					Tools.snap_to_rectangular_grid_center(transform_origin, grid_size, grid_offset)
+				)
+				- Vector2i((clipboard.image.get_size() / 2.0).floor())
+			)
+		elif Global.snap_to_rectangular_grid_boundary:
+			transform_origin = Vector2i(
+				Tools.snap_to_rectangular_grid_boundary(transform_origin, grid_size, grid_offset)
+			)
+		project.selection_map.move_bitmap_values(Global.current_project, false)
+	else:
+		if Tools.is_placing_tiles():
+			var tilemap_cel := Global.current_project.get_current_cel() as CelTileMap
+			var tile_size := tilemap_cel.get_tile_size()
+			var offset := tilemap_cel.offset % tile_size
+			project.selection_offset = Tools.snap_to_rectangular_grid_boundary(
+				project.selection_offset, tile_size, offset
+			)
+			transform_origin = Vector2i(
+				Tools.snap_to_rectangular_grid_boundary(transform_origin, tile_size, offset)
+			)
+		elif Global.snap_to_rectangular_grid_center:
+			# Offset the selection so that the center of selection falls above the center of grid.
+			project.selection_offset = (
+				Tools.snap_to_rectangular_grid_center(
+					project.selection_offset, grid_size, grid_offset
+				)
+				- (clipboard.image.get_size() / 2.0).floor()
+			)
+			transform_origin = (
+				Vector2i(
+					Tools.snap_to_rectangular_grid_center(transform_origin, grid_size, grid_offset)
+				)
+				- Vector2i((clipboard.image.get_size() / 2.0).floor())
+			)
+		elif Global.snap_to_rectangular_grid_boundary:
+			project.selection_offset = Tools.snap_to_rectangular_grid_boundary(
+				project.selection_offset, grid_size, grid_offset
+			)
+			transform_origin = Vector2i(
+				Tools.snap_to_rectangular_grid_boundary(transform_origin, grid_size, grid_offset)
+			)
+
+	is_pasting = true
+	project.selection_map_changed()
+	transformation_handles.begin_transform(clipboard.image)
+	transformation_handles.preview_transform.origin = transform_origin
+	queue_redraw()
+
+
+func paste_from_clipboard() -> void:
+	if not DisplayServer.clipboard_has_image():
+		return
+	var clipboard_image := DisplayServer.clipboard_get_image()
+	if clipboard_image.is_empty() or clipboard_image.is_invisible():
+		return
+	if transformation_handles.is_transforming():
+		transform_content_confirm()
+	undo_data = get_undo_data(true)
+	clear_selection()
+	var project := Global.current_project
+	clipboard_image.convert(project.get_image_format())
+	var clip_map := SelectionMap.new()
+	clip_map.copy_from(
+		Image.create(
+			clipboard_image.get_width(),
+			clipboard_image.get_height(),
+			false,
+			project.selection_map.get_format()
+		)
+	)
+	clip_map.fill_rect(Rect2i(Vector2i.ZERO, clipboard_image.get_size()), Color(1, 1, 1, 1))
+	var max_size := Vector2i(
+		maxi(clip_map.get_size().x, project.selection_map.get_size().x),
+		maxi(clip_map.get_size().y, project.selection_map.get_size().y)
+	)
+
+	project.selection_map.copy_from(clip_map)
+	project.selection_map.crop(max_size.x, max_size.y)
+	project.selection_map_changed()
+	transformation_handles.begin_transform(clipboard_image)
+	is_pasting = true
+	queue_redraw()
+
+
+## Deletes the drawing enclosed within the selection's area.
+func delete(selected_cels := true) -> void:
+	var project := Global.current_project
+	if !project.layers[project.current_layer].can_layer_get_drawn():
+		return
+	var images: Dictionary[Image, BaseCel]
+	if selected_cels:
+		images = _get_selected_draw_images()
+	else:
+		var current_cel := project.get_current_cel()
+		var current_cel_image := current_cel.get_image()
+		# Avoid type conflict
+		if is_instance_valid(current_cel_image) and current_cel_image is ImageExtended:
+			images[current_cel_image] = current_cel
+
+	if transformation_handles.is_transforming():
+		if (
+			transformation_handles.transformed_image.is_empty()
+			or transformation_handles.transformed_image.is_invisible()
+		):
+			transform_content_confirm()
+		else:
+			transformation_handles.reset_transform()
+			clear_selection()
+			transformation_handles.set_selection(null, Rect2())
+			is_pasting = false
+			for image in images:
+				var cel := images[image]
+				cel.shrink_to_content()
+			queue_redraw()
+			commit_undo("Draw", undo_data)
+			return
+
+	var undo_data_tmp := get_undo_data(true)
+	if project.has_selection:
+		var blank := project.new_empty_image()
+		var selection_map_copy := project.selection_map.return_cropped_copy(project, project.size)
+		var selection_rect := selection_map_copy.get_used_rect()
+		var selection := project.selection_map.get_used_rect()
+		for image in images:
+			var cel := images[image]
+			if cel is CelTileMap and Tools.is_placing_tiles():
+				var row := 0
+				for y in range(
+					selection.position.y, selection.end.y, floori(cel.tile_size.y / 2.0)
+				):
+					var current_offset := floori(cel.tile_size.x / 2.0) if row % 2 != 0 else 0
+					for x in range(
+						selection.position.x + current_offset, selection.end.x, cel.tile_size.x
+					):
+						var p := Vector2i(x, y) + Vector2i((Vector2(cel.tile_size) / 2).ceil())
+						if selection.has_point(p):
+							var tile_position := (cel as CelTileMap).get_cell_position(p)
+							var cell := (cel as CelTileMap).get_cell_at(tile_position)
+							cel.set_index(cell, 0)
+							cel.update_tilemap()
+					row += 1
+			else:
+				image.blit_rect_mask(
+					blank, selection_map_copy, selection_rect, selection_rect.position - cel.offset
+				)
+				image.convert_rgb_to_indexed()
+			cel.shrink_to_content()
+	else:
+		for image in images:
+			var cel := images[image]
+			image.fill(0)
+			cel.shrink_to_content()
+			image.convert_rgb_to_indexed()
+	clear_selection()
+	commit_undo("Draw", undo_data_tmp)
+
+
+## Makes a project brush out of the current selection's content.
+func new_brush() -> void:
+	var brush := get_enclosed_image()
+	if brush and !brush.is_invisible():
+		var brush_used: Image = brush.get_region(brush.get_used_rect())
+		Global.current_project.brushes.append(brush_used)
+		Brushes.add_project_brush(brush_used)
+
+
+## Select the entire region of current cel.
+func select_all() -> void:
+	var undo_data_tmp := get_undo_data(false)
+	clear_selection()
+	var full_rect := Rect2i(Vector2i.ZERO, Global.current_project.size)
+	select_rect(full_rect)
+	commit_undo("Select", undo_data_tmp)
+
+
+## Inverts the selection.
+func invert() -> void:
+	transform_content_confirm()
+	var project := Global.current_project
+	var undo_data_tmp := get_undo_data(false)
+	project.selection_map.crop(project.size.x, project.size.y)
+	project.selection_map.invert()
+	project.selection_map_changed()
+	project.selection_offset = Vector2.ZERO
+	commit_undo("Select", undo_data_tmp)
+
+
+## Clears the selection.
+func clear_selection(use_undo := false) -> void:
+	var project := Global.current_project
+	if not project.has_selection:
+		return
+	transform_content_confirm()
+	var undo_data_tmp := get_undo_data(false)
+	project.selection_map.crop(project.size.x, project.size.y)
+	project.selection_map.clear()
+	project.selection_offset = Vector2.ZERO
+	queue_redraw()
+	if use_undo:
+		commit_undo("Clear Selection", undo_data_tmp)
+
+
+func reselect() -> void:
+	var project := Global.current_project
+	if project.has_selection or project.prev_selection_map.is_invisible():
+		return
+	var undo_data_tmp := get_undo_data(false)
+	project.selection_map.copy_from(project.prev_selection_map)
+	commit_undo("Reselect", undo_data_tmp)
+
+
+func select_cel_rect() -> void:
+	transform_content_confirm()
+	var project := Global.current_project
+	var undo_data_tmp := get_undo_data(false)
+	project.selection_map.crop(project.size.x, project.size.y)
+	project.selection_map.clear()
+	var current_cel := project.get_current_cel()
+	var cel_rect := current_cel.get_cel_rect()
+	if current_cel is GroupCel:
+		var group_layer := project.layers[project.current_layer] as GroupLayer
+		var cel_image := group_layer.blend_children(project.frames[project.current_frame])
+		cel_rect = cel_image.get_used_rect()
+	project.selection_map.select_rect(cel_rect)
+	project.selection_map_changed()
+	project.selection_offset = Vector2.ZERO
+	commit_undo("Select", undo_data_tmp)
+
+
+func select_cel_pixels(layer: BaseLayer, frame: Frame) -> void:
+	transform_content_confirm()
+	var project := Global.current_project
+	var undo_data_tmp := get_undo_data(false)
+	project.selection_map.crop(project.size.x, project.size.y)
+	project.selection_map.clear()
+	var current_cel := frame.cels[layer.index]
+	var cel_image: Image
+	if current_cel is GroupCel:
+		cel_image = (layer as GroupLayer).blend_children(frame)
+	else:
+		cel_image = project.crop_image_to_project_size(current_cel.get_image(), current_cel.offset)
+	var selection_format := project.selection_map.get_format()
+	project.selection_map.copy_from(cel_image)
+	project.selection_map.convert(selection_format)
+	project.selection_map_changed()
+	project.selection_offset = Vector2.ZERO
+	commit_undo("Select", undo_data_tmp)
+
+
+func _project_switched() -> void:
+	marching_ants_outline.offset = Global.current_project.selection_offset
+	_update_marching_ants()
+	queue_redraw()
+
+
+static func get_selected_image(cel_image: Image) -> Image:
+	var project := Global.current_project
+	var selection_map_copy := project.selection_map.return_cropped_copy(project, project.size)
+	var selection_rect := selection_map_copy.get_used_rect()
+	var image := Image.create(
+		selection_rect.size.x, selection_rect.size.y, false, project.get_image_format()
+	)
+	image.blit_rect_mask(cel_image, selection_map_copy, selection_rect, Vector2i.ZERO)
+	return image

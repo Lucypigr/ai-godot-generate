@@ -1,0 +1,31 @@
+pxforge: 1
+name: cacador
+extends: humanoid            # the humanoid template: skeleton, body and animations (spec show --resolved)
+palette: ../../palettes/gothic.yaml
+remove: [use.sword, parts.smear, materials.steel.finish]   # its own, older sword and plain steel; the smear
+       # after the sword, as before (the order of parts decides ties between them): the sprite stays the same
+
+brief:
+  summary: generic test humanoid (hunter with a sword)
+  head: the template's head and hair, unchanged (a generic hunter)
+  must_keep: []
+  simplify: []
+
+parts:
+  sword:           # right hand only (no _L => not mirrored)
+    material: steel
+    space: wrist_R
+    prims:
+      - box: {c: [0, 0.26, 0.19], half: [0.022, 0.24, 0.007], rot: [0.52, 0, 0]}   # tilted blade
+      - box: {c: [0, 0.048, 0.068], half: [0.065, 0.013, 0.02], rot: [0.52, 0, 0]}
+  grip:
+    material: leather
+    space: wrist_R
+    prims:
+      - cylinder: {a: [0, -0.05, 0.01], b: [0, 0.04, 0.06], r: 0.021}
+  smear:
+    when: "smear_w > 0"
+    materials: [fx_tail, fx_mid, fx_core]
+    space: fxspace
+    prims:
+      - arc: {c: "[0, smear_y, smear_z]", r: smear_r, a0: smear_a0, a1: smear_a1, width: smear_w, fade: smear_fade, dip: 0.10}

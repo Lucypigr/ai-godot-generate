@@ -1,0 +1,100 @@
+{
+  "version": 1,
+  "name": "boat",
+  "width": 48,
+  "height": 32,
+  "palette": {
+    "$ref": "../palette.json"
+  },
+  "anchor": [
+    24,
+    24
+  ],
+  "sheet": {
+    "trim": true
+  },
+  "frames": [
+    {
+      "name": "bob-0",
+      "duration": 700,
+      "ops": [
+        {
+          "op": "grid",
+          "x": 0,
+          "y": 10,
+          "rows": [
+            "................................................",
+            "................................................",
+            "................................................",
+            "..........kkkkkkkkkkkkkkkkkkkkkkkkkk............",
+            "........kkooooooooooooooooooooooooookk..........",
+            "......kkoOOOOOOOOOOOOOOOOOOOOOOOOOOOOokk........",
+            ".....koOkkkkkkkkkkkkkkkkkkkkkkkkkkkkkOOuk.......",
+            "....koOkuuUUUUUUUUUUUUUUUUUUUUUUUUUUukOuUk......",
+            "...koOkuUOOOOkUUUUUUUUUkOOOOkUUUUUUuUkOuUk......",
+            "...kOOkuUOooOkUUUUUUUUUkOooOkUUUUUUUukOuUk......",
+            "...kOukuuUOOOOkUUUUUUUUUkOOOOkUUUUUUuUkuuk......",
+            "...kOukuUkkkkkUUUUUUUUUkkkkkUUUUUUUUukuUk.......",
+            "....kuUkuuuuuuuuuuuuuuuuuuuuuuuuuuukUUk.........",
+            ".....kUUkkkkkkkkkkkkkkkkkkkkkkkkkkkUUk..........",
+            "......kUUUUUUUUUUUUUUUUUUUUUUUUUUUUUk...........",
+            ".......kkkkkkkkkkkkkkkkkkkkkkkkkkkkk............"
+          ]
+        },
+        {
+          "op": "grid",
+          "x": 2,
+          "y": 26,
+          "rows": [
+            "..ww..wWWw......wWw.....wWWw..ww"
+          ]
+        }
+      ]
+    },
+    {
+      "name": "bob-1",
+      "duration": 700,
+      "ops": [
+        {
+          "op": "grid",
+          "x": 0,
+          "y": 11,
+          "rows": [
+            "................................................",
+            "................................................",
+            "................................................",
+            "..........kkkkkkkkkkkkkkkkkkkkkkkkkk............",
+            "........kkooooooooooooooooooooooooookk..........",
+            "......kkoOOOOOOOOOOOOOOOOOOOOOOOOOOOOokk........",
+            ".....koOkkkkkkkkkkkkkkkkkkkkkkkkkkkkkOOuk.......",
+            "....koOkuuUUUUUUUUUUUUUUUUUUUUUUUUUUukOuUk......",
+            "...koOkuUOOOOkUUUUUUUUUkOOOOkUUUUUUuUkOuUk......",
+            "...kOOkuUOooOkUUUUUUUUUkOooOkUUUUUUUukOuUk......",
+            "...kOukuuUOOOOkUUUUUUUUUkOOOOkUUUUUUuUkuuk......",
+            "...kOukuUkkkkkUUUUUUUUUkkkkkUUUUUUUUukuUk.......",
+            "....kuUkuuuuuuuuuuuuuuuuuuuuuuuuuuukUUk.........",
+            ".....kUUkkkkkkkkkkkkkkkkkkkkkkkkkkkUUk..........",
+            "......kUUUUUUUUUUUUUUUUUUUUUUUUUUUUUk...........",
+            ".......kkkkkkkkkkkkkkkkkkkkkkkkkkkkk............"
+          ]
+        },
+        {
+          "op": "grid",
+          "x": 2,
+          "y": 27,
+          "rows": [
+            "..ww..wWWw......wWw.....wWWw..ww"
+          ]
+        }
+      ]
+    }
+  ],
+  "animations": {
+    "bob": {
+      "frames": [
+        "bob-0",
+        "bob-1"
+      ]
+    }
+  }
+}

@@ -1,0 +1,684 @@
+extends AcceptDialog
+
+var pref_theme_base_color := Preference.new(
+	"theme_base_color",
+	"Interface/ThemeOptions/BaseColor",
+	"color",
+	Color.GRAY,
+	false,
+	_on_theme_color_changed
+)
+var pref_theme_accent_color := Preference.new(
+	"theme_accent_color",
+	"Interface/ThemeOptions/AccentColor",
+	"color",
+	Color.GRAY,
+	false,
+	_on_theme_color_changed
+)
+var pref_theme_color_contrast := Preference.new(
+	"theme_color_contrast",
+	"Interface/ThemeOptions/ContrastSlider",
+	"value",
+	0.3,
+	false,
+	_on_theme_color_changed
+)
+
+var preferences: Array[Preference] = [
+	Preference.new(
+		"open_last_project", "Startup/StartupContainer/OpenLastProject", "button_pressed", false
+	),
+	Preference.new(
+		"quit_confirmation", "Startup/StartupContainer/QuitConfirmation", "button_pressed", false
+	),
+	Preference.new("ffmpeg_path", "Startup/StartupContainer/FFMPEGPath", "text", ""),
+	Preference.new("shrink", "%ShrinkSlider", "value", Global.auto_content_scale_factor),
+	Preference.new("theme_font_index", "%FontOptionButton", "selected", 1),
+	Preference.new("font_size", "%FontSizeSlider", "value", 16),
+	Preference.new(
+		"dim_on_popup", "Interface/InterfaceOptions/DimCheckBox", "button_pressed", true
+	),
+	Preference.new(
+		"screen_orientation",
+		"Interface/InterfaceOptions/ScreenOrientationOptionButton",
+		"selected",
+		DisplayServer.SCREEN_SENSOR
+	),
+	Preference.new(
+		"show_notification_label",
+		"Interface/InterfaceOptions/ShowNotificationCheckBox",
+		"button_pressed",
+		true
+	),
+	Preference.new(
+		"use_native_file_dialogs",
+		"Interface/InterfaceOptions/NativeFileDialogs",
+		"button_pressed",
+		false
+	),
+	Preference.new(
+		"single_window_mode",
+		"Interface/InterfaceOptions/SingleWindowMode",
+		"button_pressed",
+		true,
+		true
+	),
+	(
+		Preference
+		. new(
+			"collapse_main_menu",
+			"Interface/InterfaceOptions/CollapseMainMenu",
+			"button_pressed",
+			OS.has_feature("mobile"),
+		)
+	),
+	Preference.new("theme_preset_index", "%ThemePresetOptionButton", "selected", 0),
+	pref_theme_base_color,
+	pref_theme_accent_color,
+	pref_theme_color_contrast,
+	Preference.new(
+		"reset_swap_on_shortcut_release",
+		"Tools/ToolOptions/ResetSwapCheckBox",
+		"button_pressed",
+		false
+	),
+	Preference.new(
+		"swap_color_on_tool_swap",
+		"Tools/ToolOptions/SwapColorWithToolCheckBox",
+		"button_pressed",
+		false
+	),
+	Preference.new(
+		"single_tool_mode",
+		"Tools/ToolOptions/SingleToolModeCheckBox",
+		"button_pressed",
+		DisplayServer.is_touchscreen_available()
+	),
+	Preference.new(
+		"share_options_between_tools",
+		"Tools/ToolOptions/ShareOptionsCheckBox",
+		"button_pressed",
+		false
+	),
+	Preference.new(
+		"left_tool_color", "Tools/ToolOptions/LeftToolColorButton", "color", Color("0086cf")
+	),
+	Preference.new(
+		"right_tool_color", "Tools/ToolOptions/RightToolColorButton", "color", Color("fd6d14")
+	),
+	Preference.new(
+		"global_palettes_readonly",
+		"Palettes/PaletteOptions/GlobalPalettesReadonly",
+		"button_pressed",
+		true
+	),
+	Preference.new(
+		"tool_button_size",
+		"Interface/InterfaceOptions/ToolButtonSizeOptionButton",
+		"selected",
+		Global.ButtonSize.SMALL
+	),
+	Preference.new(
+		"show_left_tool_icon",
+		"Cursors/CursorsContainer/LeftToolIconCheckbox",
+		"button_pressed",
+		true
+	),
+	Preference.new(
+		"show_right_tool_icon",
+		"Cursors/CursorsContainer/RightToolIconCheckbox",
+		"button_pressed",
+		true
+	),
+	Preference.new(
+		"left_square_indicator_visible",
+		"Cursors/CursorsContainer/LeftIndicatorCheckbox",
+		"button_pressed",
+		true
+	),
+	Preference.new(
+		"right_square_indicator_visible",
+		"Cursors/CursorsContainer/RightIndicatorCheckbox",
+		"button_pressed",
+		true
+	),
+	Preference.new(
+		"native_cursors", "Cursors/CursorsContainer/NativeCursorsCheckbox", "button_pressed", false
+	),
+	Preference.new(
+		"cross_cursor", "Cursors/CursorsContainer/CrossCursorCheckbox", "button_pressed", true
+	),
+	Preference.new(
+		"max_backed_sessions", "Backup/AutosaveContainer/MaxStoredSessions", "value", 20.0
+	),
+	Preference.new("autosave_interval", "Backup/AutosaveContainer/AutosaveInterval", "value", 1.0),
+	Preference.new(
+		"enable_autosave", "Backup/AutosaveContainer/EnableAutosave", "button_pressed", true
+	),
+	Preference.new("default_width", "Image/ImageOptions/ImageDefaultWidth", "value", 64),
+	Preference.new("default_height", "Image/ImageOptions/ImageDefaultHeight", "value", 64),
+	Preference.new("default_fill_color", "Image/ImageOptions/DefaultFillColor", "color", Color(0)),
+	Preference.new("smooth_zoom", "Canvas/ZoomOptions/SmoothZoom", "button_pressed", true),
+	Preference.new("integer_zoom", "Canvas/ZoomOptions/IntegerZoom", "button_pressed", false),
+	Preference.new("snapping_distance", "Canvas/SnappingOptions/DistanceValue", "value", 32.0),
+	Preference.new(
+		"pixel_grid_show_at_zoom", "Canvas/PixelGridOptions/ShowAtZoom", "value", 1500.0
+	),
+	Preference.new(
+		"pixel_grid_color", "Canvas/PixelGridOptions/GridColor", "color", Color("21212191")
+	),
+	Preference.new("guide_color", "Canvas/GuideOptions/GuideColor", "color", Color.PURPLE),
+	Preference.new("checker_size", "Canvas/CheckerOptions/CheckerSizeValue", "value", 10),
+	Preference.new(
+		"checker_color_1",
+		"Canvas/CheckerOptions/CheckerColor1",
+		"color",
+		Color(0.47, 0.47, 0.47, 1)
+	),
+	Preference.new(
+		"checker_color_2",
+		"Canvas/CheckerOptions/CheckerColor2",
+		"color",
+		Color(0.34, 0.35, 0.34, 1)
+	),
+	Preference.new(
+		"checker_follow_movement",
+		"Canvas/CheckerOptions/CheckerFollowMovement",
+		"button_pressed",
+		false
+	),
+	Preference.new(
+		"checker_follow_scale", "Canvas/CheckerOptions/CheckerFollowScale", "button_pressed", false
+	),
+	Preference.new("tilemode_opacity", "Canvas/CheckerOptions/TileModeOpacity", "value", 1.0),
+	Preference.new(
+		"select_layer_on_button_click",
+		"Timeline/TimelineOptions/SelectLayerOnButton",
+		"button_pressed",
+		false
+	),
+	Preference.new(
+		"onion_skinning_past_color",
+		"Timeline/TimelineOptions/OnionSkinningPastColor",
+		"color",
+		Color.RED
+	),
+	Preference.new(
+		"onion_skinning_future_color",
+		"Timeline/TimelineOptions/OnionSkinningFutureColor",
+		"color",
+		Color.BLUE
+	),
+	Preference.new(
+		"layer_locking_undoable",
+		"Timeline/TimelineOptions/LayerLockingUndoableButton",
+		"button_pressed",
+		true
+	),
+	Preference.new(
+		"layer_visibility_undoable",
+		"Timeline/TimelineOptions/LayerVisibilityUndoableButton",
+		"button_pressed",
+		true
+	),
+	Preference.new(
+		"selection_animated_borders", "Selection/SelectionOptions/Animate", "button_pressed", true
+	),
+	Preference.new(
+		"selection_border_color_1", "Selection/SelectionOptions/BorderColor1", "color", Color.WHITE
+	),
+	Preference.new(
+		"selection_border_color_2", "Selection/SelectionOptions/BorderColor2", "color", Color.BLACK
+	),
+	Preference.new(
+		"transformation_preview_alpha",
+		"Selection/SelectionOptions/TransformationPreviewAlpha",
+		"value",
+		0.5
+	),
+	Preference.new("fps_limit", "Performance/PerformanceContainer/SetFPSLimit", "value", 0),
+	Preference.new("max_undo_steps", "Performance/PerformanceContainer/MaxUndoSteps", "value", 0),
+	Preference.new(
+		"pause_when_unfocused",
+		"Performance/PerformanceContainer/PauseAppFocus",
+		"button_pressed",
+		true
+	),
+	Preference.new(
+		"update_continuously",
+		"Performance/PerformanceContainer/UpdateContinuously",
+		"button_pressed",
+		false
+	),
+	Preference.new(
+		"window_transparency",
+		"Performance/PerformanceContainer/WindowTransparency",
+		"button_pressed",
+		false,
+		true
+	),
+	Preference.new(
+		"dummy_audio_driver",
+		"Performance/PerformanceContainer/DummyAudioDriver",
+		"button_pressed",
+		false,
+		true
+	),
+	Preference.new("tablet_driver", "Drivers/DriversContainer/TabletDriver", "selected", 0),
+	Preference.new("author_display_name", "Attribution/AuthorContainer/DisplayName", "text", ""),
+	Preference.new("author_real_name", "Attribution/AuthorContainer/RealName", "text", ""),
+	Preference.new("author_contact", "Attribution/AuthorContainer/Contact", "text", ""),
+	Preference.new("author_company", "Attribution/AuthorContainer/CompanyStudio", "text", ""),
+	Preference.new("default_licence", "Attribution/LicenseProperties/LicenceName", "text", ""),
+]
+
+var content_list := PackedStringArray([])
+var selected_item := 0
+
+@onready var search_line_edit: LineEdit = %SearchLineEdit
+@onready var list: ItemList = $HSplitContainer/SearchandList/List
+@onready var right_side: VBoxContainer = $"%RightSide"
+@onready var language: VBoxContainer = %Language
+@onready var system_language := language.get_node(^"System Language") as CheckBox
+@onready var theme_preset_option_button: OptionButton = %ThemePresetOptionButton
+@onready var grid_options: GridContainer = %GridOptions
+@onready var autosave_container: Container = right_side.get_node("Backup/AutosaveContainer")
+@onready var autosave_interval: SpinBox = autosave_container.get_node("AutosaveInterval")
+@onready var shortcuts: Control = right_side.get_node("Shortcuts/ShortcutEdit")
+@onready var tablet_driver_label: Label = $"%TabletDriverLabel"
+@onready var tablet_driver: OptionButton = $"%TabletDriver"
+@onready var extensions: BoxContainer = right_side.get_node("Extensions")
+@onready var reset_category: VBoxContainer = %Reset
+@onready var must_restart: BoxContainer = $"%MustRestart"
+
+
+class Preference:
+	var prop_name: String
+	var node_path: String
+	var value_type: String
+	var default_value
+	var require_restart := false
+	var callable: Callable
+	var default_button: RestoreDefaultButton
+
+	func _init(
+		_prop_name: String,
+		_node_path: String,
+		_value_type: String,
+		_default_value = null,
+		_require_restart := false,
+		_callable := Callable(),
+	) -> void:
+		prop_name = _prop_name
+		node_path = _node_path
+		value_type = _value_type
+		require_restart = _require_restart
+		if _default_value != null:
+			default_value = _default_value
+		else:
+			default_value = Global.get(prop_name)
+		callable = _callable
+
+
+func _ready() -> void:
+	Global.font_loaded.connect(_add_fonts)
+	Themes.theme_added.connect(_update_themes)
+	Themes.theme_removed.connect(_update_themes)
+	Themes.theme_switched.connect(_on_theme_switched)
+	# Replace OK since preference changes are being applied immediately, not after OK confirmation
+	get_ok_button().text = "Close"
+	get_ok_button().size_flags_horizontal = Control.SIZE_EXPAND_FILL
+
+	shortcuts.profile_option_button.item_selected.connect(func(_i): Tools.update_hint_tooltips())
+	if shortcuts.profile_option_button.selected != 0:
+		# Manually update tooltips if the shortcut profile is not the default
+		Tools.update_hint_tooltips()
+	for child in shortcuts.get_children():
+		if not child is AcceptDialog:
+			continue
+		child.confirmed.connect(Tools.update_hint_tooltips)
+
+	if OS.get_name() == "Web":
+		var startup := right_side.get_node(^"Startup")
+		right_side.remove_child(startup)
+		startup.queue_free()
+		right_side.get_node(^"Language").visible = true
+		Global.open_last_project = false
+		%ClearRecentFiles.hide()
+	if OS.get_name() == "Windows":
+		tablet_driver_label.visible = true
+		tablet_driver.visible = true
+		for driver in DisplayServer.tablet_get_driver_count():
+			var driver_name := DisplayServer.tablet_get_driver_name(driver)
+			tablet_driver.add_item(driver_name, driver)
+	else:
+		var drivers := right_side.get_node(^"Drivers")
+		right_side.remove_child(drivers)
+		drivers.queue_free()
+	if OS.is_sandboxed():
+		get_tree().call_group(&"NoSandbox", &"free")
+	if not OS.has_feature("pc"):
+		get_tree().call_group(&"DesktopOnly", &"free")
+	if not OS.has_feature("mobile"):
+		get_tree().call_group(&"MobileOnly", &"free")
+	if (
+		not DisplayServer.has_feature(DisplayServer.FEATURE_NATIVE_DIALOG_FILE)
+		or OS.get_name() == "Android"
+	):
+		# We want to force all file dialogs to be native in Android to use SAF,
+		# to avoid requesting permission, which Google discourages.
+		get_tree().call_group(&"NativeFileDialog", &"free")
+
+	for child in right_side.get_children():
+		content_list.append(child.name)
+
+	# Create buttons for each language
+	var button_group: ButtonGroup = system_language.button_group
+	for locale in Global.loaded_locales:  # Create radiobuttons for each language
+		var button := CheckBox.new()
+		button.text = Global.LANGUAGES_DICT[locale][0] + " [%s]" % [locale]
+		button.name = Global.LANGUAGES_DICT[locale][1]
+		button.tooltip_text = Global.LANGUAGES_DICT[locale][1]
+		button.mouse_default_cursor_shape = Control.CURSOR_POINTING_HAND
+		button.button_group = button_group
+		button.size_flags_horizontal = Control.SIZE_SHRINK_BEGIN
+		if locale == TranslationServer.get_locale():
+			button.button_pressed = true
+		language.add_child(button)
+		button.pressed.connect(_on_language_pressed.bind(button.get_index()))
+
+	_add_fonts()
+	_update_themes()
+
+	for pref in preferences:
+		if not right_side.has_node(pref.node_path):
+			continue
+		var node := right_side.get_node(pref.node_path)
+		var restore_default_button := RestoreDefaultButton.new()
+		restore_default_button.setting_name = pref.prop_name
+		restore_default_button.value_type = pref.value_type
+		restore_default_button.default_value = pref.default_value
+		restore_default_button.require_restart = pref.require_restart
+		restore_default_button.node = node
+		pref.default_button = restore_default_button
+		if pref.node_path in ["%ShrinkSlider", "%FontSizeSlider"]:
+			# Add the default button to the shrink slider's grandparent
+			var node_position := node.get_parent().get_index()
+			node.get_parent().get_parent().add_child(restore_default_button)
+			node.get_parent().get_parent().move_child(restore_default_button, node_position)
+		else:
+			var node_position := node.get_index()
+			node.get_parent().add_child(restore_default_button)
+			node.get_parent().move_child(restore_default_button, node_position)
+
+		var callable := pref.callable
+		if not callable.is_valid():
+			callable = _on_Preference_value_changed
+		callable = callable.bind(pref, restore_default_button)
+		match pref.value_type:
+			"button_pressed":
+				node.toggled.connect(callable)
+			"value":
+				node.value_changed.connect(callable)
+			"color":
+				node.get_picker().presets_visible = false
+				node.color_changed.connect(callable)
+			"selected":
+				node.item_selected.connect(callable)
+			"text":
+				node.text_changed.connect(callable)
+
+		var value = Global.get(pref.prop_name)
+		if node is OptionButton:
+			var item_index = node.get_item_index(value)
+			node.set(pref.value_type, item_index)
+		else:
+			node.set(pref.value_type, value)
+		var is_default: bool = value == pref.default_value
+		# This is needed because color_changed doesn't fire if the color changes in code
+		if typeof(value) == TYPE_VECTOR2 or typeof(value) == TYPE_COLOR:
+			is_default = value.is_equal_approx(pref.default_value)
+		restore_default_button.set_disabled_status(is_default)
+	_on_theme_switched()
+	SteamManager.set_achievement("ACH_PREFERENCES")
+
+
+func _on_Preference_value_changed(value, pref: Preference, button: RestoreDefaultButton) -> void:
+	var prop := pref.prop_name
+	var default_value = pref.default_value
+	var node := right_side.get_node(pref.node_path)
+	if node is OptionButton:
+		value = node.get_item_id(value)
+	Global.set(prop, value)
+	if not pref.require_restart:
+		Global.config_cache.set_value("preferences", prop, value)
+	preference_update(pref.require_restart)
+	var disable: bool = Global.get(prop) == default_value
+	if typeof(value) == TYPE_COLOR:
+		disable = Global.get(prop).is_equal_approx(default_value)
+	button.set_disabled_status(disable)
+
+
+## Add fonts to the font option button.
+func _add_fonts() -> void:
+	%FontOptionButton.clear()
+	for font_name in Global.get_available_font_names():
+		%FontOptionButton.add_item(font_name)
+	%FontOptionButton.select(Global.theme_font_index)
+
+
+func _update_themes(_theme: Theme = null) -> void:
+	theme_preset_option_button.clear()
+	for theme_var in Themes.themes:
+		theme_preset_option_button.add_item(theme_var.get_name())
+	theme_preset_option_button.add_item("Custom", Themes.CUSTOM_THEME_INDEX)
+	var idx := theme_preset_option_button.get_item_index(Global.theme_preset_index)
+	theme_preset_option_button.select(idx)
+
+
+func _on_theme_switched() -> void:
+	if Global.theme_preset_index == Themes.CUSTOM_THEME_INDEX:
+		return
+	var theme_color_preferences: Array[Preference] = [
+		pref_theme_base_color, pref_theme_accent_color, pref_theme_color_contrast
+	]
+	for pref in theme_color_preferences:
+		var value = Global.get(pref.prop_name)
+		_on_Preference_value_changed(value, pref, pref.default_button)
+		var node := right_side.get_node(pref.node_path)
+		pref.default_value = value
+		pref.default_button.default_value = pref.default_value
+		pref.default_button.set_disabled_status(true)
+		if node is ValueSlider:
+			node.set_value_no_signal_update_display(value)
+		else:
+			node.set(pref.value_type, value)
+
+
+func preference_update(require_restart := false) -> void:
+	if require_restart:
+		must_restart.visible = true
+		return
+
+
+func _on_PreferencesDialog_about_to_show() -> void:
+	add_tabs(false)
+	list.grab_focus.call_deferred()
+
+
+func add_tabs(changed_language := false) -> void:
+	for item in content_list:
+		list.add_item(" " + tr(item))
+
+	var language_index := content_list.find("Language")
+	list.select(language_index if changed_language else selected_item)
+	autosave_interval.suffix = tr("minute(s)")
+
+
+func _on_PreferencesDialog_visibility_changed() -> void:
+	if not visible:
+		list.clear()
+		Global.dialog_open(false)
+		Global.config_cache.save(Global.CONFIG_PATH)
+
+
+func _on_search_line_edit_text_changed(new_text: String) -> void:
+	if new_text.is_empty():
+		# If the text is empty/the search bar gets cleared.
+		get_tree().call_group(&"HeaderLabels", &"show")
+		for pref in preferences:
+			if not right_side.has_node(pref.node_path):
+				continue
+			var node := right_side.get_node(pref.node_path)
+			_show_node_when_searching(node, new_text)
+		for pref in grid_options.grid_preferences:
+			if not grid_options.has_node(pref.node_path):
+				continue
+			var node := grid_options.get_node(pref.node_path)
+			_show_node_when_searching(node, new_text)
+		_show_node_when_searching(grid_options.grids_count_slider, new_text)
+		_show_node_when_searching(grid_options.grids_select_container, new_text)
+		_on_List_item_selected(selected_item)
+		return
+
+	# When the search bar has text, show relevant nodes.
+	for child in right_side.get_children():
+		child.visible = true
+	language.visible = false
+	shortcuts.get_parent().visible = false
+	extensions.visible = false
+	reset_category.visible = false
+	get_tree().call_group(&"HeaderLabels", &"hide")
+	for pref in preferences:
+		if not right_side.has_node(pref.node_path):
+			continue
+		var node := right_side.get_node(pref.node_path)
+		_show_node_when_searching(node, new_text)
+	for pref in grid_options.grid_preferences:
+		if not grid_options.has_node(pref.node_path):
+			continue
+		var node := grid_options.get_node(pref.node_path)
+		_show_node_when_searching(node, new_text)
+	_show_node_when_searching(grid_options.grids_count_slider, new_text)
+	_show_node_when_searching(grid_options.grids_select_container, new_text)
+
+
+func _show_node_when_searching(node: Control, search_text: String) -> void:
+	var node_index := node.get_index()
+	var node_parent := node.get_parent()
+	var default_button := node_parent.get_child(node_index - 1)
+	var label := node_parent.get_child(node_index - 2)
+	if node_parent.get_child_count() < 3 and label is not Label:
+		var node_parent_index := node_parent.get_index()
+		node = node_parent
+		default_button = node_parent.get_parent().get_child(node_parent_index - 1)
+		label = node_parent.get_parent().get_child(node_parent_index - 2)
+	var show_node := true
+	if not search_text.is_empty():
+		show_node = search_text.is_subsequence_ofn(node.name)
+		if label is Label:
+			show_node = show_node or search_text.is_subsequence_ofn(label.text)
+	node.visible = show_node
+	default_button.visible = node.visible
+	label.visible = node.visible
+
+
+func _on_List_item_selected(index: int) -> void:
+	if not search_line_edit.text.is_empty():
+		search_line_edit.clear()
+	selected_item = index
+	for child in right_side.get_children():
+		child.visible = child.name == content_list[index]
+
+
+func _on_shrink_apply_button_pressed() -> void:
+	Global.control.set_display_scale()
+	Global.control.set_mobile_fullscreen_safe_area()
+	hide()
+	popup_centered_clamped(Vector2(600, 400))
+	Global.dialog_open(true)
+	await get_tree().process_frame
+	Global.camera.fit_to_frame(Global.current_project.size)
+
+
+func _on_font_size_apply_button_pressed() -> void:
+	Global.control.theme.default_font_size = Global.font_size
+	Global.control.theme.set_font_size("font_size", "HeaderSmall", Global.font_size + 2)
+
+
+func _on_language_pressed(index: int) -> void:
+	var locale := OS.get_locale()
+	if index > 1:
+		locale = Global.loaded_locales[index - 2]
+	Global.set_locale(locale)
+	Global.config_cache.set_value("preferences", "locale", TranslationServer.get_locale())
+	Global.config_cache.save(Global.CONFIG_PATH)
+
+	# Update some UI elements with the new translations
+	Tools.update_hint_tooltips()
+	list.clear()
+	add_tabs(true)
+
+
+func _on_reset_button_pressed() -> void:
+	$ResetOptionsConfirmation.popup_centered_clamped()
+
+
+func _on_reset_options_confirmation_confirmed() -> void:
+	# Clear preferences
+	if %ResetPreferences.button_pressed:
+		system_language.button_pressed = true
+		_on_language_pressed(0)
+		for pref in preferences:
+			var property_name := pref.prop_name
+			var default_value = pref.default_value
+			if right_side.has_node(pref.node_path):
+				var node := right_side.get_node(pref.node_path)
+				if is_instance_valid(node):
+					node.set(pref.value_type, default_value)
+			Global.set(property_name, default_value)
+		_on_shrink_apply_button_pressed()
+		_on_font_size_apply_button_pressed()
+		Global.config_cache.erase_section("preferences")
+	# Clear timeline options
+	if %ResetTimelineOptions.button_pressed:
+		Global.animation_timeline.reset_settings()
+		Global.config_cache.erase_section("timeline")
+	# Clear tool options
+	if %ResetAllToolOptions.button_pressed:
+		Global.config_cache.erase_section("color_picker")
+		Global.config_cache.erase_section("tools")
+		Global.config_cache.erase_section("left_tool")
+		Global.config_cache.erase_section("right_tool")
+		Tools.options_reset.emit()
+	# Remove all extensions
+	if %RemoveAllExtensions.button_pressed:
+		var extensions_node := Global.control.get_node("Extensions") as Extensions
+		var extensions_list := extensions_node.extensions.duplicate()
+		for extension in extensions_list:
+			extensions_node.uninstall_extension(extension)
+		Global.config_cache.erase_section("extensions")
+	# Remove all backups
+	if %RemoveAllBackups.button_pressed:
+		for session_folder in DirAccess.get_directories_at(OpenSave.BACKUPS_DIRECTORY):
+			var folder_path := OpenSave.BACKUPS_DIRECTORY.path_join(session_folder)
+			for file in DirAccess.get_files_at(folder_path):
+				var file_path := folder_path.path_join(file)
+				DirAccess.remove_absolute(file_path)
+			DirAccess.remove_absolute(folder_path)
+	# Clear recent files list
+	if %ClearRecentFiles.button_pressed:
+		Global.config_cache.erase_section_key("data", "last_project_path")
+		Global.config_cache.erase_section_key("data", "recent_projects")
+		Global.top_menu_container.recent_projects_submenu.clear()
+
+	Global.config_cache.save(Global.CONFIG_PATH)
+
+
+func _on_theme_color_changed(value, pref: Preference, button: RestoreDefaultButton) -> void:
+	Global.theme_preset_index = Themes.CUSTOM_THEME_INDEX
+	Global.config_cache.set_value("preferences", "theme_preset_index", Global.theme_preset_index)
+	var idx := theme_preset_option_button.get_item_index(Global.theme_preset_index)
+	theme_preset_option_button.select(idx)
+	_on_Preference_value_changed(value, pref, button)

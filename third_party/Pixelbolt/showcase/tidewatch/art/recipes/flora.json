@@ -1,0 +1,581 @@
+{
+  "version": 1,
+  "name": "flora",
+  "width": 48,
+  "height": 64,
+  "palette": {
+    "$ref": "../palette.json"
+  },
+  "symbols": {
+    "frond-r": [
+      ".GGGG.............",
+      "GjjllGGG..........",
+      "GhjlllljGGG.......",
+      ".GhhjjlllljGG.....",
+      "..GGhhhjjjlljGG...",
+      "...G.GGhGhjjjljG..",
+      "......G.GhGhhjjlG.",
+      "...........G.GhjG.",
+      ".............G.GG."
+    ],
+    "frond-r2": [
+      ".GGGG.............",
+      "GjjllGGG..........",
+      "GhjlllljGG........",
+      ".GhhjjllljGG......",
+      "..GGhhhjjjljGG....",
+      "...G.GGhGhjjjlG...",
+      "......G.GhGhjjlG..",
+      "..........G.GhjjG.",
+      "............G.GhG.",
+      "..............GG.."
+    ],
+    "frond-ur": [
+      "..........G.",
+      ".........GjG",
+      ".......GGjlG",
+      "......GjlljG",
+      "....GGjllhG.",
+      "...GjjllhhG.",
+      "..GjllhhGG..",
+      ".GjlhhG.G...",
+      "GjlhGG.G....",
+      "GjhG.G......",
+      ".GG........."
+    ],
+    "frond-d": [
+      "GGG.......",
+      "GhjGG.....",
+      ".GhjjGG...",
+      "..GhjjjG..",
+      "..GghhjjG.",
+      "...GGghjG.",
+      "...G.GghjG",
+      ".....G.GhG",
+      ".......GhG",
+      ".......GgG",
+      "........G."
+    ],
+    "coco": [
+      ".kk.kk.",
+      "kuUkuUk",
+      "kUUkUUk",
+      ".kk.kk."
+    ],
+    "palm-trunk": [
+      ".....kooOuk...",
+      ".....kOOuUk...",
+      ".....kUuuUk...",
+      ".....kooOuk...",
+      "....kOOuUk....",
+      "....kUuuUk....",
+      "....kooOuk....",
+      "....kOOuUk....",
+      "....kUuuUk....",
+      "...kooOuk.....",
+      "...kOOuUk.....",
+      "...kUuuUk.....",
+      "...kooOuk.....",
+      "...kOOuUk.....",
+      "..kUuuUk......",
+      "..kooOuk......",
+      "..kOOuUk......",
+      "..kUuuUk......",
+      "..kooOuk......",
+      "..kOOuUk......",
+      ".kUuuUk.......",
+      ".kooOuk.......",
+      ".kOOuUk.......",
+      ".kUuuUk.......",
+      ".kooOuk.......",
+      ".kOOuUk.......",
+      ".kUuuUk.......",
+      "kooOukk.......",
+      "kOOuUkk.......",
+      "kUuuUkk.......",
+      "kooOuUk.......",
+      "kooOuUk.......",
+      "kooOuUk.......",
+      "kooOuUk.......",
+      ".kkooOuUkk....",
+      "kuUkkkkkkUuk.."
+    ],
+    "leafA": [
+      "....jjjj....",
+      "..jjllljjh..",
+      ".jjllllljhh.",
+      "jjllllljjhhg",
+      "jjjlljjjhhgg",
+      "hjjjjjjhhggg",
+      ".hhjjhhhggg.",
+      "..gghhhggg..",
+      "....gggg...."
+    ],
+    "leafB": [
+      "....hhhh....",
+      "..hhjjjhhg..",
+      ".hjjjjjhhgg.",
+      "hjjjjjhhhggg",
+      "hhjjjhhhgggg",
+      "ghhhhhhggggG",
+      ".gghhhgggGG.",
+      "..GgggggGG..",
+      "....GGGG...."
+    ],
+    "leafC": [
+      "....gggg....",
+      "..gghhhggG..",
+      ".ghhhhhggGG.",
+      "ghhhhhgggGGG",
+      "gghhhgggGGGG",
+      "GgggggGGGGGG",
+      ".GGgggGGGGG.",
+      "..GGGGGGGG..",
+      "....GGGG...."
+    ],
+    "oak-trunk": [
+      "...kUOouk...",
+      "...kUOuuk...",
+      "...kUOouk...",
+      "...kUoOuk...",
+      "...kUOouk...",
+      "...kUOuuk...",
+      "...kUOouk...",
+      "...kUoOuk...",
+      "..kkUOuuUk..",
+      "..kUOOuuUkk.",
+      ".kUuOuuUuUk.",
+      "kUukkUukkuUk",
+      ".kk..kk..kk."
+    ]
+  },
+  "frames": [
+    {
+      "name": "palm-0",
+      "duration": 520,
+      "anchor": [
+        22,
+        61
+      ],
+      "ops": [
+        {
+          "op": "ellipse",
+          "x": 11,
+          "y": 58,
+          "w": 24,
+          "h": 6,
+          "color": "_"
+        },
+        {
+          "op": "stamp",
+          "symbol": "palm-trunk",
+          "x": 16,
+          "y": 27
+        }
+      ],
+      "layers": [
+        {
+          "name": "back-fronds",
+          "ops": [
+            {
+              "op": "stamp",
+              "symbol": "frond-ur",
+              "x": 24,
+              "y": 10
+            },
+            {
+              "op": "stamp",
+              "symbol": "frond-ur",
+              "x": 11,
+              "y": 10,
+              "flipX": true
+            }
+          ]
+        },
+        {
+          "name": "side-fronds",
+          "ops": [
+            {
+              "op": "stamp",
+              "symbol": "frond-r",
+              "x": 25,
+              "y": 20
+            },
+            {
+              "op": "stamp",
+              "symbol": "frond-r",
+              "x": 4,
+              "y": 20,
+              "flipX": true
+            }
+          ]
+        },
+        {
+          "name": "front-fronds",
+          "ops": [
+            {
+              "op": "stamp",
+              "symbol": "coco",
+              "x": 19,
+              "y": 23
+            },
+            {
+              "op": "stamp",
+              "symbol": "frond-d",
+              "x": 24,
+              "y": 24
+            },
+            {
+              "op": "stamp",
+              "symbol": "frond-d",
+              "x": 13,
+              "y": 24,
+              "flipX": true
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "palm-1",
+      "duration": 420,
+      "anchor": [
+        22,
+        61
+      ],
+      "ops": [
+        {
+          "op": "ellipse",
+          "x": 11,
+          "y": 58,
+          "w": 24,
+          "h": 6,
+          "color": "_"
+        },
+        {
+          "op": "stamp",
+          "symbol": "palm-trunk",
+          "x": 16,
+          "y": 27
+        }
+      ],
+      "layers": [
+        {
+          "name": "back-fronds",
+          "ops": [
+            {
+              "op": "stamp",
+              "symbol": "frond-ur",
+              "x": 25,
+              "y": 10
+            },
+            {
+              "op": "stamp",
+              "symbol": "frond-ur",
+              "x": 11,
+              "y": 10,
+              "flipX": true
+            }
+          ]
+        },
+        {
+          "name": "side-fronds",
+          "ops": [
+            {
+              "op": "stamp",
+              "symbol": "frond-r2",
+              "x": 25,
+              "y": 20
+            },
+            {
+              "op": "stamp",
+              "symbol": "frond-r",
+              "x": 4,
+              "y": 20,
+              "flipX": true
+            }
+          ]
+        },
+        {
+          "name": "front-fronds",
+          "ops": [
+            {
+              "op": "stamp",
+              "symbol": "coco",
+              "x": 19,
+              "y": 23
+            },
+            {
+              "op": "stamp",
+              "symbol": "frond-d",
+              "x": 24,
+              "y": 25
+            },
+            {
+              "op": "stamp",
+              "symbol": "frond-d",
+              "x": 13,
+              "y": 24,
+              "flipX": true
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "palm-2",
+      "duration": 520,
+      "anchor": [
+        22,
+        61
+      ],
+      "ops": [
+        {
+          "op": "ellipse",
+          "x": 11,
+          "y": 58,
+          "w": 24,
+          "h": 6,
+          "color": "_"
+        },
+        {
+          "op": "stamp",
+          "symbol": "palm-trunk",
+          "x": 16,
+          "y": 27
+        }
+      ],
+      "layers": [
+        {
+          "name": "back-fronds",
+          "ops": [
+            {
+              "op": "stamp",
+              "symbol": "frond-ur",
+              "x": 24,
+              "y": 10
+            },
+            {
+              "op": "stamp",
+              "symbol": "frond-ur",
+              "x": 10,
+              "y": 10,
+              "flipX": true
+            }
+          ]
+        },
+        {
+          "name": "side-fronds",
+          "ops": [
+            {
+              "op": "stamp",
+              "symbol": "frond-r",
+              "x": 25,
+              "y": 20
+            },
+            {
+              "op": "stamp",
+              "symbol": "frond-r2",
+              "x": 4,
+              "y": 20,
+              "flipX": true
+            }
+          ]
+        },
+        {
+          "name": "front-fronds",
+          "ops": [
+            {
+              "op": "stamp",
+              "symbol": "coco",
+              "x": 19,
+              "y": 23
+            },
+            {
+              "op": "stamp",
+              "symbol": "frond-d",
+              "x": 24,
+              "y": 24
+            },
+            {
+              "op": "stamp",
+              "symbol": "frond-d",
+              "x": 13,
+              "y": 25,
+              "flipX": true
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "oak-0",
+      "duration": 900,
+      "anchor": [
+        23,
+        55
+      ],
+      "ops": [
+        {
+          "op": "ellipse",
+          "x": 8,
+          "y": 55,
+          "w": 32,
+          "h": 8,
+          "color": "_"
+        },
+        {
+          "op": "stamp",
+          "symbol": "oak-trunk",
+          "x": 18,
+          "y": 43
+        }
+      ],
+      "layers": [
+        {
+          "name": "canopy",
+          "ops": [
+            {
+              "op": "stamp",
+              "symbol": "leafC",
+              "x": 5,
+              "y": 25
+            },
+            {
+              "op": "stamp",
+              "symbol": "leafC",
+              "x": 15,
+              "y": 20
+            },
+            {
+              "op": "stamp",
+              "symbol": "leafC",
+              "x": 26,
+              "y": 20
+            },
+            {
+              "op": "stamp",
+              "symbol": "leafC",
+              "x": 34,
+              "y": 25
+            },
+            {
+              "op": "stamp",
+              "symbol": "leafC",
+              "x": 10,
+              "y": 33
+            },
+            {
+              "op": "stamp",
+              "symbol": "leafC",
+              "x": 22,
+              "y": 35
+            },
+            {
+              "op": "stamp",
+              "symbol": "leafC",
+              "x": 31,
+              "y": 33
+            },
+            {
+              "op": "stamp",
+              "symbol": "leafB",
+              "x": 2,
+              "y": 19
+            },
+            {
+              "op": "stamp",
+              "symbol": "leafB",
+              "x": 11,
+              "y": 14
+            },
+            {
+              "op": "stamp",
+              "symbol": "leafB",
+              "x": 22,
+              "y": 13
+            },
+            {
+              "op": "stamp",
+              "symbol": "leafB",
+              "x": 32,
+              "y": 18
+            },
+            {
+              "op": "stamp",
+              "symbol": "leafB",
+              "x": 7,
+              "y": 28
+            },
+            {
+              "op": "stamp",
+              "symbol": "leafB",
+              "x": 18,
+              "y": 27
+            },
+            {
+              "op": "stamp",
+              "symbol": "leafB",
+              "x": 29,
+              "y": 27
+            },
+            {
+              "op": "stamp",
+              "symbol": "leafA",
+              "x": 8,
+              "y": 10
+            },
+            {
+              "op": "stamp",
+              "symbol": "leafA",
+              "x": 19,
+              "y": 8
+            },
+            {
+              "op": "stamp",
+              "symbol": "leafA",
+              "x": 28,
+              "y": 12
+            },
+            {
+              "op": "stamp",
+              "symbol": "leafA",
+              "x": 13,
+              "y": 19
+            },
+            {
+              "op": "stamp",
+              "symbol": "leafA",
+              "x": 24,
+              "y": 20
+            },
+            {
+              "op": "outline",
+              "color": "G",
+              "diagonal": true
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "animations": {
+    "palm": {
+      "frames": [
+        "palm-0",
+        "palm-1",
+        "palm-0",
+        "palm-2"
+      ]
+    },
+    "oak": {
+      "frames": [
+        "oak-0"
+      ]
+    }
+  },
+  "sheet": {
+    "columns": 4,
+    "trim": true
+  }
+}

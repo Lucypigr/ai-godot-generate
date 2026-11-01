@@ -1,0 +1,287 @@
+name: Release
+
+on:
+  push:
+    tags: ['v*']
+  workflow_dispatch:
+    inputs:
+      tag:
+        description: 'Existing version tag to release, in the form vX.Y.Z'
+        required: true
+        type: string
+
+permissions:
+  contents: read
+
+concurrency:
+  group: release-${{ inputs.tag || github.ref_name }}
+  cancel-in-progress: false
+
+# Rights are kept to the two jobs that need them, and those jobs run only this repository's own code and pinned
+# GitHub actions. Third-party tools (npx @anthropic-ai/mcpb and its dependencies) and the test suite run in jobs that
+# can only read. The release job rebuilds the bundle itself and attests its own build, after checking that it is
+# byte for byte the bundle the build job verified, so nothing a read-only job does can change what gets attested.
+jobs:
+  # The whole matrix from test.yml on the tagged commit: Node 20, 22 and 24, Windows, macOS, the portable builds
+  # and the MCPB bundle. Nothing is published unless every one of them passes.
+  tests:
+    name: Full test matrix
+    if: github.repository == 'skulitom/Pixelbolt'
+    uses: ./.github/workflows/test.yml
+    permissions:
+      contents: read
+
+  build:
+    name: Build and check the release
+    if: github.repository == 'skulitom/Pixelbolt'
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    permissions:
+      contents: read
+    outputs:
+      sha256: ${{ steps.bundle.outputs.sha256 }}
+    env:
+      RELEASE_TAG: ${{ inputs.tag || github.ref_name }}
+    steps:
+      - uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803 # v6
+        with:
+          ref: refs/tags/${{ inputs.tag || github.ref_name }}
+          fetch-depth: 0
+          persist-credentials: false
+      - uses: actions/setup-node@249970729cb0ef3589644e2896645e5dc5ba9c38 # v6
+        with:
+          node-version: 24
+          package-manager-cache: false
+      - name: Validate version tag
+        shell: bash
+        run: |
+          set -euo pipefail
+          node --input-type=module <<'NODE'
+          import { readFileSync } from 'node:fs';
+          import { VERSION } from './scripts/build-mcpb.mjs';
+          const tag = process.env.RELEASE_TAG;
+          const pkg = JSON.parse(readFileSync('package.json'));
+          const server = JSON.parse(readFileSync('server.json'));
+          if (!tag.startsWith('v') || !VERSION.test(tag.slice(1)) || tag !== `v${pkg.version}` || server.version !== pkg.version) {
+            throw new Error('Tag must be vX.Y.Z and match package.json and server.json.');
+          }
+          if (Object.hasOwn(server, 'packages')) throw new Error('server.json must remain metadata-only.');
+          // The Claude Code plugin carries the version too, and the release notes become the GitHub release's body.
+          const plugin = JSON.parse(readFileSync('.claude-plugin/plugin.json'));
+          if (plugin.version !== pkg.version) throw new Error(`.claude-plugin/plugin.json says ${plugin.version}; set it to ${pkg.version}.`);
+          const heading = readFileSync('mcpb/RELEASE_NOTES.md', 'utf8').split('\n')[0].trim();
+          if (heading !== `# ${pkg.version}`) throw new Error(`mcpb/RELEASE_NOTES.md starts with "${heading}"; write the notes for ${pkg.version} under "# ${pkg.version}".`);
+          NODE
+          # Provenance records this run's own ref and commit, so a manual run must start from the tag itself.
+          [[ "$GITHUB_REF" == "refs/tags/$RELEASE_TAG" ]] || { echo "::error::Start this run from the tag: gh workflow run release.yml --ref $RELEASE_TAG -f tag=$RELEASE_TAG"; exit 1; }
+          git show-ref --verify "refs/tags/$RELEASE_TAG"
+          test "$(git rev-parse HEAD)" = "$(git rev-parse "refs/tags/$RELEASE_TAG^{commit}")"
+      - name: Check the npm package contents
+        shell: bash
+        run: |
+          set -euo pipefail
+          npm pack --dry-run --json > "$RUNNER_TEMP/pack.json"
+          node --input-type=module - "$RUNNER_TEMP/pack.json" <<'NODE'
+          import { readFileSync } from 'node:fs';
+          const [{ files, entryCount }] = JSON.parse(readFileSync(process.argv[2], 'utf8'));
+          const paths = files.map(file => file.path);
+          const needed = ['package.json', 'README.md', 'LICENSE', 'bin/pixelbolt.js', 'src/index.js', 'src/mcp.js', 'skills/pixel-art/SKILL.md', 'schema.json', 'studio/index.html'];
+          const missing = needed.filter(file => !paths.includes(file));
+          // Only package.json's `files` list ships: never tests, scripts, evals, showcase art, builds or local output.
+          const stray = paths.filter(file => /^(test|scripts|evals|showcase|dist|output|packaging|mcpb|\.github)\//.test(file));
+          if (missing.length || stray.length) throw new Error(`npm package: missing ${missing.join(', ') || 'none'}; unexpected ${stray.slice(0, 8).join(', ') || 'none'}`);
+          console.log(`npm package: ${entryCount} files, contents checked.`);
+          NODE
+      - run: node scripts/build-mcpb.mjs --check
+      # Recorded before any third-party tool runs, so none of them can change the hash the release job compares with.
+      - name: Record the bundle's SHA-256
+        id: bundle
+        shell: bash
+        run: echo "sha256=$(sha256sum dist/mcpb/pixelbolt.mcpb | cut -d ' ' -f 1)" >> "$GITHUB_OUTPUT"
+      - run: node scripts/verify-mcpb.mjs dist/mcpb/pixelbolt.mcpb
+      - run: npx --yes @anthropic-ai/mcpb@2.1.2 validate dist/mcpb/manifest.json
+
+  release:
+    name: Attest and publish the GitHub release
+    needs: [tests, build]
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    permissions:
+      contents: write
+      id-token: write
+      attestations: write
+    env:
+      RELEASE_TAG: ${{ inputs.tag || github.ref_name }}
+      VERIFIED_SHA256: ${{ needs.build.outputs.sha256 }}
+    steps:
+      - uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803 # v6
+        with:
+          ref: refs/tags/${{ inputs.tag || github.ref_name }}
+          fetch-depth: 0
+          persist-credentials: false
+      # The same Node.js as the build job: the bundle's ZIP is deflated with Node's zlib.
+      - uses: actions/setup-node@249970729cb0ef3589644e2896645e5dc5ba9c38 # v6
+        with:
+          node-version: 24
+          package-manager-cache: false
+      - name: Rebuild the bundle and match the verified one
+        shell: bash
+        run: |
+          set -euo pipefail
+          node scripts/build-mcpb.mjs
+          actual=$(sha256sum dist/mcpb/pixelbolt.mcpb | cut -d ' ' -f 1)
+          if [[ ! "$VERIFIED_SHA256" =~ ^[0-9a-f]{64}$ || "$actual" != "$VERIFIED_SHA256" ]]; then
+            echo "::error::This build's SHA-256 $actual is not the verified bundle's ($VERIFIED_SHA256); nothing was attested or published."
+            exit 1
+          fi
+          echo "Rebuilt bundle matches the verified one: $actual"
+      - name: Write installable registry entry
+        run: node scripts/build-mcpb.mjs --registry-entry --tag "$RELEASE_TAG" --bundle dist/mcpb/pixelbolt.mcpb
+      - name: Attest build provenance
+        uses: actions/attest-build-provenance@4d101475d8b20a2381f78447822ac1eab6504dd8 # v4.2.2
+        with:
+          subject-path: dist/mcpb/pixelbolt.mcpb
+      - name: Upload MCPB and registry entry
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2
+        with:
+          name: pixelbolt-mcpb
+          path: |
+            dist/mcpb/pixelbolt.mcpb
+            dist/mcpb/pixelbolt.mcpb.sha256
+            dist/mcpb/server.registry.json
+          if-no-files-found: error
+      - name: Publish GitHub release without replacing assets
+        shell: bash
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          # Backports must not move Latest away from the highest stable tag.
+          highest=$(git tag --list 'v*' | grep -E '^v(0|[1-9][0-9]*)\.(0|[1-9][0-9]*)\.(0|[1-9][0-9]*)$' | sort -V | tail -n 1)
+          latest=false
+          if [[ "$RELEASE_TAG" == "$highest" ]]; then latest=true; fi
+          if gh release view "$RELEASE_TAG" -R "$GITHUB_REPOSITORY" --json assets,isDraft > dist/mcpb/release.json; then
+            mkdir dist/mcpb/existing
+            missing=()
+            # Check all existing assets before uploading any missing ones. Never use --clobber.
+            for asset in pixelbolt.mcpb pixelbolt.mcpb.sha256; do
+              if jq -e --arg name "$asset" '.assets | any(.name == $name)' dist/mcpb/release.json > /dev/null; then
+                gh release download "$RELEASE_TAG" -R "$GITHUB_REPOSITORY" -p "$asset" -D dist/mcpb/existing
+                expected=$(sha256sum "dist/mcpb/$asset" | cut -d ' ' -f 1)
+                actual=$(sha256sum "dist/mcpb/existing/$asset" | cut -d ' ' -f 1)
+                if [[ "$actual" != "$expected" ]]; then
+                  echo "::error::Release asset $asset has a different SHA-256; refusing to replace it."
+                  exit 1
+                fi
+                echo "Identical release asset $asset; skipped."
+              else
+                missing+=("dist/mcpb/$asset")
+              fi
+            done
+            if (( ${#missing[@]} )); then
+              gh release upload "$RELEASE_TAG" "${missing[@]}" -R "$GITHUB_REPOSITORY"
+            fi
+            # A draft (left by an interrupted run, or made by hand) isn't public: publish it once every asset matches.
+            if jq -e '.isDraft' dist/mcpb/release.json > /dev/null; then
+              gh release edit "$RELEASE_TAG" -R "$GITHUB_REPOSITORY" --draft=false "--latest=$latest"
+            fi
+          else
+            gh release create "$RELEASE_TAG" dist/mcpb/pixelbolt.mcpb dist/mcpb/pixelbolt.mcpb.sha256 \
+              -R "$GITHUB_REPOSITORY" --verify-tag --title "Pixelbolt $RELEASE_TAG" \
+              --notes-file mcpb/RELEASE_NOTES.md --generate-notes "--latest=$latest"
+          fi
+          printf 'Release %s: MCPB and checksum attached. Test the downloaded bundle before dispatching Publish to MCP Registry.\n' "$RELEASE_TAG" >> "$GITHUB_STEP_SUMMARY"
+
+  # npm trusted publishing (LEDGER C-081): npm exchanges this job's GitHub OIDC token for a one-off publish credential,
+  # so no npm token or OTP is stored anywhere, and the package gets provenance. It runs after the release job and on
+  # its own, so an npm failure never touches the GitHub release; a rerun skips a version npm already has. npmjs.com
+  # must list this repository and release.yml as the package's trusted publisher (docs/PUBLISHING.md). The job holds
+  # the OIDC right, so it runs nothing but npm itself: the package contents were checked in the build job, and the
+  # published package is tried out in npm-check, which can only read.
+  npm:
+    needs: release
+    runs-on: ubuntu-latest
+    # One npm publish at a time across tags, so two releases can't both read the same latest version.
+    concurrency:
+      group: npm-pixelbolt
+      cancel-in-progress: false
+    timeout-minutes: 15
+    permissions:
+      contents: read
+      id-token: write
+    env:
+      RELEASE_TAG: ${{ inputs.tag || github.ref_name }}
+    steps:
+      - uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803 # v6
+        with:
+          ref: refs/tags/${{ inputs.tag || github.ref_name }}
+          persist-credentials: false
+      - uses: actions/setup-node@249970729cb0ef3589644e2896645e5dc5ba9c38 # v6
+        with:
+          node-version: 24
+          registry-url: https://registry.npmjs.org
+          package-manager-cache: false
+      - name: Use npm 11.5.1 or later (trusted publishing)
+        shell: bash
+        run: |
+          set -euo pipefail
+          if ! node -e 'const [a, b, c] = process.argv[1].split(".").map(Number); process.exit(a > 11 || (a === 11 && (b > 5 || (b === 5 && c >= 1))) ? 0 : 1)' "$(npm --version)"; then
+            npm install -g npm@11.19.1
+          fi
+          npm --version
+      - name: Publish to npm
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "v$(node -p 'require("./package.json").version')" = "$RELEASE_TAG"
+          version="${RELEASE_TAG#v}"
+          if npm view "pixelbolt@$version" version > /dev/null 2>&1; then
+            echo "pixelbolt@$version is already on npm; skipped." | tee -a "$GITHUB_STEP_SUMMARY"
+            exit 0
+          fi
+          # A version below npm's latest (a backport) can't take the latest tag; it goes out under "backport".
+          # The package is already on npm, so a failed lookup stops the job rather than risk moving latest backwards.
+          latest=$(npm view pixelbolt dist-tags.latest)
+          [[ -n "$latest" ]] || { echo "::error::Could not read npm's latest version of pixelbolt."; exit 1; }
+          tag=latest
+          if node -e 'const [a, b] = process.argv.slice(1).map(v => v.split(".").map(Number)); process.exit((a[0] - b[0] || a[1] - b[1] || a[2] - b[2]) < 0 ? 0 : 1)' "$version" "$latest"; then
+            tag=backport
+          fi
+          npm publish --access public --tag "$tag"
+          echo "Published pixelbolt@$version to npm (tag $tag)." | tee -a "$GITHUB_STEP_SUMMARY"
+
+  npm-check:
+    name: Run the published npm package
+    needs: npm
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    permissions:
+      contents: read
+    env:
+      RELEASE_TAG: ${{ inputs.tag || github.ref_name }}
+    steps:
+      - uses: actions/setup-node@249970729cb0ef3589644e2896645e5dc5ba9c38 # v6
+        with:
+          node-version: 24
+          package-manager-cache: false
+      - name: npx runs the published version
+        shell: bash
+        run: |
+          set -euo pipefail
+          version="${RELEASE_TAG#v}"
+          # From an empty folder, so npx installs the published package rather than finding a checkout. npm processes a
+          # new version before serving it (0.10.0: 77 s), and npm may reuse a cached version list without it for up to
+          # five minutes (the registry's max-age), so every try asks the registry again (--prefer-online), for up to five
+          # minutes.
+          check="$RUNNER_TEMP/npx-check"
+          mkdir -p "$check"
+          for _ in $(seq 15); do
+            if (cd "$check" && npx --yes --prefer-online "pixelbolt@$version" --help) > "$RUNNER_TEMP/help.txt"; then
+              grep -q 'pixelbolt render' "$RUNNER_TEMP/help.txt"
+              echo "\`npx -y pixelbolt@$version --help\` runs." | tee -a "$GITHUB_STEP_SUMMARY"
+              exit 0
+            fi
+            sleep 20
+          done
+          echo "::error::pixelbolt@$version is on npm but npx could not run it within five minutes."
+          exit 1

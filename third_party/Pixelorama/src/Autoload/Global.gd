@@ -1,0 +1,1776 @@
+extends Node
+
+## The Global autoload of Pixelorama.
+##
+## This Autoload contains signals, enums, constants, variables and
+## references to many UI elements used within Pixelorama.
+
+#region signals
+@warning_ignore("unused_signal")
+signal pixelorama_opened  ## Emitted as soon as Pixelorama fully opens up.
+@warning_ignore("unused_signal")
+signal pixelorama_about_to_close  ## Emitted just before Pixelorama is about to close.
+@warning_ignore("unused_signal")
+signal project_created(project: Project)  ## Emitted when a new project class is initialized.
+signal project_about_to_switch  ## Emitted before a project is about to be switched
+signal project_switched  ## Emitted whenever you switch to some other project tab.
+signal cel_switched  ## Emitted whenever you select a different cel.
+@warning_ignore("unused_signal")
+signal project_data_changed(project: Project)  ## Emitted when project data is modified.
+## Emitted when we are about to confirm a transformation.
+signal transform_content_confirmed(project: Project, should_emit_signal: bool)
+## Emitted when we are about to cancel a transformation.
+@warning_ignore("unused_signal")
+signal transform_content_canceled(project: Project)
+@warning_ignore("unused_signal")
+signal font_loaded  ## Emitted when a new font has been loaded, or an old one gets unloaded.
+signal collapse_main_menu_changed  ## Emitted when [member collapse_main_menu] changes.
+signal single_tool_mode_changed(mode: bool)  ## Emitted when [member single_tool_mode] changes.
+## Emitted when [member share_options_between_tools] changes.
+signal share_options_between_tools_changed(mode: bool)
+@warning_ignore("unused_signal")
+signal palette_panel_updated  ## Emitted when the palette needs to be redrawn in the palette panel.
+signal grid_updated  ## Emitted when the grid needs to be redrawn.
+signal pixel_grid_updated  ## Emitted when the pixel grid needs to be redrawn.
+signal selection_properties_updated
+@warning_ignore("unused_signal")
+signal on_cursor_position_text_changed(text: String)
+@warning_ignore("unused_signal")
+signal dynamics_changed
+#endregion
+
+enum LayerTypes { PIXEL, GROUP, THREE_D, TILEMAP, AUDIO }
+enum GridTypes { CARTESIAN, ISOMETRIC, HEXAGONAL_POINTY_TOP, HEXAGONAL_FLAT_TOP }
+enum ButtonSize { SMALL, BIG }
+enum MeasurementMode { NONE, DISPLAY_RECT, MOVE }
+
+## Enumeration of items present in the File Menu.
+enum FileMenu { NEW, OPEN, OPEN_LAST_PROJECT, RECENT, SAVE, SAVE_AS, EXPORT, EXPORT_AS, QUIT }
+## Enumeration of items present in the Edit Menu.
+enum EditMenu {
+	UNDO,
+	REDO,
+	UNDO_HISTORY,
+	COPY,
+	CUT,
+	PASTE,
+	PASTE_IN_PLACE,
+	PASTE_FROM_CLIPBOARD,
+	DELETE,
+	NEW_BRUSH,
+	PREFERENCES
+}
+## Enumeration of items present in the View Menu.
+enum ViewMenu {
+	CENTER_CANVAS,
+	TILE_MODE,
+	TILE_MODE_OFFSETS,
+	MIRROR_VIEW,
+	SHOW_GRID,
+	SHOW_PIXEL_GRID,
+	SHOW_PIXEL_INDICES,
+	SHOW_RULERS,
+	SHOW_GUIDES,
+	SHOW_MOUSE_GUIDES,
+	SHOW_REFERENCE_IMAGES,
+	LOCK_GUIDES,
+	DISPLAY_LAYER_EFFECTS,
+	SNAP_TO,
+}
+## Enumeration of items present in the Window Menu.
+enum WindowMenu { WINDOW_OPACITY, PANELS, LAYOUTS, MOVABLE_PANELS, ZEN_MODE, FULLSCREEN_MODE }
+## Enumeration of items present in the Image Menu.
+enum ProjectMenu {
+	PROJECT_PROPERTIES,
+	COLOR_MODE,
+	RESIZE_CANVAS,
+	SCALE_IMAGE,
+	CROP_TO_SELECTION,
+	CROP_TO_CONTENT,
+}
+## Enumeration of items present in the Select Menu.
+enum SelectMenu { SELECT_ALL, CLEAR, RESELECT, INVERT, SELECT_CEL_AREA, WRAP_STROKES, MODIFY }
+## Enumeration of items present in the Help Menu.
+enum HelpMenu {
+	VIEW_SPLASH_SCREEN,
+	ONLINE_DOCS,
+	ISSUE_TRACKER,
+	RESTORE_BACKUP,
+	OPEN_EDITOR_DATA_FOLDER,
+	CHANGELOG,
+	ABOUT_PIXELORAMA,
+	SUPPORT_PIXELORAMA
+}
+
+const LANGUAGES_DICT := {
+	"en_US": ["English", "English"],
+	"cs_CZ": ["Czech", "Czech"],
+	"ar_SA": ["العربيّة", "Arabic"],
+	"da_DK": ["Dansk", "Danish"],
+	"de_DE": ["Deutsch", "German"],
+	"el_GR": ["Ελληνικά", "Greek"],
+	"eo_UY": ["Esperanto", "Esperanto"],
+	"es_ES": ["Español", "Spanish"],
+	"fr_FR": ["Français", "French"],
+	"id_ID": ["Indonesian", "Indonesian"],
+	"it_IT": ["Italiano", "Italian"],
+	"lv_LV": ["Latvian", "Latvian"],
+	"pl_PL": ["Polski", "Polish"],
+	"pt_BR": ["Português Brasileiro", "Brazilian Portuguese"],
+	"pt_PT": ["Português", "Portuguese"],
+	"ru_RU": ["Русский", "Russian"],
+	"zh_CN": ["简体中文", "Chinese Simplified"],
+	"zh_TW": ["繁體中文", "Chinese Traditional"],
+	"nb_NO": ["Norsk Bokmål", "Norwegian Bokmål"],
+	"hu_HU": ["Magyar", "Hungarian"],
+	"ro_RO": ["Română", "Romanian"],
+	"ko_KR": ["한국어", "Korean"],
+	"tr_TR": ["Türkçe", "Turkish"],
+	"ja_JP": ["日本語", "Japanese"],
+	"uk_UA": ["Українська", "Ukrainian"],
+	"th_TH": ["ภาษาไทย", "Thai"],
+}
+const SUPPORTED_IMAGE_TYPES: PackedStringArray = [
+	"png", "bmp", "hdr", "jpg", "jpeg", "svg", "tga", "webp", "exr"
+]
+const RUNNING_FILE_PATH := "user://.running"
+## The file path used for the [member config_cache] file.
+const CONFIG_PATH := "user://config.ini"
+## The file used to save preferences that use [method _save_to_override_file].
+const OVERRIDE_FILE := "user://override.cfg"
+## The name of folder containing Pixelorama preferences.
+const HOME_SUBDIR_NAME := "pixelorama"
+## The name of folder that contains subdirectories for users to place brushes, palettes, patterns.
+const CONFIG_SUBDIR_NAME := "pixelorama_data"
+## The path of the directory where the UI layouts are being stored.
+const LAYOUT_DIR := "user://layouts"
+## The path of the ditectory where users can load custom fonts.
+const FONTS_DIR_PATH := "user://fonts"
+
+## It is path to the executable's base drectory.
+var root_directory := "."
+var pixelorama_has_loaded := false
+## The path where preferences and other subdirectories for stuff like layouts, extensions, logs etc.
+## will get stored by Pixelorama.
+var home_data_directory := OS.get_data_dir().path_join(HOME_SUBDIR_NAME)
+## Only read from these directories. This is an [Array] of directories potentially containing
+## stuff such as Brushes, Palettes and Patterns in sub-directories.[br]
+## ([member home_data_directory] and [member root_directory] are also included in this array).
+var data_directories: PackedStringArray = [home_data_directory]
+## The config file used to get/set preferences, tool settings etc.
+var config_cache := ConfigFile.new()
+var loaded_locales: PackedStringArray = LANGUAGES_DICT.keys()
+
+var projects: Array[Project] = []  ## Array of currently open projects.
+var current_project: Project:  ## The project that currently in focus.
+	set(value):
+		current_project = value
+		if top_menu_container.file_menu:
+			if current_project is ResourceProject:
+				top_menu_container.file_menu.set_item_disabled(FileMenu.SAVE_AS, true)
+				top_menu_container.file_menu.set_item_disabled(FileMenu.EXPORT, true)
+				top_menu_container.file_menu.set_item_disabled(FileMenu.EXPORT_AS, true)
+			else:
+				top_menu_container.file_menu.set_item_disabled(FileMenu.SAVE_AS, false)
+				top_menu_container.file_menu.set_item_disabled(FileMenu.EXPORT, false)
+				top_menu_container.file_menu.set_item_disabled(FileMenu.EXPORT_AS, false)
+## The index of project that is currently in focus.
+var current_project_index := 0:
+	set(value):
+		if value >= projects.size():
+			return
+		transform_content_confirmed.emit()
+		project_about_to_switch.emit()
+		current_project_index = value
+		current_project = projects[value]
+		project_switched.connect(current_project.change_project)
+		project_switched.emit()
+		project_switched.disconnect(current_project.change_project)
+		cel_switched.emit()
+var default_layouts: Array[DockableLayout] = [
+	preload("res://assets/layouts/Default.tres"),
+	preload("res://assets/layouts/Tallscreen.tres"),
+]
+var layouts: Array[DockableLayout] = []
+var loaded_fonts: Array[Font] = [
+	ThemeDB.fallback_font, preload("res://assets/fonts/Roboto-Regular.ttf")
+]
+
+# Canvas related stuff
+## Tells if the user allowed to draw on the canvas. Usually it is temporarily set to
+## [code]false[/code] when we are moving some gizmo and don't want the current tool to accidentally
+## start drawing.[br](This does not depend on layer invisibility or lock/unlock status).
+var can_draw := true
+## (Intended to be used as getter only) Tells if the user allowed to move the guide while on canvas.
+var move_guides_on_canvas := true
+
+var play_only_tags := true  ## If [code]true[/code], animation plays only on frames of the same tag.
+## If true, the x symmetry guide ( -- ) is visible.
+var show_x_symmetry_axis := false
+## If true, the y symmetry guide ( | ) is visible.
+var show_y_symmetry_axis := false
+## If true, the x=y symmetry guide ( / ) is visible.
+var show_xy_symmetry_axis := false
+## If true, the x=-y symmetry guide ( \ ) is visible.
+var show_x_minus_y_symmetry_axis := false
+
+#region Preferences
+## Found in Preferences. If [code]true[/code], the last saved project will open on startup.
+var open_last_project := false
+## Found in Preferences. If [code]true[/code], asks for permission to quit on exit.
+var quit_confirmation := false
+## Found in Preferences. Refers to the ffmpeg location path.
+var ffmpeg_path := ""
+## Found in Preferences. If [code]true[/code], the zoom is smooth.
+var smooth_zoom := true
+## Found in Preferences. If [code]true[/code], the zoom is restricted to integral multiples of 100%.
+var integer_zoom := false:
+	set(value):
+		if value == integer_zoom:
+			return
+		integer_zoom = value
+		var zoom_slider: ValueSlider = top_menu_container.get_node("%ZoomSlider")
+		if value:
+			zoom_slider.min_value = 100
+			zoom_slider.snap_step = 100
+			zoom_slider.step = 100
+		else:
+			zoom_slider.min_value = 1
+			zoom_slider.snap_step = 1
+			zoom_slider.step = 1
+		zoom_slider.value = zoom_slider.value  # to trigger signal emission
+
+## Found in Preferences. The scale of the interface.
+var shrink := 1.0
+## The default value of the scale of the interface.
+var auto_content_scale_factor := 1.0
+var theme_font := loaded_fonts[theme_font_index]:
+	set(value):
+		theme_font = value
+		if is_instance_valid(control) and is_instance_valid(control.theme):
+			control.theme.default_font = theme_font
+## Found in Preferences. The index of the font used by the interface.
+var theme_font_index := 1:
+	set(value):
+		theme_font_index = value
+		if theme_font_index < loaded_fonts.size():
+			theme_font = loaded_fonts[theme_font_index]
+		else:
+			var available_font_names := get_available_font_names()
+			if theme_font_index < available_font_names.size():
+				var font_name := available_font_names[theme_font_index]
+				theme_font = find_font_from_name(font_name)
+			else:
+				theme_font = loaded_fonts[1]  # Fall back to Roboto if out of bounds
+## Found in Preferences. The font size used by the interface.
+var font_size := 16
+## Found in Preferences. The orientation of the screen, used by mobile devices.
+var screen_orientation := DisplayServer.SCREEN_SENSOR:
+	set(value):
+		screen_orientation = value
+		DisplayServer.screen_set_orientation(screen_orientation)
+		control.set_mobile_fullscreen_safe_area()
+## Found in Preferences. If [code]true[/code], the interface dims on popups.
+var dim_on_popup := true
+## Found in Preferences. If [code]true[/code], notification labels appear.
+var show_notification_label := true
+## Found in Preferences. If [code]true[/code], the native file dialogs of the
+## operating system are being used, instead of Godot's FileDialog node.
+var use_native_file_dialogs := false:
+	set(value):
+		if value == use_native_file_dialogs:
+			return
+		use_native_file_dialogs = value
+		if not is_inside_tree():
+			await tree_entered
+			await get_tree().process_frame
+		get_tree().set_group(&"FileDialogs", "use_native_dialog", value)
+var collapse_main_menu := OS.has_feature("mobile"):
+	set(value):
+		if value == collapse_main_menu:
+			return
+		collapse_main_menu = value
+		collapse_main_menu_changed.emit()
+## Found in Preferences. If [code]true[/code], subwindows are embedded in the main window.
+var single_window_mode := true:
+	set(value):
+		if value == single_window_mode:
+			return
+		single_window_mode = value
+		_save_to_override_file()
+## Found in Preferences. The index of the current theme preset.
+var theme_preset_index := 0:
+	set(value):
+		theme_preset_index = value
+		if pixelorama_has_loaded:
+			# Do not change theme before Pixelorama has finished loading.
+			# Because this is being handled in Themes' ready method.
+			Themes.change_theme(theme_preset_index)
+var theme_base_color := Color.BLACK:
+	set(value):
+		theme_base_color = value
+		if pixelorama_has_loaded and theme_preset_index == Themes.CUSTOM_THEME_INDEX:
+			# Do not change theme before Pixelorama has finished loading.
+			# Because this is being handled in Themes' ready method.
+			Themes.change_theme(theme_preset_index)
+var theme_accent_color := Color.WHITE:
+	set(value):
+		theme_accent_color = value
+		if pixelorama_has_loaded and theme_preset_index == Themes.CUSTOM_THEME_INDEX:
+			# Do not change theme before Pixelorama has finished loading.
+			# Because this is being handled in Themes' ready method.
+			Themes.change_theme(theme_preset_index)
+var theme_color_contrast := 0.3:
+	set(value):
+		theme_color_contrast = value
+		if pixelorama_has_loaded and theme_preset_index == Themes.CUSTOM_THEME_INDEX:
+			# Do not change theme before Pixelorama has finished loading.
+			# Because this is being handled in Themes' ready method.
+			Themes.change_theme(theme_preset_index)
+## Found in Preferences. The modulation color (or simply color) of icons.
+var modulate_icon_color := Color.GRAY
+## Found in Preferences. The modulation color (or simply color) of canvas background
+## (aside from checker background).
+var modulate_clear_color := Color.GRAY:
+	set(value):
+		if value == modulate_clear_color:
+			return
+		modulate_clear_color = value
+		Themes.change_clear_color()
+## Found in Preferences. Controls the readonly mode of global palettes.
+var global_palettes_readonly := true
+## Found in Preferences. The selected size mode of tool buttons using [enum ButtonSize] enum.
+var tool_button_size := ButtonSize.SMALL:
+	set(value):
+		if value == tool_button_size:
+			return
+		tool_button_size = value
+		Tools.set_button_size(tool_button_size)
+## Found in Preferences. Determines behavior of the swap_tools action.
+var reset_swap_on_shortcut_release := false
+## Found in Preferences. Determines if color should swap on tool swap.
+var swap_color_on_tool_swap := false
+## Found in Preferences.
+## If enabled, the right mouse button is always mapped to the same tool as the left button.
+var single_tool_mode := DisplayServer.is_touchscreen_available():
+	set(value):
+		single_tool_mode = value
+		single_tool_mode_changed.emit(single_tool_mode)
+## Found in Preferences.
+var share_options_between_tools := false:
+	set(value):
+		share_options_between_tools = value
+		share_options_between_tools_changed.emit(share_options_between_tools)
+		Tools.attempt_config_share(MOUSE_BUTTON_LEFT)
+## Found in Preferences. The left tool color.
+var left_tool_color := Color("0086cf"):
+	set(value):
+		if value == left_tool_color:
+			return
+		left_tool_color = value
+		if not is_instance_valid(Tools._tool_buttons):
+			await get_tree().process_frame
+		for child in Tools._tool_buttons.get_children():
+			var background: NinePatchRect = child.get_node("BackgroundLeft")
+			background.modulate = value
+		Tools._slots[MOUSE_BUTTON_LEFT].tool_node.color_rect.color = value
+## Found in Preferences. The right tool color.
+var right_tool_color := Color("fd6d14"):
+	set(value):
+		if value == right_tool_color:
+			return
+		right_tool_color = value
+		if not is_instance_valid(Tools._tool_buttons):
+			await get_tree().process_frame
+		for child in Tools._tool_buttons.get_children():
+			var background: NinePatchRect = child.get_node("BackgroundRight")
+			background.modulate = value
+		Tools._slots[MOUSE_BUTTON_RIGHT].tool_node.color_rect.color = value
+
+var default_width := 64  ## Found in Preferences. The default width of startup project.
+var default_height := 64  ## Found in Preferences. The default height of startup project.
+## Found in Preferences. The fill color of startup project.
+var default_fill_color := Color(0, 0, 0, 0)
+## Found in Preferences. The distance to the guide or grig below which cursor snapping activates.
+var snapping_distance := 32.0
+## Contains dictionaries of individual grids.
+var grids: Array[Grid] = []
+## Found in Preferences. The minimum zoom after which pixel grid gets drawn if enabled.
+var pixel_grid_show_at_zoom := 1500.0:  # percentage
+	set(value):
+		if value == pixel_grid_show_at_zoom:
+			return
+		pixel_grid_show_at_zoom = value
+		pixel_grid_updated.emit()
+## Found in Preferences. The color of pixel grid.
+var pixel_grid_color := Color("21212191"):
+	set(value):
+		if value == pixel_grid_color:
+			return
+		pixel_grid_color = value
+		pixel_grid_updated.emit()
+## Found in Preferences. The color of guides.
+var guide_color := Color.PURPLE:
+	set(value):
+		if value == guide_color:
+			return
+		guide_color = value
+		for guide in canvas.get_children():
+			if guide is Guide:
+				guide.set_color(guide_color)
+## Found in Preferences. The size of checkers in the checker background.
+var checker_size := 10:
+	set(value):
+		if value == checker_size:
+			return
+		checker_size = value
+		transparent_checker.update_rect()
+## Found in Preferences. The color of first checker.
+var checker_color_1 := Color(0.47, 0.47, 0.47, 1):
+	set(value):
+		if value == checker_color_1:
+			return
+		checker_color_1 = value
+		transparent_checker.update_rect()
+## Found in Preferences. The color of second checker.
+var checker_color_2 := Color(0.34, 0.35, 0.34, 1):
+	set(value):
+		if value == checker_color_2:
+			return
+		checker_color_2 = value
+		transparent_checker.update_rect()
+## Found in Preferences. The color of second checker.
+var checker_follow_movement := false:
+	set(value):
+		if value == checker_follow_movement:
+			return
+		checker_follow_movement = value
+		transparent_checker.update_rect()
+## Found in Preferences. If [code]true[/code], the checker follows zoom.
+var checker_follow_scale := false:
+	set(value):
+		if value == checker_follow_scale:
+			return
+		checker_follow_scale = value
+		transparent_checker.update_rect()
+## Found in Preferences. Opacity of the sprites rendered on the extended area of tile-mode.
+var tilemode_opacity := 1.0:
+	set(value):
+		if value == tilemode_opacity:
+			return
+		tilemode_opacity = value
+		if is_instance_valid(canvas.tile_mode):
+			canvas.tile_mode.queue_redraw()
+
+## Found in Preferences. If [code]true[/code], layers get selected when their buttons are pressed.
+var select_layer_on_button_click := false
+## Found in Preferences. The onion color of past frames.
+var onion_skinning_past_color := Color.RED:
+	set(value):
+		if value == onion_skinning_past_color:
+			return
+		onion_skinning_past_color = value
+		if is_instance_valid(canvas.onion_past):
+			canvas.onion_past.blue_red_color = value
+			canvas.onion_past.queue_redraw()
+## Found in Preferences. The onion color of future frames.
+var onion_skinning_future_color := Color.BLUE:
+	set(value):
+		if value == onion_skinning_future_color:
+			return
+		onion_skinning_future_color = value
+		if is_instance_valid(canvas.onion_future):
+			canvas.onion_future.blue_red_color = value
+			canvas.onion_future.queue_redraw()
+
+## Found in Preferences. Determines if changes in layer locking are undoable.
+var layer_locking_undoable := true
+## Found in Preferences. Determines if changes in layer visibility are undoable.
+var layer_visibility_undoable := true
+## Determines if changes in layer blend modes are undoable. Not exposed in preferences
+## to avoid cluttering preferences for users this option is meant to be changed through api.
+var layer_blend_mode_undoable := true
+## Determines if changes in layer opacity are undoable. Not exposed in preferences
+## to avoid cluttering preferences for users this option is meant to be changed through api.
+var layer_opacity_undoable := true
+## Determines if changes in cel opacity are undoable. Not exposed in preferences
+## to avoid cluttering preferences for users this option is meant to be changed through api.
+var cel_opacity_undoable := true
+
+## Found in Preferences. If [code]true[/code], the selection rect has animated borders.
+var selection_animated_borders := true:
+	set(value):
+		if value == selection_animated_borders:
+			return
+		selection_animated_borders = value
+		selection_properties_updated.emit()
+## Found in Preferences. The first color of the selection borders.
+var selection_border_color_1 := Color.WHITE:
+	set(value):
+		if value == selection_border_color_1:
+			return
+		selection_border_color_1 = value
+		selection_properties_updated.emit()
+## Found in Preferences. The second color of the selection borders.
+var selection_border_color_2 := Color.BLACK:
+	set(value):
+		if value == selection_border_color_2:
+			return
+		selection_border_color_2 = value
+		selection_properties_updated.emit()
+## Found in Preferences. The second color of the selection borders.
+var transformation_preview_alpha := 0.5:
+	set(value):
+		if value == transformation_preview_alpha:
+			return
+		transformation_preview_alpha = value
+		selection_properties_updated.emit()
+
+## Found in Preferences. If [code]true[/code], Pixelorama pauses when unfocused to save CPU usage.
+var pause_when_unfocused := true
+## Found in Preferences. The maximum FPS value Pixelorama can reach. 0 means no limit.
+var fps_limit := 0:
+	set(value):
+		if value == fps_limit:
+			return
+		fps_limit = value
+		Engine.max_fps = fps_limit
+## Found in Preferences. The maximum amount of undo steps projects can use. 0 means no limit.
+var max_undo_steps := 0:
+	set(value):
+		if value == max_undo_steps:
+			return
+		max_undo_steps = value
+		for project in projects:
+			project.undo_redo.max_steps = max_undo_steps
+## Found in Preferences. Affects the per_pixel_transparency project setting.
+## If [code]true[/code], it allows for the window to be transparent.
+## This affects performance, so keep it [code]false[/code] if you don't need it.
+var update_continuously := false:
+	set(value):
+		update_continuously = value
+		OS.low_processor_usage_mode = !value
+var window_transparency := false:
+	set(value):
+		if value == window_transparency:
+			return
+		window_transparency = value
+		_save_to_override_file()
+var dummy_audio_driver := false:
+	set(value):
+		if value != dummy_audio_driver:
+			dummy_audio_driver = value
+			_save_to_override_file()
+
+## Found in Preferences. The maximum limit of recent sessions that can be stored as backup.
+var max_backed_sessions := 20.0:
+	set(value):
+		if value == max_backed_sessions:
+			return
+		max_backed_sessions = value
+		OpenSave.enforce_backed_sessions_limit()
+## Found in Preferences. The time (in minutes) after which backup is created (if enabled).
+var autosave_interval := 1.0:
+	set(value):
+		if value == autosave_interval:
+			return
+		autosave_interval = value
+		OpenSave.update_autosave()
+## Found in Preferences. If [code]true[/code], generation of backups get enabled.
+var enable_autosave := true:
+	set(value):
+		if value == enable_autosave:
+			return
+		enable_autosave = value
+		OpenSave.update_autosave()
+## Found in Preferences. The index of tablet driver used by Pixelorama.
+var tablet_driver := 0:
+	set(value):
+		if value == tablet_driver:
+			return
+		tablet_driver = value
+		var tablet_driver_name := DisplayServer.tablet_get_driver_name(tablet_driver)
+		DisplayServer.tablet_set_current_driver(tablet_driver_name)
+## Found in Preferences. The displayed name of the current project author.
+var author_display_name := ""
+## Found in Preferences. The real name of the current project author.
+var author_real_name := ""
+## Found in Preferences. The contact info of the current project author.
+var author_contact := ""
+## Found in Preferences. The company name of the current project author.
+var author_company := ""
+## Found in Preferences. The default licence to be used for the current project.
+var default_licence := ""
+
+# Tools & options
+## Found in Preferences. If [code]true[/code], the cursor's left tool icon is visible.
+var show_left_tool_icon := true
+## Found in Preferences. If [code]true[/code], the cursor's right tool icon is visible.
+var show_right_tool_icon := true
+## Found in Preferences. If [code]true[/code], the left tool's brush indicator is visible.
+var left_square_indicator_visible := true
+## Found in Preferences. If [code]true[/code], the right tool's brush indicator is visible.
+var right_square_indicator_visible := true
+## Found in Preferences. If [code]true[/code], native cursors are used instead of default cursors.
+var native_cursors := false:
+	set(value):
+		if value == native_cursors:
+			return
+		if DisplayServer.get_name() == "headless":
+			return
+		native_cursors = value
+		if native_cursors:
+			Input.set_custom_mouse_cursor(null, Input.CURSOR_CROSS, Vector2(15, 15))
+		else:
+			control.set_custom_cursor()
+## Found in Preferences. If [code]true[/code], cursor becomes cross shaped when hovering the canvas.
+var cross_cursor := true
+#endregion
+
+#region View menu options
+## If [code]true[/code], the content of canvas is flipped.
+var mirror_view := false
+## If [code]true[/code], the grid is visible.
+var draw_grid := false
+## If [code]true[/code], the pixel grid is visible.
+var draw_pixel_grid := false
+## If [code]true[/code], the rulers are visible.
+var show_rulers := true:
+	set(value):
+		show_rulers = value
+		get_tree().set_group(&"CanvasRulers", "visible", value)
+## If [code]true[/code], the guides are visible.
+var lock_guides := false:
+	set(value):
+		if value == lock_guides:
+			return
+		lock_guides = value
+		if is_instance_valid(top_menu_container):
+			top_menu_container.view_menu.set_item_checked(ViewMenu.LOCK_GUIDES, value)
+## If [code]true[/code], the guides are visible.
+var show_guides := true
+## If [code]true[/code], the mouse guides are visible.
+var show_mouse_guides := false
+## If [code]true[/code], the indices of color are shown.
+var show_pixel_indices := false:
+	set(value):
+		show_pixel_indices = value
+		if is_instance_valid(canvas.color_index):
+			canvas.color_index.enabled = value
+var show_reference_images := true:
+	set(value):
+		show_reference_images = value
+		if is_instance_valid(canvas.reference_image_container):
+			canvas.reference_image_container.visible = show_reference_images
+var display_layer_effects := true:
+	set(value):
+		if value == display_layer_effects:
+			return
+		display_layer_effects = value
+		if is_instance_valid(top_menu_container):
+			top_menu_container.view_menu.set_item_checked(ViewMenu.DISPLAY_LAYER_EFFECTS, value)
+			canvas.update_all_layers = true
+			canvas.queue_redraw()
+## If [code]true[/code], cursor snaps to the boundary of rectangular grid boxes.
+var snap_to_rectangular_grid_boundary := false
+## If [code]true[/code], cursor snaps to the center of rectangular grid boxes.
+var snap_to_rectangular_grid_center := false
+## If [code]true[/code], cursor snaps to regular guides.
+var snap_to_guides := false
+## If [code]true[/code], cursor snaps to perspective guides.
+var snap_to_perspective_guides := false
+#endregion
+
+# Onion skinning options
+var onion_skinning := false  ## If [code]true[/code], onion skinning is enabled.
+var onion_skinning_past_rate := 1  ## Number of past frames shown when onion skinning is enabled.
+## Number of future frames shown when onion skinning is enabled.
+var onion_skinning_future_rate := 1
+var onion_skinning_blue_red := false  ## If [code]true[/code], then blue-red mode is enabled.
+
+## The current version of pixelorama
+var current_version: String = ProjectSettings.get_setting("application/config/version")
+
+# Nodes
+## The [PackedScene] of the button used by layers in the timeline.
+var layer_button_node := preload("res://src/UI/Timeline/LayerButton.tscn")
+## The [PackedScene] of the button used by cels in the timeline.
+var cel_button_scene: PackedScene = load("res://src/UI/Timeline/CelButton.tscn")
+
+## The control node (aka Main node). It has the [param Main.gd] script attached.
+@onready var control := get_tree().current_scene as Control
+## The project tabs bar. It has the [param Tabs.gd] script attached.
+@onready var tabs: TabBar = control.find_child("TabBar")
+## Contains viewport of the main canvas. It has the [param ViewportContainer.gd] script attached.
+@onready var main_viewport: SubViewportContainer = control.find_child("SubViewportContainer")
+## The main canvas node. It has the [param Canvas.gd] script attached.
+@onready var canvas: Canvas = main_viewport.find_child("Canvas")
+## Camera of the main canvas.
+@onready var camera: CanvasCamera = main_viewport.find_child("Camera2D")
+## Transparent checker of the main canvas. It has the [param TransparentChecker.gd] script attached.
+@onready var transparent_checker: ColorRect = control.find_child("TransparentChecker")
+## The top menu container. It has the [param TopMenuContainer.gd] script attached.
+@onready var top_menu_container: Panel = control.find_child("TopMenuContainer")
+## The animation timeline. It has the [param AnimationTimeline.gd] script attached.
+@onready var animation_timeline: Panel = control.find_child("Animation Timeline")
+## Popup dialog that displays brushes. It has the [param BrushesPopup.gd] script attached.
+@onready var brushes_popup: Popup = control.find_child("BrushesPopup")
+## Popup dialog that displays patterns. It has the [param PatternsPopup.gd] script attached.
+@onready var patterns_popup: Popup = control.find_child("PatternsPopup")
+## Dialog used to export images. It has the [param ExportDialog.gd] script attached.
+@onready var export_dialog: AcceptDialog = control.find_child("ExportDialog")
+## An error dialog to show errors.
+@onready var error_dialog: AcceptDialog = control.find_child("ErrorDialog")
+
+
+class Grid:
+	var grid_type := GridTypes.CARTESIAN:
+		set(value):
+			if value == grid_type:
+				return
+			grid_type = value
+			Global.grid_updated.emit()
+	## Found in Preferences. The size of the grid.
+	var grid_size := Vector2i(2, 2):
+		set(value):
+			if value == grid_size:
+				return
+			grid_size = value
+			Global.grid_updated.emit()
+	## Found in Preferences. The grid offset from top-left corner of the canvas.
+	var grid_offset := Vector2i.ZERO:
+		set(value):
+			if value == grid_offset:
+				return
+			grid_offset = value
+			Global.grid_updated.emit()
+	## Found in Preferences. If [code]true[/code], The grid draws over the area extended by
+	## tile-mode as well.
+	var grid_draw_over_tile_mode := false:
+		set(value):
+			if value == grid_draw_over_tile_mode:
+				return
+			grid_draw_over_tile_mode = value
+			Global.grid_updated.emit()
+	## Found in Preferences. The color of grid.
+	var grid_color := Color.BLACK:
+		set(value):
+			if value == grid_color:
+				return
+			grid_color = value
+			Global.grid_updated.emit()
+	## Found in Preferences. The enables/disables pixelation mode of grid.
+	var is_pixelated := false:
+		set(value):
+			if value == is_pixelated:
+				return
+			is_pixelated = value
+			Global.grid_updated.emit()
+	## Found in Preferences. contains special keywords that may not be common among grids.
+	var special_flags := PackedStringArray():
+		set(value):
+			if value == special_flags:
+				return
+			special_flags = value
+			Global.grid_updated.emit()
+
+	func _init(properties := {}) -> void:
+		Global.grids.append(self)
+		for prop in properties.keys():
+			if !get(prop) and typeof(properties[prop]) == TYPE_BOOL:
+				if properties[prop]:
+					special_flags.append(prop)
+			set(prop, properties[prop])
+
+
+func _init() -> void:
+	# Load settings from the config file
+	config_cache.load(CONFIG_PATH)
+	loaded_locales.sort()  # Make sure locales are always sorted
+	var saved_locale := OS.get_locale()
+	# Load language
+	if config_cache.has_section_key("preferences", "locale"):
+		saved_locale = config_cache.get_value("preferences", "locale")
+	set_locale(saved_locale, false)  # If no language is saved, OS' locale is used
+	# Set Data Directories
+	if OS.has_feature("template"):
+		root_directory = OS.get_executable_path().get_base_dir()
+	if OS.get_name() == "macOS":
+		data_directories.append(
+			root_directory.path_join("../Resources").path_join(CONFIG_SUBDIR_NAME)
+		)
+	data_directories.append(root_directory.path_join(CONFIG_SUBDIR_NAME))
+	if is_linux_or_bsd():
+		# Checks the list of files var, and processes them.
+		if OS.has_environment("XDG_DATA_DIRS"):
+			var raw_env_var := OS.get_environment("XDG_DATA_DIRS")  # includes empties.
+			var unappended_subdirs := raw_env_var.split(":", true)
+			for unapp_subdir in unappended_subdirs:
+				data_directories.append(unapp_subdir.path_join(HOME_SUBDIR_NAME))
+		else:
+			# Create defaults
+			for default_loc in ["/usr/local/share", "/usr/share"]:
+				data_directories.append(default_loc.path_join(HOME_SUBDIR_NAME))
+	# Set Favourites list in File dialogs
+	if config_cache.has_section_key("FileDialog", "favourite_paths"):
+		FileDialog.set_favorite_list(
+			config_cache.get_value("FileDialog", "favourite_paths", PackedStringArray())
+		)
+	if config_cache.has_section_key("FileDialog", "recent_paths"):
+		FileDialog.set_recent_list(
+			config_cache.get_value("FileDialog", "recent_paths", PackedStringArray())
+		)
+	# Load overridden project settings
+	if ProjectSettings.get_setting("display/window/tablet_driver") == "winink":
+		tablet_driver = 1
+	single_window_mode = ProjectSettings.get_setting("display/window/subwindows/embed_subwindows")
+	window_transparency = ProjectSettings.get_setting(
+		"display/window/per_pixel_transparency/allowed"
+	)
+	dummy_audio_driver = ProjectSettings.get_setting("audio/driver/driver") == "Dummy"
+
+
+func _ready() -> void:
+	print(get_system_info())
+	if DirAccess.dir_exists_absolute(FONTS_DIR_PATH):
+		var fonts_dir := DirAccess.open(FONTS_DIR_PATH)
+		var files := fonts_dir.get_files()
+		for file in files:
+			var font_file := OpenSave.open_font_file(FONTS_DIR_PATH.path_join(file))
+			if not font_file.data.is_empty():
+				loaded_fonts.append(font_file)
+	# Initialize Grid
+	Grid.new()  # gets auto added to grids array
+	_initialize_keychain()
+	default_width = config_cache.get_value("preferences", "default_width", default_width)
+	default_height = config_cache.get_value("preferences", "default_height", default_height)
+	default_fill_color = config_cache.get_value(
+		"preferences", "default_fill_color", default_fill_color
+	)
+	var proj_size := Vector2i(default_width, default_height)
+	projects.append(Project.new([], tr("untitled"), proj_size))
+	current_project = projects[0]
+	current_project.fill_color = default_fill_color
+
+	# Load preferences from the config file
+	if config_cache.has_section("preferences"):
+		for pref in config_cache.get_section_keys("preferences"):
+			if get(pref) == null:
+				continue
+			var value = config_cache.get_value("preferences", pref)
+			if pref == "grids":
+				if value:
+					update_grids(value)
+			else:
+				set(pref, value)
+	if OS.is_sandboxed() or OS.has_feature("mobile"):
+		Global.use_native_file_dialogs = true
+	current_project.initialize_attribution_data()
+	await get_tree().process_frame
+	project_switched.emit()
+	canvas.color_index.enabled = show_pixel_indices  # Initialize color index preview
+
+
+func is_linux_or_bsd() -> bool:
+	return OS.get_name() in ["Linux", "FreeBSD", "NetBSD", "OpenBSD", "BSD"]
+
+
+## Returns [code]true[/code] if the platform's selection modifier is held down.
+## On macOS this is the Command key, because Control+left-click is interpreted by the
+## operating system as a right-click; on every other platform it is the Control key.
+func is_ctrl_or_cmd_pressed() -> bool:
+	if OS.get_name() == "macOS":
+		return Input.is_key_pressed(KEY_META)
+	return Input.is_action_pressed(&"ctrl")
+
+
+## Print this when Pixelorama launches so it can be stored in the log files.
+## This info may help us better debug issues certain users may have.
+func get_system_info() -> String:
+	var pixelorama_ver := "Pixelorama " + current_version
+	var distribution_name := OS.get_distribution_name()
+	if distribution_name.is_empty():
+		distribution_name = OS.get_name()
+	if distribution_name.is_empty():
+		distribution_name = "Other"
+
+	var distribution_version := OS.get_version_alias()
+	var display_session_type := ""
+	var display_driver_window_mode := ""
+	var distribution_display_session_type := distribution_name
+	if is_linux_or_bsd():
+		var xdg_session_type := OS.get_environment("XDG_SESSION_TYPE")
+		var space_char := ord(" ")
+		display_session_type = xdg_session_type.capitalize().remove_char(space_char)
+		display_driver_window_mode = (
+			DisplayServer.get_name().capitalize().remove_char(space_char) + " display driver"
+		)
+	if not distribution_version.is_empty():
+		distribution_display_session_type += " " + distribution_version
+
+	if not display_session_type.is_empty():
+		distribution_display_session_type += " on " + display_session_type
+
+	if not display_driver_window_mode.is_empty():
+		display_driver_window_mode += ", "
+
+	var embedded_subwindows := get_viewport().is_embedding_subwindows()
+	display_driver_window_mode += "Single-window" if embedded_subwindows else "Multi-window"
+
+	var screen_count := DisplayServer.get_screen_count()
+	if screen_count == 1:
+		display_driver_window_mode += ", " + str(screen_count) + " monitor"
+	else:
+		display_driver_window_mode += ", " + str(screen_count) + " monitors"
+
+	var is_sandboxed := "is sandboxed" if OS.is_sandboxed() else "is not sandboxed"
+	var processor_name := OS.get_processor_name()
+	var processor_count := OS.get_processor_count()
+	var system_ram: int = OS.get_memory_info()["physical"]
+
+	var audio_driver_name := AudioServer.get_driver_name()
+	var info := PackedStringArray()
+	info.push_back(pixelorama_ver)
+	info.push_back(distribution_display_session_type)
+	info.push_back(display_driver_window_mode)
+	info.push_back(is_sandboxed)
+	info.push_back("%s (%d threads)" % [processor_name, processor_count])
+	if system_ram > 0:
+		info.push_back("%s memory" % String.humanize_size(system_ram))
+	info.push_back(audio_driver_name)
+	return String(" - ").join(info)
+
+
+func update_grids(grids_data: Dictionary) -> void:
+	# Remove old grids
+	grids.clear()
+	grid_updated.emit()
+	# ADD new ones
+	for grid_idx in grids_data.size():
+		Grid.new(grids_data[grid_idx])  # gets auto added to grids array
+
+
+func _initialize_keychain() -> void:
+	Keychain.config_file = config_cache
+	Keychain.actions = {
+		&"new_file": Keychain.InputAction.new("", "File menu", true),
+		&"open_file": Keychain.InputAction.new("", "File menu", true),
+		&"open_last_project": Keychain.InputAction.new("", "File menu", true),
+		&"save_file": Keychain.InputAction.new("", "File menu", true),
+		&"save_file_as": Keychain.InputAction.new("", "File menu", true),
+		&"export_file": Keychain.InputAction.new("", "File menu", true),
+		&"export_file_as": Keychain.InputAction.new("", "File menu", true),
+		&"quit": Keychain.InputAction.new("", "File menu", true),
+		&"redo": Keychain.InputAction.new("", "Edit menu", true),
+		&"undo": Keychain.InputAction.new("", "Edit menu", true),
+		&"undo_history": Keychain.InputAction.new("", "Edit menu", true),
+		&"cut": Keychain.InputAction.new("", "Edit menu", true),
+		&"copy": Keychain.InputAction.new("", "Edit menu", true),
+		&"paste": Keychain.InputAction.new("", "Edit menu", true),
+		&"paste_in_place": Keychain.InputAction.new("", "Edit menu", true),
+		&"paste_from_clipboard": Keychain.InputAction.new("", "Edit menu", true),
+		&"delete": Keychain.InputAction.new("", "Edit menu", true),
+		&"new_brush": Keychain.InputAction.new("", "Edit menu", true),
+		&"preferences": Keychain.InputAction.new("", "Edit menu", true),
+		&"project_properties": Keychain.InputAction.new("", "Image menu", true),
+		&"scale_image": Keychain.InputAction.new("", "Image menu", true),
+		&"crop_to_selection": Keychain.InputAction.new("", "Image menu", true),
+		&"crop_to_content": Keychain.InputAction.new("", "Image menu", true),
+		&"resize_canvas": Keychain.InputAction.new("", "Image menu", true),
+		&"reapply_last_effect": Keychain.InputAction.new("", "Effects menu", true),
+		&"offset_image": Keychain.InputAction.new("", "Effects menu", true),
+		&"mirror_image": Keychain.InputAction.new("", "Effects menu", true),
+		&"rotate_image": Keychain.InputAction.new("", "Effects menu", true),
+		&"flat_to_isometric": Keychain.InputAction.new("", "Effects menu", true),
+		&"invert_colors": Keychain.InputAction.new("", "Effects menu", true),
+		&"desaturation": Keychain.InputAction.new("", "Effects menu", true),
+		&"outline": Keychain.InputAction.new("", "Effects menu", true),
+		&"drop_shadow": Keychain.InputAction.new("", "Effects menu", true),
+		&"adjust_hsv": Keychain.InputAction.new("", "Effects menu", true),
+		&"adjust_brightness_contrast": Keychain.InputAction.new("", "Effects menu", true),
+		&"color_curves": Keychain.InputAction.new("", "Effects menu", true),
+		&"gaussian_blur": Keychain.InputAction.new("", "Effects menu", true),
+		&"gradient": Keychain.InputAction.new("", "Effects menu", true),
+		&"gradient_map": Keychain.InputAction.new("", "Effects menu", true),
+		&"palettize": Keychain.InputAction.new("", "Effects menu", true),
+		&"pixelize": Keychain.InputAction.new("", "Effects menu", true),
+		&"posterize": Keychain.InputAction.new("", "Effects menu", true),
+		&"center_canvas": Keychain.InputAction.new("", "View menu", true),
+		&"mirror_view": Keychain.InputAction.new("", "View menu", true),
+		&"show_grid": Keychain.InputAction.new("", "View menu", true),
+		&"show_pixel_grid": Keychain.InputAction.new("", "View menu", true),
+		&"show_pixel_indices": Keychain.InputAction.new("", "View menu", true),
+		&"show_guides": Keychain.InputAction.new("", "View menu", true),
+		&"show_rulers": Keychain.InputAction.new("", "View menu", true),
+		&"show_reference_images": Keychain.InputAction.new("", "View menu", true),
+		&"lock_guides": Keychain.InputAction.new("", "View menu", true),
+		&"display_layer_effects": Keychain.InputAction.new("", "View menu", true),
+		&"moveable_panels": Keychain.InputAction.new("", "Window menu", true),
+		&"zen_mode": Keychain.InputAction.new("", "Window menu", true),
+		&"toggle_fullscreen": Keychain.InputAction.new("", "Window menu", true),
+		&"clear_selection": Keychain.InputAction.new("", "Select menu", true),
+		&"reselect": Keychain.InputAction.new("", "Select menu", true),
+		&"select_all": Keychain.InputAction.new("", "Select menu", true),
+		&"invert_selection": Keychain.InputAction.new("", "Select menu", true),
+		&"select_cel_area": Keychain.InputAction.new("", "Select menu", true),
+		&"view_splash_screen": Keychain.InputAction.new("", "Help menu", true),
+		&"open_docs": Keychain.InputAction.new("", "Help menu", true),
+		&"issue_tracker": Keychain.InputAction.new("", "Help menu", true),
+		&"open_editor_data_folder": Keychain.InputAction.new("", "Help menu", true),
+		&"changelog": Keychain.InputAction.new("", "Help menu", true),
+		&"about_pixelorama": Keychain.InputAction.new("", "Help menu", true),
+		&"previous_project": Keychain.InputAction.new("", "Canvas"),
+		&"next_project": Keychain.InputAction.new("", "Canvas"),
+		&"close_project": Keychain.InputAction.new("", "Canvas"),
+		&"zoom_in": Keychain.InputAction.new("", "Canvas"),
+		&"zoom_out": Keychain.InputAction.new("", "Canvas"),
+		&"rotate_left": Keychain.InputAction.new("", "Canvas"),
+		&"rotate_right": Keychain.InputAction.new("", "Canvas"),
+		&"camera_left": Keychain.InputAction.new("", "Canvas"),
+		&"camera_right": Keychain.InputAction.new("", "Canvas"),
+		&"camera_up": Keychain.InputAction.new("", "Canvas"),
+		&"camera_down": Keychain.InputAction.new("", "Canvas"),
+		&"pan": Keychain.InputAction.new("", "Canvas"),
+		&"activate_left_tool": Keychain.InputAction.new("", "Canvas"),
+		&"activate_right_tool": Keychain.InputAction.new("", "Canvas"),
+		&"move_mouse_left": Keychain.InputAction.new("", "Cursor movement"),
+		&"move_mouse_right": Keychain.InputAction.new("", "Cursor movement"),
+		&"move_mouse_up": Keychain.InputAction.new("", "Cursor movement"),
+		&"move_mouse_down": Keychain.InputAction.new("", "Cursor movement"),
+		&"reset_colors_default": Keychain.InputAction.new("", "Global tool options"),
+		&"switch_colors": Keychain.InputAction.new("", "Global tool options"),
+		&"horizontal_mirror": Keychain.InputAction.new("", "Global tool options"),
+		&"vertical_mirror": Keychain.InputAction.new("", "Global tool options"),
+		&"diagonal_xy_mirror": Keychain.InputAction.new("", "Global tool options"),
+		&"diagonal_x_minus_y_mirror": Keychain.InputAction.new("", "Global tool options"),
+		&"pixel_perfect": Keychain.InputAction.new("", "Global tool options"),
+		&"alpha_lock": Keychain.InputAction.new("", "Global tool options"),
+		&"rename_layer": Keychain.InputAction.new("", "Timeline"),
+		&"new_layer": Keychain.InputAction.new("", "Timeline"),
+		&"remove_layer": Keychain.InputAction.new("", "Timeline"),
+		&"move_layer_up": Keychain.InputAction.new("", "Timeline"),
+		&"move_layer_down": Keychain.InputAction.new("", "Timeline"),
+		&"clone_layer": Keychain.InputAction.new("", "Timeline"),
+		&"merge_down_layer": Keychain.InputAction.new("", "Timeline"),
+		&"add_frame": Keychain.InputAction.new("", "Timeline"),
+		&"remove_frame": Keychain.InputAction.new("", "Timeline"),
+		&"clone_cel": Keychain.InputAction.new("", "Timeline"),
+		&"clone_frame": Keychain.InputAction.new("", "Timeline"),
+		&"move_frame_left": Keychain.InputAction.new("", "Timeline"),
+		&"move_frame_right": Keychain.InputAction.new("", "Timeline"),
+		&"go_to_first_frame": Keychain.InputAction.new("", "Timeline"),
+		&"go_to_last_frame": Keychain.InputAction.new("", "Timeline"),
+		&"go_to_previous_frame": Keychain.InputAction.new("", "Timeline"),
+		&"go_to_previous_frame_with_same_tag": Keychain.InputAction.new("", "Timeline"),
+		&"go_to_next_frame": Keychain.InputAction.new("", "Timeline"),
+		&"go_to_next_frame_with_same_tag": Keychain.InputAction.new("", "Timeline"),
+		&"go_to_previous_layer": Keychain.InputAction.new("", "Timeline"),
+		&"go_to_next_layer": Keychain.InputAction.new("", "Timeline"),
+		&"play_backwards": Keychain.InputAction.new("", "Timeline"),
+		&"play_forward": Keychain.InputAction.new("", "Timeline"),
+		&"onion_skinning_toggle": Keychain.InputAction.new("", "Timeline"),
+		&"loop_toggle": Keychain.InputAction.new("", "Timeline"),
+		&"onion_skinning_settings": Keychain.InputAction.new("", "Timeline"),
+		&"layer_visibility": Keychain.InputAction.new("", "Timeline"),
+		&"layer_lock": Keychain.InputAction.new("", "Timeline"),
+		&"new_palette": Keychain.InputAction.new("", "Palettes"),
+		&"edit_palette": Keychain.InputAction.new("", "Palettes"),
+		&"brush_size_increment": Keychain.InputAction.new("", "Tool modifiers"),
+		&"brush_size_decrement": Keychain.InputAction.new("", "Tool modifiers"),
+		&"change_tool_mode": Keychain.InputAction.new("", "Tool modifiers", false),
+		&"swap_tools": Keychain.InputAction.new("", "Tool modifiers"),
+		&"draw_create_line": Keychain.InputAction.new("", "Draw tools", false),
+		&"draw_snap_angle": Keychain.InputAction.new("", "Draw tools", false),
+		&"change_layer_automatically": Keychain.InputAction.new("", "Tools", false),
+		&"shape_perfect": Keychain.InputAction.new("", "Shape tools", false),
+		&"shape_center": Keychain.InputAction.new("", "Shape tools", false),
+		&"shape_displace": Keychain.InputAction.new("", "Shape tools", false),
+		&"selection_add": Keychain.InputAction.new("", "Selection tools", false),
+		&"selection_subtract": Keychain.InputAction.new("", "Selection tools", false),
+		&"selection_intersect": Keychain.InputAction.new("", "Selection tools", false),
+		&"transformation_confirm": Keychain.InputAction.new("", "Transformation tools", false),
+		&"transformation_cancel": Keychain.InputAction.new("", "Transformation tools", false),
+		&"transform_snap_axis": Keychain.InputAction.new("", "Transformation tools", false),
+		&"transform_snap_grid": Keychain.InputAction.new("", "Transformation tools", false),
+		&"transform_move_selection_only":
+		Keychain.InputAction.new("", "Transformation tools", false),
+		&"transform_copy_selection_content":
+		Keychain.InputAction.new("", "Transformation tools", false),
+		&"reference_rotate": Keychain.InputAction.new("", "Reference images", false),
+		&"reference_scale": Keychain.InputAction.new("", "Reference images", false),
+		&"reference_quick_menu": Keychain.InputAction.new("", "Reference images", false),
+		&"cancel_reference_transform": Keychain.InputAction.new("", "Reference images", false),
+		&"toggle_draw_tiles_mode": Keychain.InputAction.new("", "Tileset panel", false),
+		&"tile_edit_mode_manual": Keychain.InputAction.new("", "Tileset panel", false),
+		&"tile_edit_mode_auto": Keychain.InputAction.new("", "Tileset panel", false),
+		&"tile_edit_mode_stack": Keychain.InputAction.new("", "Tileset panel", false),
+		&"tile_rotate_left": Keychain.InputAction.new("", "Tileset panel", false),
+		&"tile_rotate_right": Keychain.InputAction.new("", "Tileset panel", false),
+		&"tile_flip_horizontal": Keychain.InputAction.new("", "Tileset panel", false),
+		&"tile_flip_vertical": Keychain.InputAction.new("", "Tileset panel", false),
+		&"mm_change_brush_size":
+		Keychain.MouseMovementInputAction.new(
+			"Change brush size", "Mouse drag", false, &"mm_change_brush_size"
+		),
+		&"mm_color_change_hue":
+		Keychain.MouseMovementInputAction.new(
+			"Color change hue", "Mouse drag", false, &"mm_color_change_hue", Vector2.DOWN, 0.001
+		),
+		&"mm_color_change_saturation":
+		Keychain.MouseMovementInputAction.new(
+			"Color change saturation",
+			"Mouse drag",
+			false,
+			&"mm_color_change_saturation",
+			Vector2.RIGHT,
+			0.001
+		),
+		&"mm_color_change_value":
+		Keychain.MouseMovementInputAction.new(
+			"Color change value", "Mouse drag", false, &"mm_color_change_value", Vector2.DOWN, 0.001
+		),
+		&"mm_color_change_alpha":
+		Keychain.MouseMovementInputAction.new(
+			"Color change alpha",
+			"Mouse drag",
+			false,
+			&"mm_color_change_alpha",
+			Vector2.RIGHT,
+			0.001
+		),
+	}
+
+	Keychain.groups = {
+		"Canvas": Keychain.InputGroup.new("", false),
+		"Cursor movement": Keychain.InputGroup.new("Canvas"),
+		"Reference images": Keychain.InputGroup.new("Canvas"),
+		"Timeline": Keychain.InputGroup.new(),
+		"Global tool options": Keychain.InputGroup.new(),
+		"Palettes": Keychain.InputGroup.new(),
+		"Tools": Keychain.InputGroup.new(),
+		"Left": Keychain.InputGroup.new("Tools"),
+		"Right": Keychain.InputGroup.new("Tools"),
+		"Quick tools": Keychain.InputGroup.new("Tools"),
+		"Menu": Keychain.InputGroup.new(),
+		"File menu": Keychain.InputGroup.new("Menu"),
+		"Edit menu": Keychain.InputGroup.new("Menu"),
+		"View menu": Keychain.InputGroup.new("Menu"),
+		"Select menu": Keychain.InputGroup.new("Menu"),
+		"Image menu": Keychain.InputGroup.new("Menu"),
+		"Effects menu": Keychain.InputGroup.new("Menu"),
+		"Window menu": Keychain.InputGroup.new("Menu"),
+		"Help menu": Keychain.InputGroup.new("Menu"),
+		"Tool modifiers": Keychain.InputGroup.new(),
+		"Draw tools": Keychain.InputGroup.new("Tool modifiers"),
+		"Shape tools": Keychain.InputGroup.new("Tool modifiers"),
+		"Selection tools": Keychain.InputGroup.new("Tool modifiers"),
+		"Transformation tools": Keychain.InputGroup.new("Tool modifiers"),
+		"Tileset panel": Keychain.InputGroup.new(),
+		"Mouse drag": Keychain.InputGroup.new(),
+	}
+	Keychain.ignore_actions = ["left_mouse", "right_mouse", "middle_mouse", "shift", "ctrl"]
+
+
+## This method serves the purpose of both initializing (first time it's called), and retrieving
+## crash info of last session
+func session_crashed_last_time() -> bool:
+	# Callable for time updater
+	var update_monitoring_time = func():
+		# NOTE: Only create the file at RUNNING_FILE_PATH through timeout signal. Creating them
+		# instantly ar session startup would cause conflicts between consecutive calls of the
+		# session_crashed_last_time method.
+		var m_file := FileAccess.open(RUNNING_FILE_PATH, FileAccess.WRITE)
+		m_file.store_line(var_to_str(int(Time.get_unix_time_from_system())))
+		m_file.close()
+
+	# Add a ping timer (this serves as a heart beat that announces that session is still alive
+	# every wait_time seconds).
+	var ping_timer: Timer = get_tree().get_first_node_in_group("SessionPingTimer")
+	if not ping_timer:
+		ping_timer = Timer.new()  # Used to ping that at least one session is alive during Timer's run.
+		ping_timer.process_mode = Node.PROCESS_MODE_ALWAYS
+		ping_timer.add_to_group("SessionPingTimer")
+		ping_timer.wait_time = 5  # Ping that at least one session is alive during this time
+		ping_timer.name = "SessionPingTimer"
+		add_child(ping_timer)
+		# Connect this file to ping timer.
+		ping_timer.timeout.connect(update_monitoring_time)
+		pixelorama_about_to_close.connect(func(): DirAccess.remove_absolute(RUNNING_FILE_PATH))
+		ping_timer.start()
+
+	# This is the file the ping timer announces to
+	if FileAccess.file_exists(RUNNING_FILE_PATH):
+		# This code will decide if pixelorama crashed or not
+		var monitor_file := FileAccess.open(RUNNING_FILE_PATH, FileAccess.READ)
+		var last_update_time = str_to_var(monitor_file.get_line())
+		monitor_file.close()
+		if typeof(last_update_time) == TYPE_INT:
+			# If the time difference detected in file is less than wait_time, it's likely that
+			# this or some other session is still pinging this file
+			if int(Time.get_unix_time_from_system()) - last_update_time <= ping_timer.wait_time:
+				return false
+		# If this line is reached then it's likely that the app crashed last session
+		return true
+	return false
+
+
+## Generates an animated notification label showing [param text].
+func notification_label(text: String) -> void:
+	if not show_notification_label:
+		return
+	var notif := NotificationLabel.new()
+	notif.text = tr(text)
+	notif.position = main_viewport.global_position
+	notif.position.y += main_viewport.size.y
+	control.add_child(notif)
+
+
+## Performs the general, bare minimum stuff needed after an undo is done.
+func general_undo(project := current_project) -> void:
+	var action_name := project.undo_redo.get_current_action_name()
+	notification_label("Undo: %s" % action_name)
+
+
+## Performs the general, bare minimum stuff needed after a redo is done.
+func general_redo(project := current_project) -> void:
+	if control.redone:
+		var action_name := project.undo_redo.get_current_action_name()
+		notification_label("Redo: %s" % action_name)
+
+
+## Performs actions done after an undo or redo is done. this takes [member general_undo] and
+## [member general_redo] a step further. Does further work if the current action requires it
+## like refreshing textures, redraw UI elements etc...[br]
+## [param frame_index] and [param layer_index] are there for optimization. if the undo or redo
+## happens only in one cel then the cel's frame and layer should be passed to [param frame_index]
+## and [param layer_index] respectively, otherwise the entire timeline will be refreshed.
+func undo_or_redo(
+	undo: bool, frame_index := -1, layer_index := -1, project := current_project
+) -> void:
+	if undo:
+		general_undo(project)
+	else:
+		general_redo(project)
+	var action_name := project.undo_redo.get_current_action_name()
+	if (
+		action_name
+		in [
+			"Draw",
+			"Draw Shape",
+			"Select",
+			"Move Selection",
+			"Scale",
+			"Merge Layer",
+			"Link Cel",
+			"Unlink Cel"
+		]
+	):
+		if layer_index > -1 and frame_index > -1:
+			var cel := project.frames[frame_index].cels[layer_index]
+			if action_name == "Scale":
+				cel.size_changed(project.size)
+			canvas.update_texture(layer_index, frame_index, project, undo)
+		else:
+			for i in project.frames.size():
+				for j in project.layers.size():
+					var cel := project.frames[i].cels[j]
+					if action_name == "Scale":
+						cel.size_changed(project.size)
+					canvas.update_texture(j, i, project, undo)
+
+		if action_name == "Scale":
+			for i in project.frames.size():
+				for j in project.layers.size():
+					var current_cel := project.frames[i].cels[j]
+					if current_cel is not Cel3D:
+						current_cel.image_texture.set_image(current_cel.get_image())
+			project.selection_map_changed()
+
+	canvas.queue_redraw()
+	canvas.selection.queue_redraw()
+	for canvas_preview in get_tree().get_nodes_in_group("CanvasPreviews"):
+		canvas_preview.queue_redraw()
+	if !project.has_changed:
+		if project == current_project:
+			get_window().title = get_window().title + "(*)"
+	project.has_changed = true
+
+
+## Use this to prepare Pixelorama before opening a dialog.
+func dialog_open(open: bool, is_file_dialog := false) -> void:
+	if is_file_dialog and use_native_file_dialogs:
+		return
+	var dim_color := Color.WHITE
+	if open:
+		if dim_on_popup:
+			dim_color = Color(0.5, 0.5, 0.5)
+
+	var tween := create_tween().set_trans(Tween.TRANS_LINEAR).set_ease(Tween.EASE_OUT)
+	tween.tween_property(control, "modulate", dim_color, 0.1)
+
+
+func popup_error(text: String) -> void:
+	error_dialog.set_text(text)
+	error_dialog.popup_centered_clamped()
+	dialog_open(true)
+
+
+## sets the [member BaseButton.disabled] property of the [param button] to [param disable],
+## changes the cursor shape for it accordingly, and dims/brightens any textures it may have.
+func disable_button(button: BaseButton, disable: bool) -> void:
+	button.disabled = disable
+	if disable:
+		button.mouse_default_cursor_shape = Control.CURSOR_FORBIDDEN
+	else:
+		button.mouse_default_cursor_shape = Control.CURSOR_POINTING_HAND
+
+	if button is Button:
+		for c in button.get_children():
+			if c is TextureRect:
+				c.modulate.a = 0.5 if disable else modulate_icon_color.a
+				break
+
+
+## Changes the texture of the [param texture_rect] to another texture of name [param new_file_name]
+## present in the same directory as the old one.
+func change_button_texturerect(texture_rect: TextureRect, new_file_name: String) -> void:
+	if !texture_rect.texture:
+		return
+	var file_name := texture_rect.texture.resource_path.get_basename().get_file()
+	var directory_path := texture_rect.texture.resource_path.get_basename().replace(file_name, "")
+	texture_rect.texture = load(directory_path.path_join(new_file_name))
+
+
+## Joins each [String] path in [param basepaths] with [param subpath] using
+## [method String.path_join]
+func path_join_array(basepaths: PackedStringArray, subpath: String) -> PackedStringArray:
+	var res := PackedStringArray()
+	for _path in basepaths:
+		res.append(_path.path_join(subpath))
+	return res
+
+
+func set_locale(locale: String, load_keychain := true) -> void:
+	locale = find_nearest_locale(locale)
+	if not locale in TranslationServer.get_loaded_locales():
+		var translation := load("res://Translations/%s.po" % locale)
+		if is_instance_valid(translation) and translation is Translation:
+			TranslationServer.add_translation(translation)
+		else:
+			printerr("Translation %s for locale %s failed to load." % [translation, locale])
+			return
+		if load_keychain:
+			Keychain.load_translation(locale)
+	TranslationServer.set_locale(locale)
+
+
+func find_nearest_locale(locale: String) -> String:
+	if locale in loaded_locales:
+		return locale
+	var max_similarity_score := 0
+	var closest_locale := "en_US"
+	for loaded_locale in loaded_locales:
+		var compared := TranslationServer.compare_locales(locale, loaded_locale)
+		if compared > max_similarity_score:
+			max_similarity_score = compared
+			closest_locale = loaded_locale
+	return closest_locale
+
+
+func get_available_font_names() -> PackedStringArray:
+	var font_names := PackedStringArray()
+	for font in loaded_fonts:
+		var font_name := font.get_font_name()
+		if font_name in font_names:
+			continue
+		font_names.append(font_name)
+	var system_fonts := OS.get_system_fonts()
+	system_fonts.sort()
+	for system_font_name in system_fonts:
+		if system_font_name in font_names:
+			continue
+		font_names.append(system_font_name)
+	return font_names
+
+
+func find_font_from_name(font_name: String) -> Font:
+	for font in loaded_fonts:
+		if font.get_font_name() == font_name:
+			return font.duplicate()
+	for system_font_name in OS.get_system_fonts():
+		if system_font_name == font_name:
+			var system_font := SystemFont.new()
+			system_font.font_names = [font_name]
+			return system_font
+	return ThemeDB.fallback_font
+
+
+## Used by undo/redo operations to store compressed images in memory.
+## [param redo_data] and [param undo_data] are Dictionaries,
+## with keys of type [Image] and [Dictionary] values, coming from [member Image.data].
+func undo_redo_compress_images(
+	redo_data: Dictionary, undo_data: Dictionary, project := current_project
+) -> void:
+	for image in redo_data:
+		if not image is Image:
+			continue
+		var new_image: Dictionary = redo_data[image]
+		var new_size := Vector2i(new_image["width"], new_image["height"])
+		var buffer_size: int = new_image["data"].size()
+		var compressed_data: PackedByteArray = new_image["data"].compress()
+		project.undo_redo.add_do_method(
+			undo_redo_draw_op.bind(image, new_size, compressed_data, buffer_size)
+		)
+	for image in undo_data:
+		if not image is Image:
+			continue
+		var new_image: Dictionary = undo_data[image]
+		var new_size := Vector2i(new_image["width"], new_image["height"])
+		var buffer_size: int = new_image["data"].size()
+		var compressed_data: PackedByteArray = new_image["data"].compress()
+		project.undo_redo.add_undo_method(
+			undo_redo_draw_op.bind(image, new_size, compressed_data, buffer_size)
+		)
+
+
+## Decompresses the [param compressed_image_data] with [param buffer_size] to the [param image]
+## This is a memory optimization method used while performing undo/redo drawing operations.
+func undo_redo_draw_op(
+	image: Image, new_size: Vector2i, compressed_image_data: PackedByteArray, buffer_size: int
+) -> void:
+	if image is ImageExtended and image.is_indexed:
+		# If using indexed mode,
+		# just convert the indices to RGB instead of setting the image data directly.
+		if image.get_size() != new_size:
+			image.crop(new_size.x, new_size.y)
+		image.convert_indexed_to_rgb()
+	else:
+		var decompressed := compressed_image_data.decompress(buffer_size)
+		image.set_data(
+			new_size.x, new_size.y, image.has_mipmaps(), image.get_format(), decompressed
+		)
+
+
+func create_node_from_variable(
+	curr_value: Variant, value_changed: Callable, properties := {}, started_editing := Callable()
+) -> Control:
+	var hint: PropertyHint = properties.get("hint", PROPERTY_HINT_NONE)
+	var hint_string: String = properties.get("hint_string", "")
+	var min_value = null
+	var max_value = null
+	var step = null
+	var allow_lesser := false
+	var allow_greater := false
+	var prefix := ""
+	var suffix := ""
+	if "or_less" in hint_string:
+		allow_lesser = true
+	if "or_greater" in hint_string:
+		allow_greater = true
+	var hint_string_split := hint_string.split(",")
+	for i in hint_string_split.size():
+		var option := hint_string_split[i]
+		if i == 0 and hint_string_split[0].is_valid_float():
+			min_value = hint_string_split[0].to_float()
+		elif i == 1 and hint_string_split[1].is_valid_float():
+			max_value = hint_string_split[1].to_float()
+		elif i == 2 and hint_string_split[2].is_valid_float():
+			step = hint_string_split[2].to_float()
+		elif option.begins_with("prefix:"):
+			prefix = option.replace("prefix:", "")
+		elif option.begins_with("suffix:"):
+			suffix = option.replace("suffix:", "")
+	var type := typeof(curr_value)
+	match type:
+		TYPE_BOOL:
+			var check_box := CheckBox.new()
+			check_box.text = "On"
+			check_box.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+			check_box.button_pressed = curr_value == true
+			if started_editing.is_valid():
+				check_box.button_down.connect(started_editing)
+			if value_changed.is_valid():
+				check_box.toggled.connect(value_changed)
+			return check_box
+		TYPE_INT, TYPE_FLOAT:
+			if hint == PROPERTY_HINT_ENUM or hint == PROPERTY_HINT_ENUM_SUGGESTION:
+				var option_button := OptionButton.new()
+				option_button.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+				for option in hint_string_split:
+					option_button.add_item(option)
+				option_button.select(curr_value)
+				if started_editing.is_valid():
+					option_button.button_down.connect(started_editing)
+				if value_changed.is_valid():
+					option_button.item_selected.connect(value_changed)
+				return option_button
+			else:
+				var slider := ValueSlider.new()
+				if type == TYPE_FLOAT:
+					slider.step = 0.01
+				if typeof(step) == type:
+					step = snapped(step, 0.000001)
+					slider.step = step
+				slider.allow_lesser = allow_lesser
+				slider.allow_greater = allow_greater
+				if typeof(min_value) == type:
+					slider.min_value = min_value
+				if typeof(max_value) == type:
+					slider.max_value = max_value
+				slider.prefix = prefix
+				slider.suffix = suffix
+				slider.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+				slider.value = curr_value
+				if started_editing.is_valid():
+					slider.drag_started.connect(started_editing)
+				if value_changed.is_valid():
+					slider.value_changed.connect(value_changed)
+				return slider
+		TYPE_VECTOR2, TYPE_VECTOR2I:
+			var slider := ShaderLoader.VALUE_SLIDER_V2_TSCN.instantiate() as ValueSliderV2
+			slider.show_ratio = true
+			if type == TYPE_VECTOR2:
+				slider.step = 0.01
+			if typeof(step) in [TYPE_FLOAT, TYPE_INT]:
+				slider.step = step
+			slider.allow_lesser = allow_lesser
+			slider.allow_greater = allow_greater
+			if typeof(min_value) == type:
+				slider.min_value = min_value
+			elif typeof(min_value) in [TYPE_FLOAT, TYPE_INT]:
+				slider.min_value = Vector2(min_value, min_value)
+			if typeof(max_value) == type:
+				slider.max_value = max_value
+			elif typeof(max_value) in [TYPE_FLOAT, TYPE_INT]:
+				slider.max_value = Vector2(max_value, max_value)
+			slider.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+			slider.value = curr_value
+			if started_editing.is_valid():
+				slider.drag_started.connect(started_editing)
+			if value_changed.is_valid():
+				slider.value_changed.connect(value_changed)
+			return slider
+		TYPE_VECTOR3, TYPE_VECTOR3I:
+			var slider := ShaderLoader.VALUE_SLIDER_V3_TSCN.instantiate() as ValueSliderV3
+			slider.show_ratio = true
+			if type == TYPE_VECTOR3:
+				slider.step = 0.01
+			if typeof(step) in [TYPE_FLOAT, TYPE_INT]:
+				slider.step = step
+			slider.allow_lesser = allow_lesser
+			slider.allow_greater = allow_greater
+			if typeof(min_value) == type:
+				slider.min_value = min_value
+			elif typeof(min_value) in [TYPE_FLOAT, TYPE_INT]:
+				if min_value <= -9999:
+					min_value = -100
+				slider.min_value = Vector3(min_value, min_value, min_value)
+			if typeof(max_value) == type:
+				slider.max_value = max_value
+			elif typeof(max_value) in [TYPE_FLOAT, TYPE_INT]:
+				if max_value >= 9999:
+					max_value = 100
+				slider.max_value = Vector3(max_value, max_value, max_value)
+			slider.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+			if "radians_as_degrees" in hint_string:
+				slider.value = radians_to_degrees(curr_value)
+			else:
+				slider.value = curr_value
+			if started_editing.is_valid():
+				slider.drag_started.connect(started_editing)
+			if value_changed.is_valid():
+				if "radians_as_degrees" in hint_string:
+					slider.value_changed.connect(
+						func(new_value): value_changed.call(degrees_to_radians(new_value))
+					)
+				else:
+					slider.value_changed.connect(value_changed)
+			return slider
+		TYPE_VECTOR4, TYPE_VECTOR4I, TYPE_COLOR:
+			var color_picker_button := ColorPickerButton.new()
+			color_picker_button.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+			color_picker_button.color = curr_value
+			if started_editing.is_valid():
+				color_picker_button.button_down.connect(started_editing)
+			if value_changed.is_valid():
+				color_picker_button.color_changed.connect(value_changed)
+			return color_picker_button
+		TYPE_BASIS:
+			var sliders := ShaderLoader.BASIS_SLIDERS_TSCN.instantiate() as BasisSliders
+			if typeof(step) in [TYPE_FLOAT, TYPE_INT]:
+				sliders.step = step
+			sliders.allow_lesser = allow_lesser
+			sliders.allow_greater = allow_greater
+			if typeof(min_value) == type:
+				sliders.min_value = min_value
+			if typeof(max_value) == type:
+				sliders.max_value = max_value
+			sliders.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+			sliders.value = curr_value
+			if started_editing.is_valid():
+				sliders.drag_started.connect(started_editing)
+			if value_changed.is_valid():
+				sliders.value_changed.connect(value_changed)
+			return sliders
+		TYPE_STRING, TYPE_STRING_NAME:
+			var line_edit := LineEdit.new()
+			line_edit.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+			line_edit.text = curr_value
+			if started_editing.is_valid():
+				line_edit.editing_toggled.connect(
+					func(toggled_on: bool):
+						if toggled_on:
+							started_editing.call()
+				)
+			if value_changed.is_valid():
+				line_edit.text_submitted.connect(value_changed)
+			return line_edit
+		TYPE_OBJECT:
+			if curr_value is Font:
+				var option_button := OptionButton.new()
+				option_button.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+				var font_name := (curr_value as Font).get_font_name()
+				for available_font_name in get_available_font_names():
+					option_button.add_item(available_font_name)
+					if font_name == available_font_name:
+						option_button.select(option_button.item_count - 1)
+				if started_editing.is_valid():
+					option_button.button_down.connect(started_editing)
+				if value_changed.is_valid():
+					option_button.item_selected.connect(value_changed)
+				return option_button
+			elif curr_value is Texture2D:
+				var button := Button.new()
+				button.text = "Load texture"
+				if started_editing.is_valid():
+					button.button_down.connect(started_editing)
+				if value_changed.is_valid():
+					button.pressed.connect(popup_image_file_dialog.bind(value_changed))
+				button.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+				button.mouse_default_cursor_shape = Control.CURSOR_POINTING_HAND
+				var mod_button := Button.new()
+				mod_button.name = "ModifyButton"
+				mod_button.text = "Modify"
+				if value_changed.is_valid():
+					mod_button.pressed.connect(
+						func():
+							ShaderLoader.modify_texture_resource(
+								curr_value.get_image(),
+								"",
+								on_resource_proj_updated.bind(value_changed)
+							)
+					)
+				mod_button.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+				mod_button.mouse_default_cursor_shape = Control.CURSOR_POINTING_HAND
+				var hbox := HBoxContainer.new()
+				hbox.add_child(button)
+				hbox.add_child(mod_button)
+				return hbox
+	return null
+
+
+func set_value_to_node(node: Control, value) -> void:
+	if node is CheckBox:
+		node.set_pressed_no_signal(value)
+	elif node is ValueSlider:
+		node.set_value_no_signal_update_display(value)
+	elif node is ValueSliderV2:
+		node.set_value_no_signal(value)
+	elif node is ValueSliderV3:
+		node.set_value_no_signal(value)
+	elif node is ColorPickerButton:
+		node.color = value
+	elif node is BasisSliders:
+		node.value = value
+	elif node is LineEdit or node is TextEdit:
+		node.text = value
+
+
+func degrees_to_radians(value_in_deg) -> Variant:
+	var new_value
+	if typeof(value_in_deg) == TYPE_FLOAT:
+		new_value = deg_to_rad(value_in_deg)
+	elif typeof(value_in_deg) == TYPE_VECTOR2:
+		new_value = Vector2()
+		new_value.x = deg_to_rad(value_in_deg.x)
+		new_value.y = deg_to_rad(value_in_deg.y)
+	elif typeof(value_in_deg) == TYPE_VECTOR3:
+		new_value = Vector3()
+		new_value.x = deg_to_rad(value_in_deg.x)
+		new_value.y = deg_to_rad(value_in_deg.y)
+		new_value.z = deg_to_rad(value_in_deg.z)
+	return new_value
+
+
+func radians_to_degrees(value_in_deg) -> Variant:
+	var new_value
+	if typeof(value_in_deg) == TYPE_FLOAT:
+		new_value = rad_to_deg(value_in_deg)
+	elif typeof(value_in_deg) == TYPE_VECTOR2:
+		new_value = Vector2()
+		new_value.x = rad_to_deg(value_in_deg.x)
+		new_value.y = rad_to_deg(value_in_deg.y)
+	elif typeof(value_in_deg) == TYPE_VECTOR3:
+		new_value = Vector3()
+		new_value.x = rad_to_deg(value_in_deg.x)
+		new_value.y = rad_to_deg(value_in_deg.y)
+		new_value.z = rad_to_deg(value_in_deg.z)
+	return new_value
+
+
+func popup_image_file_dialog(on_file_selected: Callable) -> void:
+	var file_dialog := FileDialog.new()
+	file_dialog.always_on_top = true
+	file_dialog.file_mode = FileDialog.FILE_MODE_OPEN_FILE
+	file_dialog.access = FileDialog.ACCESS_FILESYSTEM
+	file_dialog.use_native_dialog = use_native_file_dialogs
+	var filters := PackedStringArray([])
+	for image_type in SUPPORTED_IMAGE_TYPES:
+		filters.append("*.%s;" % image_type)
+	file_dialog.filters = filters
+	file_dialog.size = Vector2(384, 281)
+	file_dialog.file_selected.connect(
+		func(path: String):
+			var image := Image.new()
+			image.load(path)
+			if !image:
+				print("Error loading texture")
+				file_dialog.queue_free()
+				return
+			var image_tex := ImageTexture.create_from_image(image)
+			on_file_selected.call(image_tex)
+			file_dialog.queue_free()
+	)
+	add_child(file_dialog)
+	file_dialog.popup_centered_clamped()
+	file_dialog.canceled.connect(file_dialog.queue_free)
+
+
+# TODO: Remove duplicate code, either keep this or
+# _shader_update_texture in ShaderLoader.
+func on_resource_proj_updated(resource_proj: ResourceProject, value_changed: Callable) -> void:
+	var warnings := ""
+	if resource_proj.frames.size() > 1:
+		warnings += "This resource is intended to have 1 frame only. Extra frames will be ignored."
+	var updated_image := resource_proj.get_frame_image(0)
+	if value_changed and value_changed.is_valid():
+		value_changed.call(ImageTexture.create_from_image(updated_image))
+	if not warnings.is_empty():
+		popup_error(warnings)
+
+
+## This method is used to write project setting overrides to the override.cfg file, located
+## in the same directory as the executable.
+## We use this method instead of [method ProjectSettings.save_custom] because that copies
+## the entire project.godot file into override.cfg, which causes issues
+## because software updates will not be able to make changes to the project settings for
+## users who have already saved an override.cfg file, leading into confusion.
+## To avoid this issue, we just write the lines we want to the override.cfg file.
+func _save_to_override_file() -> void:
+	var file := FileAccess.open(OVERRIDE_FILE, FileAccess.WRITE)
+	file.store_line("[display]\n")
+	file.store_line("window/subwindows/embed_subwindows=%s" % single_window_mode)
+	file.store_line("window/per_pixel_transparency/allowed=%s" % window_transparency)
+	if dummy_audio_driver:
+		file.store_line("[audio]\n")
+		file.store_line('driver/driver="Dummy"')

@@ -1,0 +1,544 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://raw.githubusercontent.com/LucasJRamos/spritekiln/main/spritekiln/data/spec.schema.json",
+  "title": "SpriteKiln spec",
+  "description": "A character or prop: skeleton, SDF primitives, materials, palette and animations, rendered as 8-direction pixel art. Numbers may be expression strings (\"0.78 + bob\").",
+  "type": "object",
+  "properties": {
+    "spritekiln": {"const": 1, "description": "Spec format version. Put `spritekiln: 1` on the first line."},
+    "pxforge": {"const": 1, "description": "Old name of the version header; same meaning as `spritekiln: 1`."},
+    "name": {"type": "string", "description": "Asset name; names the exported files. Defaults to the file name."},
+    "kind": {"enum": ["character", "prop"], "default": "character"},
+    "view": {
+      "enum": ["topdown", "side"],
+      "default": "topdown",
+      "description": "topdown: 3/4 camera at 38 degrees, 8 directions, ground shadow. side: side-scroller profile (camera pitch 0, directions [e, w], no ground shadow). Explicit camera/directions/shadow values win."
+    },
+    "size": {"type": "integer", "minimum": 8, "maximum": 512, "default": 64, "description": "Frame size in pixels."},
+    "directions": {
+      "description": "1, 4, 8 or a list of directions. Default: 8 for characters, 1 for props.",
+      "anyOf": [
+        {"enum": [1, 4, 8]},
+        {"type": "array", "items": {"$ref": "#/$defs/direction"}, "minItems": 1, "uniqueItems": true}
+      ]
+    },
+    "mirror": {
+      "type": "boolean",
+      "default": false,
+      "description": "Do not render left-facing directions (w, sw, nw): engines flip their right-facing twins (half the atlas). The fixed world light then comes from the other side on flipped frames."
+    },
+    "palette": {
+      "description": "Palette file(s) relative to the spec, built-in palette names (gothic, props) or inline ramps.",
+      "anyOf": [
+        {"type": "string"},
+        {"type": "array", "items": {"type": "string"}},
+        {"$ref": "#/$defs/ramps"}
+      ]
+    },
+    "ramps": {"$ref": "#/$defs/ramps", "description": "Extra ramps defined in the spec (override the palette)."},
+    "extends": {"type": "string", "description": "A base spec merged under this one (its keys win; lists are replaced): a built-in template (humanoid), a project template (<specs>/templates/<name>.yaml) or a path relative to this file."},
+    "remove": {"type": "array", "items": {"type": "string"}, "description": "Paths of the base to delete (parts.cape, animations.dash), or use.<as> for everything a base's kit added."},
+    "use": {"type": "array", "description": "Kits: reusable parts with parameters (spritekiln kits lists them).", "items": {"type": "object", "additionalProperties": false, "required": ["kit"], "properties": {
+      "kit": {"type": "string", "description": "A built-in kit, a project kit (<specs>/kits/<name>.yaml) or a path relative to this file."},
+      "as": {"type": "string", "description": "Prefix of the names it adds (<as>_<name>; default the kit's name). A name ending in _L is mirrored."},
+      "at": {"type": "string", "description": "The frame it attaches to (default: the kit's)."},
+      "with": {"type": "object", "description": "Values of the kit's params."},
+      "materials": {"type": "object", "additionalProperties": {"type": "string"}, "description": "The kit's materials mapped to this spec's (steel: iron)."}
+    }}},
+    "kit": {"type": "string", "description": "Kit files only: the kit's name. A kit opened as a spec shows on its host."},
+    "license": {"type": "string", "description": "Kit files only: the licence of the kit (built-in kits are CC0-1.0)."},
+    "summary": {"type": "string", "description": "Kit files only: what the kit is, in one line."},
+    "host": {"type": "string", "description": "Kit files only: the base it is shown on (default humanoid)."},
+    "at": {"type": "string", "description": "Kit files only: the frame it attaches to by default; inside the kit, the frame `at`."},
+    "host_remove": {"type": "array", "items": {"type": "string"}, "description": "Kit files only: what to remove from the host when showing the kit (use.sword)."},
+    "params": {"type": "object", "description": "Kit files only: the kit's params and their defaults, used as variables in its expressions."},
+    "host_channels": {"type": "object", "description": "Kit files only: channels of the host the kit reads (coat, lean...), with the value used when the host has none."},
+    "render": {"type": "object", "additionalProperties": false, "description": "How this spec is drawn. The project's style ([style] of spritekiln.toml) sets the defaults; set a field here only for an exception (spritekiln style lists such specs).", "properties": {
+      "outline": {"enum": ["selective", "dark", "colored", "none"], "description": "Outer outline: each material's darkest tone (selective), one dark colour (dark), each material's line tone (colored) or none."},
+      "outline_color": {"$ref": "#/$defs/color", "description": "The one colour of outline: dark (default: the darkest first tone of the ramps)."},
+      "shading": {"enum": ["soft", "flat", "toon"], "description": "Tones per material when it sets no bands: all (soft), its two lightest (flat), three in hard steps (toon)."},
+      "lines": {"enum": ["depth", "depth+normal", "none"], "description": "Inner lines: where parts overlap (depth), also at folds inside a part (depth+normal: crease on every material), or none."},
+      "highlights": {"type": "boolean", "description": "Material finishes add their highlights (default true)."},
+      "dither": {"enum": ["none", "bayer2", "bayer4"], "description": "Ordered dither between neighbouring tones, inside regions, anchored on each part."},
+      "light": {"enum": ["classic", "top", "dramatic", "soft", "flat"], "description": "Light preset; keys of light: win over it."},
+      "snap": {"type": "boolean", "description": "Snap root and torso_rot to whole pixels when the spec has no snap: list."},
+      "crease_angle": {"type": "number", "description": "Degrees between neighbouring normals that make a crease line (default 50)."},
+      "min_run": {"type": "integer", "minimum": 1, "description": "Crease line runs shorter than this many pixels are dropped (default 2)."}
+    }},
+    "snap": {"type": "array", "items": {"type": "string"}, "description": "Frames (root, bones) whose movement is rounded to whole pixels on screen, so small bobs do not make the sprite boil."},
+    "camera": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "pitch": {"type": "number", "default": 38, "description": "Degrees below the horizon. Keep it equal across a game."},
+        "scale": {"type": "number", "exclusiveMinimum": 0, "description": "World units per pixel (bigger = zoom out)."},
+        "center": {"$ref": "#/$defs/vec3num", "description": "World point at the center of the frame."},
+        "supersample": {"type": "integer", "minimum": 1, "default": 3},
+        "coverage": {"type": "integer", "minimum": 1, "default": 4}
+      }
+    },
+    "shadow": {
+      "description": "Ground shadow ellipse in pixels; `null` disables it.",
+      "anyOf": [
+        {"type": "null"},
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "rx": {"type": "number"},
+            "ry": {"type": "number"},
+            "alpha": {"type": "integer", "minimum": 0, "maximum": 255},
+            "color": {"$ref": "#/$defs/color"},
+            "offset": {"$ref": "#/$defs/vec3num"}
+          }
+        }
+      ]
+    },
+    "light": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "dir": {"$ref": "#/$defs/vec3num"},
+        "rim": {"$ref": "#/$defs/vec3num"},
+        "rim_strength": {"type": "number"},
+        "ambient": {"type": "number"},
+        "shadows": {"type": "boolean"},
+        "ao": {"type": "boolean"},
+        "mode": {"enum": ["baked", "flat"], "description": "flat: one tone per material (flat_band), for games that light the sprite through the normal map."}
+      }
+    },
+    "brief": {"description": "Free text for humans and AIs (summary, must_keep, simplify, reference). Ignored by the renderer."},
+    "materials": {"type": "object", "additionalProperties": {"$ref": "#/$defs/material"}},
+    "channels": {
+      "type": "object",
+      "description": "Animatable values with their defaults. Names ending in _L get an automatic _R twin.",
+      "additionalProperties": {"$ref": "#/$defs/value"}
+    },
+    "bones": {"type": "object", "additionalProperties": {"$ref": "#/$defs/bone"}},
+    "ik": {"type": "object", "additionalProperties": {"$ref": "#/$defs/ik"}},
+    "parts": {"type": "object", "additionalProperties": {"$ref": "#/$defs/part"}},
+    "review": {
+      "type": "object",
+      "additionalProperties": false,
+      "description": "Art-direction targets (spritekiln review; QA warnings) and the scene the asset lives in.",
+      "properties": {
+        "min_lstar": {"type": "number", "description": "Minimum median CIE L* of the sprite (under `tint`)."},
+        "tint": {
+          "description": "Scene light used for L* and previews: [r, g, b] multipliers, \"0.7,0.7,1.0\" or \"#b3b5ff\".",
+          "anyOf": [{"type": "string"}, {"type": "array", "items": {"type": "number", "minimum": 0}, "minItems": 3, "maxItems": 3}]
+        },
+        "background": {"type": "string", "description": "Floor image (relative to the spec) for review sheets."},
+        "materials": {
+          "type": "object",
+          "description": "Material -> {min_px, max_px}: opaque pixels per direction (median over a clip's frames).",
+          "additionalProperties": {
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {"min_px": {"type": "integer", "minimum": 0}, "max_px": {"type": "integer", "minimum": 0}}
+          }
+        }
+      }
+    },
+    "timing": {
+      "type": "object",
+      "description": "Targets checked by validate and QA: when events fire and how long clips last. Example: {shoot_r: {release: 2f, total: 7f}}.",
+      "properties": {
+        "fps": {"type": "number", "exclusiveMinimum": 0, "default": 60},
+        "tolerance": {"type": "number", "minimum": 0, "default": 1, "description": "Allowed error in frames."}
+      },
+      "additionalProperties": {
+        "type": "object",
+        "description": "Animation -> {event or total: target}.",
+        "additionalProperties": {"$ref": "#/$defs/duration"}
+      }
+    },
+    "sockets": {
+      "type": "object",
+      "description": "Attachment points exported per frame and direction (muzzles, hands, feet, hit points). Names ending in _L get an automatic _R twin.",
+      "additionalProperties": {"$ref": "#/$defs/socket"}
+    },
+    "animations": {"type": "object", "additionalProperties": {"$ref": "#/$defs/animation"}}
+  },
+  "additionalProperties": false,
+  "$defs": {
+    "direction": {"enum": ["s", "se", "e", "ne", "n", "nw", "w", "sw"]},
+    "color": {"type": "string", "pattern": "^#[0-9a-fA-F]{6}$"},
+    "ramps": {
+      "type": "object",
+      "additionalProperties": {"type": "array", "items": {"$ref": "#/$defs/color"}, "minItems": 1}
+    },
+    "expr": {"type": ["number", "string"], "description": "A number or an expression string."},
+    "duration": {
+      "description": "Frames (2 or \"2f\") or milliseconds (\"33ms\").",
+      "anyOf": [{"type": "number", "minimum": 0}, {"type": "string", "pattern": "^ *[0-9]*[.]?[0-9]+ *(f|ms)? *$"}]
+    },
+    "value": {
+      "anyOf": [
+        {"$ref": "#/$defs/expr"},
+        {"type": "boolean"},
+        {"type": "array", "items": {"$ref": "#/$defs/expr"}}
+      ]
+    },
+    "vec": {
+      "description": "A number (broadcast), an [x, y, z] list or an expression string.",
+      "anyOf": [
+        {"$ref": "#/$defs/expr"},
+        {"type": "array", "items": {"$ref": "#/$defs/expr"}, "minItems": 1, "maxItems": 3}
+      ]
+    },
+    "vec3num": {"type": "array", "items": {"type": "number"}, "minItems": 3, "maxItems": 3},
+    "point": {
+      "description": "[x, y, z] in the part's space, an expression, \"@frame\", {at: frame, off: [..]} or {between: [p0, p1], t}.",
+      "anyOf": [
+        {"$ref": "#/$defs/expr"},
+        {"type": "array", "items": {"$ref": "#/$defs/expr"}, "minItems": 3, "maxItems": 3},
+        {
+          "type": "object",
+          "required": ["at"],
+          "additionalProperties": false,
+          "properties": {"at": {"type": "string"}, "off": {"$ref": "#/$defs/vec"}}
+        },
+        {
+          "type": "object",
+          "required": ["between"],
+          "additionalProperties": false,
+          "properties": {
+            "between": {"type": "array", "items": {"$ref": "#/$defs/point"}, "minItems": 2, "maxItems": 2},
+            "t": {"$ref": "#/$defs/expr"}
+          }
+        }
+      ]
+    },
+    "material": {
+      "anyOf": [
+        {"type": "null"},
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "ramp": {
+              "description": "Ramp name in the palette (default: the material name) or a list of colors. Index 0 is the outline.",
+              "anyOf": [{"type": "string"}, {"type": "array", "items": {"$ref": "#/$defs/color"}, "minItems": 1}]
+            },
+            "emissive": {"type": "boolean", "description": "Unlit, no outline; uses `band`."},
+            "band": {"type": "integer", "minimum": 0},
+            "bands": {"type": "array", "items": {"type": "integer", "minimum": 0}, "minItems": 2, "maxItems": 2},
+            "line": {"type": "boolean", "description": "Takes part in internal contour lines."},
+            "line_band": {"type": "integer", "minimum": 0},
+            "outline": {"type": "boolean"},
+            "two_sided": {"type": "boolean", "description": "Thin membranes lit from both sides."},
+            "gamma": {"type": "number"},
+            "flat_band": {"type": "integer", "minimum": 0, "description": "The tone used when light.mode is flat (default: the upper middle of bands)."},
+            "finish": {"enum": ["matte", "soft", "metal", "glossy"], "description": "A preset of highlight and rim: matte (cloth, stone), soft (skin, leather, wood), metal, glossy (gems, eyes)."},
+            "highlight": {
+              "anyOf": [{"type": "null"}, {"type": "boolean"}, {
+                "type": "object", "additionalProperties": false,
+                "properties": {
+                  "band": {"type": "integer", "minimum": 0, "description": "Ramp index of the highlight (default: the top)."},
+                  "color": {"$ref": "#/$defs/color"},
+                  "size": {"type": "number", "description": "Cosine threshold of n.h: higher is smaller (0.9 wide, 0.97 small)."},
+                  "max_px": {"type": "integer", "minimum": 1, "description": "Keep at most this many pixels per highlight cluster."},
+                  "min_px": {"type": "integer", "minimum": 1, "description": "Drop clusters smaller than this."}
+                }
+              }],
+              "description": "A small hard light cluster where the surface faces between the light and the camera."
+            },
+            "rim": {"type": "number", "description": "Rim light strength on this material's shadow side (default: light.rim_strength)."},
+            "thresholds": {"type": "array", "items": {"type": "number"}, "minItems": 1, "description": "Light values where the tone steps up (toon shading), instead of gamma."},
+            "crease": {"type": "boolean", "description": "Lines where the surface folds inwards inside one part."},
+            "edge_highlight": {"type": "boolean", "description": "One tone up along convex edges facing the light."},
+            "dither": {"type": "boolean", "description": "false: never dithered; true: dithered even when the style has none (bayer2)."},
+            "line_color": {"$ref": "#/$defs/color", "description": "This material's outer outline colour, in every outline style but none (default: from the style)."},
+            "glow": {
+              "anyOf": [
+                {"$ref": "#/$defs/color"},
+                {
+                  "type": "object",
+                  "additionalProperties": false,
+                  "required": ["color"],
+                  "properties": {
+                    "color": {"$ref": "#/$defs/color"},
+                    "mix": {"type": "number"},
+                    "radius": {"type": "integer", "minimum": 1}
+                  }
+                }
+              ]
+            }
+          }
+        }
+      ]
+    },
+    "bone": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "parent": {"type": "string", "default": "root"},
+        "pos": {"$ref": "#/$defs/vec"},
+        "rot": {"$ref": "#/$defs/vec", "description": "Euler radians [x, y, z], applied as Ry·Rz·Rx."},
+        "scale": {"$ref": "#/$defs/vec"},
+        "inherit_rot": {"type": "boolean"},
+        "inherit_scale": {"type": "boolean"},
+        "at": {"type": "string", "description": "Take the origin from another frame (e.g. an IK end)."}
+      }
+    },
+    "socket": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["bone"],
+      "properties": {
+        "bone": {"type": "string", "description": "Frame the point follows: a bone, an IK joint/end, or root."},
+        "offset": {"$ref": "#/$defs/vec", "description": "Point in the bone's space (default [0, 0, 0])."},
+        "when": {"anyOf": [{"$ref": "#/$defs/expr"}, {"type": "boolean"}], "description": "Export null while false."}
+      }
+    },
+    "ik": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["start", "target", "lengths", "joint", "end"],
+      "properties": {
+        "start": {"type": "string"},
+        "space": {"type": "string"},
+        "target": {"$ref": "#/$defs/vec"},
+        "lengths": {"$ref": "#/$defs/vec"},
+        "pole": {"$ref": "#/$defs/vec"},
+        "pole_space": {"type": "string"},
+        "up": {"$ref": "#/$defs/vec"},
+        "joint": {"type": "string"},
+        "end": {"type": "string"}
+      }
+    },
+    "part": {
+      "type": "object",
+      "additionalProperties": false,
+      "anyOf": [{"required": ["material"]}, {"required": ["materials"]}],
+      "required": ["prims"],
+      "properties": {
+        "material": {"type": "string"},
+        "materials": {"type": "array", "items": {"type": "string"}, "minItems": 1, "description": "Smear arcs: tail to core."},
+        "space": {"type": "string", "default": "root"},
+        "blend": {"anyOf": [{"$ref": "#/$defs/expr"}, {"type": "object", "additionalProperties": false, "properties": {"mode": {"enum": ["smooth", "chamfer", "round", "stairs"]}, "k": {"type": "number"}, "n": {"type": "integer", "minimum": 1}}}], "description": "How the primitives join: a radius (smooth), or {mode: smooth|chamfer|round|stairs, k, n}."},
+        "line": {"type": "boolean"},
+        "when": {"anyOf": [{"$ref": "#/$defs/expr"}, {"type": "boolean"}], "description": "Render only when true."},
+        "prims": {"type": "array", "items": {"$ref": "#/$defs/prim"}, "minItems": 1},
+        "cut": {"type": "array", "items": {"$ref": "#/$defs/prim"}},
+        "paint": {"type": "array", "description": "Colour regions on the part without new geometry (later layers win).", "items": {
+          "type": "object", "additionalProperties": false, "required": ["material"],
+          "properties": {
+            "material": {"type": "string"},
+            "edge": {"type": "boolean", "description": "A 1 px line where this paint meets the rest of the part."},
+            "prims": {"type": "array", "items": {"$ref": "#/$defs/prim"}, "description": "A volume: the surface inside these primitives is painted."},
+            "stripes": {"$ref": "#/$defs/paint_bands"},
+            "rings": {"$ref": "#/$defs/paint_bands"},
+            "grid": {"type": "object", "additionalProperties": false, "properties": {"axes": {"type": "array", "items": {"enum": ["x", "y", "z"]}, "minItems": 2, "maxItems": 2}, "spacing": {"$ref": "#/$defs/vec"}, "r": {"$ref": "#/$defs/expr"}, "offset": {"$ref": "#/$defs/vec"}}},
+            "spots": {"type": "object", "additionalProperties": false, "properties": {"scale": {"$ref": "#/$defs/expr"}, "density": {"$ref": "#/$defs/expr"}, "seed": {"type": "integer"}}},
+            "checker": {"type": "object", "additionalProperties": false, "properties": {"size": {"$ref": "#/$defs/expr"}}}
+          }
+        }},
+        "priority": {"type": "number", "exclusiveMinimum": 0, "description": "Weight of its samples in the pixel vote (default 1); 2-3 keeps thin weapons visible."},
+        "min_cover": {"type": "integer", "minimum": 1, "description": "Samples of this part that fill a pixel even below the camera coverage (thin details: 1 or 2)."},
+        "cut_blend": {"anyOf": [{"$ref": "#/$defs/expr"}, {"type": "object", "additionalProperties": false, "properties": {"mode": {"enum": ["smooth", "chamfer", "round", "stairs", "groove"]}, "k": {"type": "number"}, "n": {"type": "integer", "minimum": 1}, "depth": {"type": "number"}, "width": {"type": "number"}}}], "description": "How the cuts carve: a radius (smooth), {mode: chamfer|round|stairs, k, n}, or {mode: groove, depth, width}."}
+      }
+    },
+    "prim": {
+      "description": "One primitive: a mapping with a single key naming its type.",
+      "oneOf": [
+        {"type": "object", "required": ["sphere"], "additionalProperties": false, "properties": {"sphere": {"$ref": "#/$defs/sphere"}}},
+        {"type": "object", "required": ["ellipsoid"], "additionalProperties": false, "properties": {"ellipsoid": {"$ref": "#/$defs/ellipsoid"}}},
+        {"type": "object", "required": ["cone"], "additionalProperties": false, "properties": {"cone": {"$ref": "#/$defs/cone"}}},
+        {"type": "object", "required": ["chain"], "additionalProperties": false, "properties": {"chain": {"$ref": "#/$defs/chain"}}},
+        {"type": "object", "required": ["box"], "additionalProperties": false, "properties": {"box": {"$ref": "#/$defs/box"}}},
+        {"type": "object", "required": ["cylinder"], "additionalProperties": false, "properties": {"cylinder": {"$ref": "#/$defs/cylinder"}}},
+        {"type": "object", "required": ["torus"], "additionalProperties": false, "properties": {"torus": {"$ref": "#/$defs/torus"}}},
+        {"type": "object", "required": ["tri"], "additionalProperties": false, "properties": {"tri": {"$ref": "#/$defs/tri"}}},
+        {"type": "object", "required": ["membrane"], "additionalProperties": false, "properties": {"membrane": {"$ref": "#/$defs/membrane"}}},
+        {"type": "object", "required": ["arc"], "additionalProperties": false, "properties": {"arc": {"$ref": "#/$defs/arc"}}},
+        {"type": "object", "required": ["extrude"], "additionalProperties": false, "properties": {"extrude": {"$ref": "#/$defs/extrude"}}},
+        {"type": "object", "required": ["revolve"], "additionalProperties": false, "properties": {"revolve": {"$ref": "#/$defs/revolve"}}},
+        {"type": "object", "required": ["tube"], "additionalProperties": false, "properties": {"tube": {"$ref": "#/$defs/tube"}}},
+        {"type": "object", "required": ["plane"], "additionalProperties": false, "properties": {"plane": {"$ref": "#/$defs/plane"}}}
+      ]
+    },
+    "sphere": {
+      "type": "object", "additionalProperties": false, "required": ["c", "r"],
+      "properties": {"c": {"$ref": "#/$defs/point"}, "r": {"$ref": "#/$defs/expr"}, "shell": {"$ref": "#/$defs/expr", "description": "Hollow it: a shell this thick around its surface."}, "elongate": {"$ref": "#/$defs/vec", "description": "Stretch its middle: half lengths added along local x, y, z."}, "twist": {"$ref": "#/$defs/expr", "description": "Twist about local y, radians per unit."}, "bend": {"$ref": "#/$defs/expr", "description": "Bend in the local x-y plane, radians per unit along x."}}
+    },
+    "ellipsoid": {
+      "type": "object", "additionalProperties": false, "required": ["c", "r"],
+      "properties": {
+        "c": {"$ref": "#/$defs/point"}, "r": {"$ref": "#/$defs/vec"}, "rot": {"$ref": "#/$defs/vec"},
+        "align": {"type": "array", "items": {"$ref": "#/$defs/point"}, "minItems": 2, "maxItems": 2},
+        "shell": {"$ref": "#/$defs/expr", "description": "Hollow it: a shell this thick around its surface."}, "elongate": {"$ref": "#/$defs/vec", "description": "Stretch its middle: half lengths added along local x, y, z."}, "twist": {"$ref": "#/$defs/expr", "description": "Twist about local y, radians per unit."}, "bend": {"$ref": "#/$defs/expr", "description": "Bend in the local x-y plane, radians per unit along x."}
+      }
+    },
+    "cone": {
+      "type": "object", "additionalProperties": false, "required": ["a", "b", "r"],
+      "description": "Tapered capsule from a to b; r is one radius or [r_a, r_b].",
+      "properties": {"a": {"$ref": "#/$defs/point"}, "b": {"$ref": "#/$defs/point"}, "r": {"$ref": "#/$defs/vec"}, "shell": {"$ref": "#/$defs/expr", "description": "Hollow it: a shell this thick around its surface."}, "elongate": {"$ref": "#/$defs/vec", "description": "Stretch its middle: half lengths added along local x, y, z."}, "twist": {"$ref": "#/$defs/expr", "description": "Twist about local y, radians per unit."}, "bend": {"$ref": "#/$defs/expr", "description": "Bend in the local x-y plane, radians per unit along x."}}
+    },
+    "chain": {
+      "type": "object", "additionalProperties": false, "required": ["pts", "r"],
+      "properties": {
+        "pts": {"type": "array", "items": {"$ref": "#/$defs/point"}, "minItems": 2},
+        "r": {
+          "description": "One radius per point, or an expression giving the list.",
+          "anyOf": [{"type": "string"}, {"type": "array", "items": {"$ref": "#/$defs/expr"}, "minItems": 2}]
+        }
+      }
+    },
+    "box": {
+      "type": "object", "additionalProperties": false, "required": ["c", "half"],
+      "properties": {
+        "c": {"$ref": "#/$defs/point"}, "half": {"$ref": "#/$defs/vec"}, "rot": {"$ref": "#/$defs/vec"},
+        "align": {"type": "array", "items": {"$ref": "#/$defs/point"}, "minItems": 2, "maxItems": 2},
+        "round": {"$ref": "#/$defs/expr"},
+        "shell": {"$ref": "#/$defs/expr", "description": "Hollow it: a shell this thick around its surface."}, "elongate": {"$ref": "#/$defs/vec", "description": "Stretch its middle: half lengths added along local x, y, z."}, "twist": {"$ref": "#/$defs/expr", "description": "Twist about local y, radians per unit."}, "bend": {"$ref": "#/$defs/expr", "description": "Bend in the local x-y plane, radians per unit along x."}
+      }
+    },
+    "cylinder": {
+      "type": "object", "additionalProperties": false, "required": ["a", "b", "r"],
+      "properties": {
+        "a": {"$ref": "#/$defs/point"}, "b": {"$ref": "#/$defs/point"}, "r": {"$ref": "#/$defs/expr"},
+        "round": {"$ref": "#/$defs/expr"},
+        "shell": {"$ref": "#/$defs/expr", "description": "Hollow it: a shell this thick around its surface."}, "elongate": {"$ref": "#/$defs/vec", "description": "Stretch its middle: half lengths added along local x, y, z."}, "twist": {"$ref": "#/$defs/expr", "description": "Twist about local y, radians per unit."}, "bend": {"$ref": "#/$defs/expr", "description": "Bend in the local x-y plane, radians per unit along x."}
+      }
+    },
+    "torus": {
+      "type": "object", "additionalProperties": false, "required": ["c", "R", "r"],
+      "properties": {
+        "c": {"$ref": "#/$defs/point"}, "R": {"$ref": "#/$defs/expr"}, "r": {"$ref": "#/$defs/expr"},
+        "rot": {"$ref": "#/$defs/vec"},
+        "align": {"type": "array", "items": {"$ref": "#/$defs/point"}, "minItems": 2, "maxItems": 2},
+        "shell": {"$ref": "#/$defs/expr", "description": "Hollow it: a shell this thick around its surface."}, "elongate": {"$ref": "#/$defs/vec", "description": "Stretch its middle: half lengths added along local x, y, z."}, "twist": {"$ref": "#/$defs/expr", "description": "Twist about local y, radians per unit."}, "bend": {"$ref": "#/$defs/expr", "description": "Bend in the local x-y plane, radians per unit along x."}
+      }
+    },
+    "tri": {
+      "type": "object", "additionalProperties": false, "required": ["a", "b", "c"],
+      "properties": {
+        "a": {"$ref": "#/$defs/point"}, "b": {"$ref": "#/$defs/point"}, "c": {"$ref": "#/$defs/point"},
+        "th": {"$ref": "#/$defs/expr"},
+        "shell": {"$ref": "#/$defs/expr", "description": "Hollow it: a shell this thick around its surface."}, "elongate": {"$ref": "#/$defs/vec", "description": "Stretch its middle: half lengths added along local x, y, z."}, "twist": {"$ref": "#/$defs/expr", "description": "Twist about local y, radians per unit."}, "bend": {"$ref": "#/$defs/expr", "description": "Bend in the local x-y plane, radians per unit along x."}
+      }
+    },
+    "membrane": {
+      "type": "object", "additionalProperties": false, "required": ["hub", "ring"],
+      "description": "Fan of triangles from hub to ring points (wings, capes, sails).",
+      "properties": {
+        "hub": {"$ref": "#/$defs/point"},
+        "ring": {"type": "array", "items": {"$ref": "#/$defs/point"}, "minItems": 2},
+        "th": {"$ref": "#/$defs/expr"},
+        "scallop": {"type": "array", "items": {"type": "integer", "minimum": 0}},
+        "scallop_depth": {"type": "number"},
+        "fill_root": {"type": "boolean"}
+      }
+    },
+    "profile": {
+      "description": "A closed 2D shape: {circle: r}, {rect: [hx, hy], chamfer | round}, {polygon: [[x, y], ...], round} or {bezier: [P0, C0, P1, C1, ...]}.",
+      "type": "object", "additionalProperties": false,
+      "properties": {
+        "circle": {"$ref": "#/$defs/expr"},
+        "rect": {"$ref": "#/$defs/vec", "description": "Half width and half height."},
+        "polygon": {"type": "array", "items": {"$ref": "#/$defs/vec"}, "minItems": 3},
+        "bezier": {"type": "array", "items": {"$ref": "#/$defs/vec"}, "minItems": 4, "description": "Quadratic segments P0 -> C0 -> P1, P1 -> C1 -> P2... back to P0."},
+        "chamfer": {"$ref": "#/$defs/expr", "description": "rect: cut the corners at 45 degrees."},
+        "round": {"$ref": "#/$defs/expr", "description": "rect: round the corners (same size); polygon: round them by growing the outline."}
+      }
+    },
+    "extrude": {
+      "type": "object", "additionalProperties": false, "required": ["profile", "depth"],
+      "description": "A 2D profile in the local x-y plane pushed `depth` along local z: blades, plates, shields, axe heads.",
+      "properties": {
+        "c": {"$ref": "#/$defs/point"}, "rot": {"$ref": "#/$defs/vec"}, "align": {"type": "array", "items": {"$ref": "#/$defs/point"}, "minItems": 2, "maxItems": 2},
+        "profile": {"$ref": "#/$defs/profile"}, "depth": {"$ref": "#/$defs/expr"},
+        "round": {"$ref": "#/$defs/expr", "description": "Round the edges of the front and back faces (same size)."},
+        "shell": {"$ref": "#/$defs/expr", "description": "Hollow it: a shell this thick around its surface."}, "elongate": {"$ref": "#/$defs/vec", "description": "Stretch its middle: half lengths added along local x, y, z."}, "twist": {"$ref": "#/$defs/expr", "description": "Twist about local y, radians per unit."}, "bend": {"$ref": "#/$defs/expr", "description": "Bend in the local x-y plane, radians per unit along x."}
+      }
+    },
+    "revolve": {
+      "type": "object", "additionalProperties": false, "required": ["profile"],
+      "description": "A 2D cross-section through the local y axis (x = distance from the axis, both sides) turned about local y: helmets, hats, bottles, bells.",
+      "properties": {
+        "c": {"$ref": "#/$defs/point"}, "rot": {"$ref": "#/$defs/vec"}, "align": {"type": "array", "items": {"$ref": "#/$defs/point"}, "minItems": 2, "maxItems": 2},
+        "profile": {"$ref": "#/$defs/profile"},
+        "offset": {"$ref": "#/$defs/expr", "description": "Move the profile away from the axis (a ring)."},
+        "angle": {"$ref": "#/$defs/vec", "description": "[a0, a1] radians from local +z towards +x: a partial turn (pauldrons, a hood's opening)."},
+        "shell": {"$ref": "#/$defs/expr", "description": "Hollow it: a shell this thick around its surface."}, "elongate": {"$ref": "#/$defs/vec", "description": "Stretch its middle: half lengths added along local x, y, z."}, "twist": {"$ref": "#/$defs/expr", "description": "Twist about local y, radians per unit."}, "bend": {"$ref": "#/$defs/expr", "description": "Bend in the local x-y plane, radians per unit along x."}
+      }
+    },
+    "tube": {
+      "type": "object", "additionalProperties": false, "required": ["pts", "r"],
+      "description": "A smooth round tube from the first point to the last, bending towards the others: horns, tails, straps, hair locks.",
+      "properties": {
+        "pts": {"type": "array", "items": {"$ref": "#/$defs/point"}, "minItems": 3},
+        "r": {"$ref": "#/$defs/vec", "description": "One radius, or [start, end]."},
+        "shell": {"$ref": "#/$defs/expr", "description": "Hollow it: a shell this thick around its surface."}, "elongate": {"$ref": "#/$defs/vec", "description": "Stretch its middle: half lengths added along local x, y, z."}, "twist": {"$ref": "#/$defs/expr", "description": "Twist about local y, radians per unit."}, "bend": {"$ref": "#/$defs/expr", "description": "Bend in the local x-y plane, radians per unit along x."}
+      }
+    },
+    "plane": {
+      "type": "object", "additionalProperties": false,
+      "description": "Only under cut: removes the side `n` points to, from the plane `at` along n (or through `c`).",
+      "properties": {"n": {"$ref": "#/$defs/vec"}, "at": {"$ref": "#/$defs/expr"}, "c": {"$ref": "#/$defs/point"}}
+    },
+    "paint_bands": {
+      "type": "object", "additionalProperties": false,
+      "description": "Bands across an axis of the part (stripes: around an arm or a column at some heights) or concentric by distance from it (rings): `period` repeats them, `at` lists positions.",
+      "properties": {"axis": {"enum": ["x", "y", "z"]}, "width": {"$ref": "#/$defs/expr"}, "period": {"$ref": "#/$defs/expr"}, "at": {"anyOf": [{"$ref": "#/$defs/expr"}, {"type": "array", "items": {"$ref": "#/$defs/expr"}, "minItems": 1}]}, "offset": {"$ref": "#/$defs/expr"}}
+    },
+    "arc": {
+      "type": "object", "additionalProperties": false, "required": ["r", "a0", "a1"],
+      "description": "Smear VFX arc; use `materials: [tail, mid, core]` on the part.",
+      "properties": {
+        "c": {"$ref": "#/$defs/point"}, "r": {"$ref": "#/$defs/expr"}, "a0": {"$ref": "#/$defs/expr"},
+        "a1": {"$ref": "#/$defs/expr"}, "width": {"$ref": "#/$defs/expr"}, "fade": {"$ref": "#/$defs/expr"},
+        "dip": {"$ref": "#/$defs/expr"}, "segments": {"type": "integer", "minimum": 2}
+      }
+    },
+    "events": {
+      "type": "object",
+      "description": "Frame index -> event name(s) sent to the game (hit, step_l, windup...).",
+      "patternProperties": {"^[0-9]+$": {"anyOf": [{"type": "string"}, {"type": "array", "items": {"type": "string"}}]}},
+      "additionalProperties": false
+    },
+    "animation": {
+      "if": {"type": "object", "required": ["keys"]},
+      "then": {"$ref": "#/$defs/key_animation"},
+      "else": {"$ref": "#/$defs/cycle_animation"}
+    },
+    "cycle_animation": {
+      "type": "object",
+      "description": "Loop driven by expressions of p (0..2π), t, f, n.",
+      "additionalProperties": false,
+      "properties": {
+        "frames": {"type": "integer", "minimum": 1, "default": 8},
+        "ms": {"anyOf": [{"$ref": "#/$defs/expr"}, {"type": "array", "items": {"type": "integer", "minimum": 1}}]},
+        "loop": {"type": "boolean", "default": true},
+        "events": {"$ref": "#/$defs/events"},
+        "channels": {"type": "object", "additionalProperties": {"$ref": "#/$defs/value"}}
+      }
+    },
+    "key_animation": {
+      "type": "object",
+      "description": "Pose to pose: one output frame per key (plus tweens).",
+      "additionalProperties": false,
+      "required": ["keys"],
+      "properties": {
+        "loop": {"type": "boolean", "default": false},
+        "carry": {"type": "boolean", "description": "Keys inherit the previous key's channels instead of the defaults."},
+        "ms": {"type": "integer", "minimum": 1, "description": "Default duration of a key."},
+        "keys": {"type": "array", "items": {"$ref": "#/$defs/key"}, "minItems": 1}
+      }
+    },
+    "key": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "ms": {"type": "integer", "minimum": 1},
+        "set": {"type": "object", "additionalProperties": {"$ref": "#/$defs/value"}},
+        "event": {"type": "string"},
+        "carry": {"type": "boolean"},
+        "tween": {"type": "integer", "minimum": 0, "description": "Interpolated frames inserted towards the next key."},
+        "tween_ms": {"type": "integer", "minimum": 1},
+        "ease": {"enum": ["linear", "in", "out", "inout"]}
+      }
+    }
+  }
+}

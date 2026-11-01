@@ -1,0 +1,795 @@
+{
+  "version": 1,
+  "name": "fx",
+  "width": 32,
+  "height": 32,
+  "palette": { "$ref": "../palette.json" },
+  "symbols": {
+    "leaf-l0": [
+      "jl",
+      "hj"
+    ],
+    "leaf-l1": [
+      ".l",
+      "jh",
+      "g."
+    ],
+    "leaf-j0": [
+      "jj",
+      "hg"
+    ],
+    "leaf-j1": [
+      "hj",
+      ".g"
+    ],
+    "leaf-h0": [
+      "hj",
+      "g."
+    ],
+    "leaf-h1": [
+      ".h",
+      "hg"
+    ],
+    "shard-a": [
+      "kOk",
+      "kuk"
+    ],
+    "shard-b": [
+      "kkk",
+      "Ouk"
+    ],
+    "shard-c": [
+      "kOuk",
+      ".kk."
+    ],
+    "shard-d": [
+      "kO",
+      "uk"
+    ],
+    "shard-e": ["kOk"],
+    "shard-f": [
+      "ku",
+      "kk"
+    ],
+    "shard-g": ["Uk"],
+    "shard-h": ["kuUk"],
+    "drop": ["w"],
+    "spout": [
+      "w",
+      "W"
+    ],
+    "ripple-l": [
+      "W.",
+      "ww",
+      ".W"
+    ],
+    "ripple-r": [
+      ".W",
+      "ww",
+      "W."
+    ],
+    "puff-0": [
+      ".ttt.",
+      ".tRt.",
+      ".ttt."
+    ],
+    "puff-1": [
+      ".ttttt.",
+      ".trrRt.",
+      "trrRRRt",
+      ".tRRRt.",
+      ".ttttt."
+    ],
+    "puff-2": [
+      "...ttt...",
+      ".ttrrRtt.",
+      ".trrRRRt.",
+      ".trRRRRt.",
+      ".tRRRRRt.",
+      ".ttRRRtt.",
+      "...ttt..."
+    ],
+    "puff-3": [
+      "...99999...",
+      "..9888999..",
+      "..9889999..",
+      ".988999999.",
+      "..9999999..",
+      "..9999999..",
+      "...99999..."
+    ],
+    "puff-4": [
+      "...999...",
+      "..98899..",
+      ".9889999.",
+      ".9899999.",
+      ".9999999.",
+      "..99999..",
+      "...999..."
+    ],
+    "puff-5": [
+      "...9...",
+      ".99899.",
+      ".98999.",
+      ".99999.",
+      "...9..."
+    ],
+    "cloud-0": [
+      "...t...",
+      ".ttrtt.",
+      ".trRRt.",
+      ".ttRtt.",
+      "...t..."
+    ],
+    "cloud-1": [
+      "..ttttt..",
+      ".trrrRRt.",
+      ".trrRRRt.",
+      "trrRRRRRt",
+      ".tRRRRRt.",
+      ".tRRRRRt.",
+      "..ttttt.."
+    ],
+    "cloud-2": [
+      "...ttttt...",
+      "..trrrrRt..",
+      ".trrrrRRRt.",
+      ".trrrRRRRt.",
+      "trrrRRRRRRt",
+      ".trRRRRRRt.",
+      ".tRRRRRRRt.",
+      "..tRRRRRt..",
+      "...ttttt..."
+    ],
+    "cloud-3": [
+      "...9998999...",
+      "..998888999..",
+      "..988889999..",
+      ".98888999999.",
+      ".98889999999.",
+      ".98899999999.",
+      "..999999999..",
+      "..999999999..",
+      "...9999999..."
+    ],
+    "cloud-4": [
+      "....999....",
+      "..9988899..",
+      ".988889999.",
+      ".988899999.",
+      ".988999999.",
+      ".989999999.",
+      ".999999999.",
+      "..9999999..",
+      "....999...."
+    ],
+    "cloud-5": [
+      "..99899..",
+      ".9988999.",
+      ".9889999.",
+      ".9999999.",
+      "..99999.."
+    ],
+    "hit-0": [
+      "................",
+      ".......x........",
+      ".......x........",
+      "...x...x...x....",
+      "....x..W..x.....",
+      ".....xWWWx......",
+      "..xxxWW7WWxxx...",
+      ".....xWWWx......",
+      "....x..W..x.....",
+      "...x...x...x....",
+      ".......x........",
+      ".......x........"
+    ],
+    "hit-1": [
+      "................",
+      "................",
+      ".......W........",
+      "....W..x..W.....",
+      ".....x.x.x......",
+      "......x7x.......",
+      "...WxxxWxxxW....",
+      "......x7x.......",
+      ".....x.x.x......",
+      "....W..x..W.....",
+      ".......W........",
+      "................"
+    ],
+    "hit-2": [
+      "................",
+      "................",
+      "................",
+      "................",
+      ".......M........",
+      ".....M.W.M......",
+      "....M.W.W.M.....",
+      ".....M.W.M......",
+      ".......M........",
+      "................",
+      "................",
+      "................"
+    ],
+    "sparkle-0": [
+      ".......",
+      "...x...",
+      "..xWx..",
+      ".xW7Wx.",
+      "..xWx..",
+      "...x...",
+      "......."
+    ],
+    "sparkle-1": [
+      "...x...",
+      "...x...",
+      "..xWx..",
+      "xxW7Wxx",
+      "..xWx..",
+      "...x...",
+      "...x..."
+    ],
+    "sparkle-2": [
+      ".......",
+      "...W...",
+      "...x...",
+      ".Wx7xW.",
+      "...x...",
+      "...W...",
+      "......."
+    ],
+    "sparkle-3": [
+      ".......",
+      ".......",
+      "...W...",
+      "..W7W..",
+      "...W...",
+      ".......",
+      "......."
+    ],
+    "dust-0": [
+      ".RR.",
+      "RrRt",
+      ".tt."
+    ],
+    "dust-1": [
+      "R.",
+      "Rt"
+    ],
+    "dust-2": ["R"]
+  },
+  "anchor": [16, 20],
+  "frames": [
+    {
+      "name": "leaves-0",
+      "duration": 70,
+      "ops": [
+        { "op": "stamp", "symbol": "leaf-l1", "x": 13, "y": 18 },
+        { "op": "stamp", "symbol": "leaf-j1", "x": 14, "y": 18 },
+        { "op": "stamp", "symbol": "leaf-h0", "x": 16, "y": 15 },
+        { "op": "stamp", "symbol": "leaf-l0", "x": 19, "y": 16 },
+        { "op": "stamp", "symbol": "leaf-h1", "x": 13, "y": 16 },
+        { "op": "stamp", "symbol": "leaf-h0", "x": 14, "y": 16 },
+        { "op": "stamp", "symbol": "leaf-j1", "x": 13, "y": 16 },
+        { "op": "stamp", "symbol": "leaf-h1", "x": 15, "y": 18 },
+        { "op": "stamp", "symbol": "leaf-j1", "x": 13, "y": 19 },
+        { "op": "stamp", "symbol": "leaf-l0", "x": 14, "y": 17 }
+      ]
+    },
+    {
+      "name": "leaves-1",
+      "duration": 70,
+      "ops": [
+        { "op": "stamp", "symbol": "leaf-l0", "x": 17, "y": 16 },
+        { "op": "stamp", "symbol": "leaf-j0", "x": 12, "y": 16 },
+        { "op": "stamp", "symbol": "leaf-h1", "x": 18, "y": 13 },
+        { "op": "stamp", "symbol": "leaf-l1", "x": 18, "y": 14 },
+        { "op": "stamp", "symbol": "leaf-h0", "x": 12, "y": 14 },
+        { "op": "stamp", "symbol": "leaf-h1", "x": 15, "y": 14 },
+        { "op": "stamp", "symbol": "leaf-j0", "x": 12, "y": 14 },
+        { "op": "stamp", "symbol": "leaf-h0", "x": 13, "y": 16 },
+        { "op": "stamp", "symbol": "leaf-j0", "x": 14, "y": 18 },
+        { "op": "stamp", "symbol": "leaf-l1", "x": 14, "y": 14 }
+      ]
+    },
+    {
+      "name": "leaves-2",
+      "duration": 70,
+      "ops": [
+        { "op": "stamp", "symbol": "leaf-l1", "x": 20, "y": 15 },
+        { "op": "stamp", "symbol": "leaf-j1", "x": 12, "y": 14 },
+        { "op": "stamp", "symbol": "leaf-h0", "x": 19, "y": 12 },
+        { "op": "stamp", "symbol": "leaf-l0", "x": 17, "y": 13 },
+        { "op": "stamp", "symbol": "leaf-h1", "x": 11, "y": 11 },
+        { "op": "stamp", "symbol": "leaf-h0", "x": 14, "y": 13 },
+        { "op": "stamp", "symbol": "leaf-j1", "x": 10, "y": 12 },
+        { "op": "stamp", "symbol": "leaf-h1", "x": 11, "y": 13 },
+        { "op": "stamp", "symbol": "leaf-j1", "x": 17, "y": 18 },
+        { "op": "stamp", "symbol": "leaf-l0", "x": 14, "y": 11 }
+      ]
+    },
+    {
+      "name": "leaves-3",
+      "duration": 70,
+      "ops": [
+        { "op": "stamp", "symbol": "leaf-l0", "x": 22, "y": 14 },
+        { "op": "stamp", "symbol": "leaf-j0", "x": 11, "y": 13 },
+        { "op": "stamp", "symbol": "leaf-h1", "x": 19, "y": 11 },
+        { "op": "stamp", "symbol": "leaf-l1", "x": 17, "y": 13 },
+        { "op": "stamp", "symbol": "leaf-h0", "x": 9, "y": 10 },
+        { "op": "stamp", "symbol": "leaf-h1", "x": 14, "y": 12 },
+        { "op": "stamp", "symbol": "leaf-j0", "x": 7, "y": 11 },
+        { "op": "stamp", "symbol": "leaf-h0", "x": 10, "y": 12 },
+        { "op": "stamp", "symbol": "leaf-j0", "x": 19, "y": 18 },
+        { "op": "stamp", "symbol": "leaf-l1", "x": 13, "y": 9 }
+      ]
+    },
+    {
+      "name": "leaves-4",
+      "duration": 70,
+      "ops": [
+        { "op": "stamp", "symbol": "leaf-l1", "x": 24, "y": 14 },
+        { "op": "stamp", "symbol": "leaf-j1", "x": 9, "y": 12 },
+        { "op": "stamp", "symbol": "leaf-h0", "x": 20, "y": 11 },
+        { "op": "stamp", "symbol": "leaf-l0", "x": 18, "y": 13 },
+        { "op": "stamp", "symbol": "leaf-h1", "x": 6, "y": 9 },
+        { "op": "stamp", "symbol": "leaf-h0", "x": 15, "y": 12 },
+        { "op": "stamp", "symbol": "leaf-j1", "x": 5, "y": 11 },
+        { "op": "stamp", "symbol": "leaf-h1", "x": 11, "y": 11 },
+        { "op": "stamp", "symbol": "leaf-j1", "x": 20, "y": 19 },
+        { "op": "stamp", "symbol": "leaf-l0", "x": 11, "y": 8 }
+      ]
+    },
+    {
+      "name": "leaves-5",
+      "duration": 70,
+      "ops": [
+        { "op": "stamp", "symbol": "leaf-l0", "x": 26, "y": 15 },
+        { "op": "stamp", "symbol": "leaf-j0", "x": 6, "y": 12 },
+        { "op": "stamp", "symbol": "leaf-h1", "x": 22, "y": 11 },
+        { "op": "stamp", "symbol": "leaf-l1", "x": 19, "y": 14 },
+        { "op": "stamp", "symbol": "leaf-h0", "x": 4, "y": 9 },
+        { "op": "stamp", "symbol": "leaf-h1", "x": 17, "y": 12 },
+        { "op": "stamp", "symbol": "leaf-j0", "x": 5, "y": 11 },
+        { "op": "stamp", "symbol": "leaf-h0", "x": 10, "y": 11 },
+        { "op": "stamp", "symbol": "leaf-j0", "x": 20, "y": 21 },
+        { "op": "stamp", "symbol": "leaf-l1", "x": 10, "y": 7 }
+      ]
+    },
+    {
+      "name": "leaves-6",
+      "duration": 70,
+      "ops": [
+        { "op": "stamp", "symbol": "leaf-l1", "x": 30, "y": 16 },
+        { "op": "stamp", "symbol": "leaf-j1", "x": 5, "y": 12 },
+        { "op": "stamp", "symbol": "leaf-h0", "x": 24, "y": 12 },
+        { "op": "stamp", "symbol": "leaf-l0", "x": 18, "y": 15 },
+        { "op": "stamp", "symbol": "leaf-h1", "x": 4, "y": 9 },
+        { "op": "stamp", "symbol": "leaf-h0", "x": 18, "y": 13 },
+        { "op": "stamp", "symbol": "leaf-j1", "x": 4, "y": 12 },
+        { "op": "stamp", "symbol": "leaf-h1", "x": 8, "y": 11 },
+        { "op": "stamp", "symbol": "leaf-j1", "x": 21, "y": 23 },
+        { "op": "stamp", "symbol": "leaf-l0", "x": 9, "y": 7 }
+      ]
+    },
+    {
+      "name": "shards-0",
+      "duration": 70,
+      "ops": [
+        { "op": "stamp", "symbol": "shard-e", "x": 15, "y": 19 },
+        { "op": "stamp", "symbol": "shard-h", "x": 12, "y": 20 },
+        { "op": "stamp", "symbol": "shard-h", "x": 16, "y": 19 },
+        { "op": "stamp", "symbol": "shard-g", "x": 17, "y": 21 },
+        { "op": "stamp", "symbol": "shard-e", "x": 14, "y": 21 },
+        { "op": "stamp", "symbol": "shard-b", "x": 14, "y": 17 },
+        { "op": "stamp", "symbol": "shard-d", "x": 17, "y": 19 },
+        { "op": "stamp", "symbol": "shard-b", "x": 17, "y": 18 }
+      ]
+    },
+    {
+      "name": "shards-1",
+      "duration": 70,
+      "ops": [
+        { "op": "stamp", "symbol": "shard-e", "x": 13, "y": 19 },
+        { "op": "stamp", "symbol": "shard-h", "x": 9, "y": 20 },
+        { "op": "stamp", "symbol": "shard-h", "x": 17, "y": 16 },
+        { "op": "stamp", "symbol": "shard-g", "x": 15, "y": 21 },
+        { "op": "stamp", "symbol": "shard-e", "x": 14, "y": 19 },
+        { "op": "stamp", "symbol": "shard-b", "x": 15, "y": 16 },
+        { "op": "stamp", "symbol": "shard-d", "x": 14, "y": 18 },
+        { "op": "stamp", "symbol": "shard-b", "x": 19, "y": 17 }
+      ]
+    },
+    {
+      "name": "shards-2",
+      "duration": 70,
+      "ops": [
+        { "op": "stamp", "symbol": "shard-e", "x": 10, "y": 20 },
+        { "op": "stamp", "symbol": "shard-h", "x": 7, "y": 22 },
+        { "op": "stamp", "symbol": "shard-h", "x": 19, "y": 15 },
+        { "op": "stamp", "symbol": "shard-g", "x": 14, "y": 21 },
+        { "op": "stamp", "symbol": "shard-e", "x": 15, "y": 18 },
+        { "op": "stamp", "symbol": "shard-b", "x": 17, "y": 16 },
+        { "op": "stamp", "symbol": "shard-d", "x": 11, "y": 18 },
+        { "op": "stamp", "symbol": "shard-b", "x": 21, "y": 16 }
+      ]
+    },
+    {
+      "name": "shards-3",
+      "duration": 70,
+      "ops": [
+        { "op": "stamp", "symbol": "shard-e", "x": 8, "y": 22 },
+        { "op": "stamp", "symbol": "shard-h", "x": 4, "y": 24 },
+        { "op": "stamp", "symbol": "shard-h", "x": 20, "y": 15 },
+        { "op": "stamp", "symbol": "shard-g", "x": 12, "y": 23 },
+        { "op": "stamp", "symbol": "shard-e", "x": 15, "y": 18 },
+        { "op": "stamp", "symbol": "shard-b", "x": 18, "y": 17 },
+        { "op": "stamp", "symbol": "shard-d", "x": 8, "y": 19 },
+        { "op": "stamp", "symbol": "shard-b", "x": 23, "y": 18 }
+      ]
+    },
+    {
+      "name": "shards-4",
+      "duration": 70,
+      "ops": [
+        { "op": "stamp", "symbol": "shard-e", "x": 5, "y": 25 },
+        { "op": "stamp", "symbol": "shard-h", "x": 2, "y": 26 },
+        { "op": "stamp", "symbol": "shard-h", "x": 22, "y": 15 },
+        { "op": "stamp", "symbol": "shard-g", "x": 11, "y": 26 },
+        { "op": "stamp", "symbol": "shard-e", "x": 15, "y": 19 },
+        { "op": "stamp", "symbol": "shard-b", "x": 19, "y": 20 },
+        { "op": "stamp", "symbol": "shard-d", "x": 6, "y": 21 },
+        { "op": "stamp", "symbol": "shard-b", "x": 25, "y": 20 }
+      ]
+    },
+    {
+      "name": "shards-5",
+      "duration": 70,
+      "ops": [
+        { "op": "stamp", "symbol": "shard-e", "x": 3, "y": 26 },
+        { "op": "stamp", "symbol": "shard-h", "x": 0, "y": 26 },
+        { "op": "stamp", "symbol": "shard-h", "x": 23, "y": 17 },
+        { "op": "stamp", "symbol": "shard-g", "x": 9, "y": 26 },
+        { "op": "stamp", "symbol": "shard-e", "x": 15, "y": 21 },
+        { "op": "stamp", "symbol": "shard-b", "x": 21, "y": 23 },
+        { "op": "stamp", "symbol": "shard-d", "x": 3, "y": 24 },
+        { "op": "stamp", "symbol": "shard-b", "x": 27, "y": 23 }
+      ]
+    },
+    {
+      "name": "splash-0",
+      "duration": 80,
+      "ops": [
+        { "op": "stamp", "symbol": "spout", "x": 17, "y": 23 },
+        { "op": "stamp", "symbol": "spout", "x": 13, "y": 23 },
+        { "op": "stamp", "symbol": "spout", "x": 15, "y": 23 },
+        { "op": "stamp", "symbol": "spout", "x": 19, "y": 23 }
+      ]
+    },
+    {
+      "name": "splash-1",
+      "duration": 80,
+      "ops": [
+        { "op": "line", "x": 17, "y": 24, "x2": 17, "y2": 22, "color": "W" },
+        { "op": "stamp", "symbol": "drop", "x": 17, "y": 22 },
+        { "op": "line", "x": 13, "y": 24, "x2": 13, "y2": 21, "color": "W" },
+        { "op": "stamp", "symbol": "drop", "x": 13, "y": 21 },
+        { "op": "line", "x": 15, "y": 24, "x2": 15, "y2": 22, "color": "W" },
+        { "op": "stamp", "symbol": "drop", "x": 15, "y": 22 },
+        { "op": "line", "x": 19, "y": 24, "x2": 18, "y2": 21, "color": "W" },
+        { "op": "stamp", "symbol": "drop", "x": 18, "y": 21 },
+        { "op": "stamp", "symbol": "drop", "x": 14, "y": 18 },
+        { "op": "stamp", "symbol": "drop", "x": 17, "y": 18 },
+        { "op": "stamp", "symbol": "drop", "x": 17, "y": 18 },
+        { "op": "stamp", "symbol": "drop", "x": 18, "y": 18 }
+      ]
+    },
+    {
+      "name": "splash-2",
+      "duration": 80,
+      "ops": [
+        { "op": "line", "x": 17, "y": 24, "x2": 17, "y2": 20, "color": "W" },
+        { "op": "stamp", "symbol": "drop", "x": 17, "y": 20 },
+        { "op": "line", "x": 13, "y": 24, "x2": 13, "y2": 19, "color": "W" },
+        { "op": "stamp", "symbol": "drop", "x": 13, "y": 19 },
+        { "op": "line", "x": 15, "y": 24, "x2": 15, "y2": 20, "color": "W" },
+        { "op": "stamp", "symbol": "drop", "x": 15, "y": 20 },
+        { "op": "line", "x": 19, "y": 24, "x2": 18, "y2": 19, "color": "W" },
+        { "op": "stamp", "symbol": "drop", "x": 18, "y": 19 },
+        { "op": "stamp", "symbol": "drop", "x": 14, "y": 16 },
+        { "op": "stamp", "symbol": "drop", "x": 17, "y": 16 },
+        { "op": "stamp", "symbol": "drop", "x": 16, "y": 15 },
+        { "op": "stamp", "symbol": "drop", "x": 19, "y": 16 },
+        { "op": "stamp", "symbol": "ripple-l", "x": 9, "y": 23 },
+        { "op": "stamp", "symbol": "ripple-r", "x": 22, "y": 23 }
+      ]
+    },
+    {
+      "name": "splash-3",
+      "duration": 80,
+      "ops": [
+        { "op": "line", "x": 17, "y": 24, "x2": 17, "y2": 20, "color": "W" },
+        { "op": "stamp", "symbol": "drop", "x": 17, "y": 20 },
+        { "op": "line", "x": 13, "y": 24, "x2": 12, "y2": 19, "color": "W" },
+        { "op": "stamp", "symbol": "drop", "x": 12, "y": 19 },
+        { "op": "line", "x": 15, "y": 24, "x2": 15, "y2": 20, "color": "W" },
+        { "op": "stamp", "symbol": "drop", "x": 15, "y": 20 },
+        { "op": "line", "x": 19, "y": 24, "x2": 18, "y2": 18, "color": "W" },
+        { "op": "stamp", "symbol": "drop", "x": 18, "y": 18 },
+        { "op": "stamp", "symbol": "ripple-l", "x": 7, "y": 23 },
+        { "op": "stamp", "symbol": "ripple-r", "x": 24, "y": 23 }
+      ]
+    },
+    {
+      "name": "splash-4",
+      "duration": 80,
+      "ops": [
+        { "op": "stamp", "symbol": "ripple-l", "x": 5, "y": 23 },
+        { "op": "stamp", "symbol": "ripple-r", "x": 26, "y": 23 }
+      ]
+    },
+    {
+      "name": "poof-0",
+      "duration": 70,
+      "ops": [
+        { "op": "stamp", "symbol": "cloud-0", "x": 13, "y": 16 },
+        { "op": "stamp", "symbol": "puff-0", "x": 9, "y": 16 },
+        { "op": "stamp", "symbol": "puff-0", "x": 19, "y": 16 },
+        { "op": "stamp", "symbol": "puff-0", "x": 12, "y": 12 },
+        { "op": "stamp", "symbol": "puff-0", "x": 17, "y": 12 },
+        { "op": "stamp", "symbol": "puff-0", "x": 14, "y": 20 }
+      ]
+    },
+    {
+      "name": "poof-1",
+      "duration": 70,
+      "ops": [
+        { "op": "stamp", "symbol": "cloud-1", "x": 12, "y": 13 },
+        { "op": "stamp", "symbol": "puff-1", "x": 8, "y": 14 },
+        { "op": "stamp", "symbol": "puff-1", "x": 18, "y": 14 },
+        { "op": "stamp", "symbol": "puff-1", "x": 11, "y": 10 },
+        { "op": "stamp", "symbol": "puff-1", "x": 16, "y": 10 },
+        { "op": "stamp", "symbol": "puff-1", "x": 13, "y": 18 }
+      ]
+    },
+    {
+      "name": "poof-2",
+      "duration": 70,
+      "ops": [
+        { "op": "stamp", "symbol": "cloud-2", "x": 11, "y": 11 },
+        { "op": "stamp", "symbol": "puff-2", "x": 7, "y": 12 },
+        { "op": "stamp", "symbol": "puff-2", "x": 17, "y": 12 },
+        { "op": "stamp", "symbol": "puff-2", "x": 10, "y": 8 },
+        { "op": "stamp", "symbol": "puff-2", "x": 15, "y": 8 },
+        { "op": "stamp", "symbol": "puff-2", "x": 12, "y": 16 }
+      ]
+    },
+    {
+      "name": "poof-3",
+      "duration": 70,
+      "ops": [
+        { "op": "stamp", "symbol": "cloud-3", "x": 10, "y": 9 },
+        { "op": "stamp", "symbol": "puff-3", "x": 6, "y": 10 },
+        { "op": "stamp", "symbol": "puff-3", "x": 16, "y": 10 },
+        { "op": "stamp", "symbol": "puff-3", "x": 9, "y": 6 },
+        { "op": "stamp", "symbol": "puff-3", "x": 14, "y": 6 },
+        { "op": "stamp", "symbol": "puff-3", "x": 11, "y": 14 }
+      ]
+    },
+    {
+      "name": "poof-4",
+      "duration": 70,
+      "ops": [
+        {
+          "op": "grid",
+          "x": 11,
+          "y": 7,
+          "rows": [
+            "....99.....",
+            "...98.89...",
+            "..88.89.99.",
+            ".98.89.99..",
+            ".9.89.99.9.",
+            "..89.99.99.",
+            ".99.99.99..",
+            "...99.99...",
+            ".....99...."
+          ]
+        },
+        {
+          "op": "grid",
+          "x": 7,
+          "y": 9,
+          "rows": [
+            "...99....",
+            "..98.99..",
+            ".98.99.9.",
+            ".9.99.99.",
+            "..99.99..",
+            "..9.99...",
+            "...99...."
+          ]
+        },
+        {
+          "op": "grid",
+          "x": 17,
+          "y": 9,
+          "rows": [
+            "...9.9...",
+            "..9.89...",
+            ".9.89.99.",
+            "..89.99..",
+            ".99.99.9.",
+            "...99.9..",
+            "...9.9..."
+          ]
+        },
+        {
+          "op": "grid",
+          "x": 10,
+          "y": 5,
+          "rows": [
+            "....99...",
+            "...88.9..",
+            "..88.99..",
+            ".98.99.9.",
+            ".9.99.99.",
+            "..99.99..",
+            "....99..."
+          ]
+        },
+        {
+          "op": "grid",
+          "x": 15,
+          "y": 5,
+          "rows": [
+            "...9.9...",
+            "..9.89...",
+            ".9.89.99.",
+            "..89.99..",
+            ".99.99.9.",
+            "...99.9..",
+            "...9.9..."
+          ]
+        },
+        {
+          "op": "grid",
+          "x": 12,
+          "y": 13,
+          "rows": [
+            "...99....",
+            "..98.99..",
+            ".98.99.9.",
+            ".9.99.99.",
+            "..99.99..",
+            "..9.99...",
+            "...99...."
+          ]
+        }
+      ]
+    },
+    {
+      "name": "poof-5",
+      "duration": 70,
+      "ops": [
+        {
+          "op": "grid",
+          "x": 12,
+          "y": 8,
+          "rows": [
+            "...9..9..",
+            "..9..9...",
+            ".9..9..9.",
+            "...9..9..",
+            "..9..9..."
+          ]
+        },
+        {
+          "op": "grid",
+          "x": 8,
+          "y": 9,
+          "rows": [
+            "...9...",
+            "..9..9.",
+            ".9..9..",
+            "...9...",
+            "......."
+          ]
+        },
+        {
+          "op": "grid",
+          "x": 18,
+          "y": 9,
+          "rows": [
+            ".......",
+            ".9..9..",
+            "...9...",
+            "..9..9.",
+            "......."
+          ]
+        },
+        {
+          "op": "grid",
+          "x": 11,
+          "y": 5,
+          "rows": [
+            ".......",
+            "...8...",
+            "..8..9.",
+            ".9..9..",
+            "...9..."
+          ]
+        },
+        {
+          "op": "grid",
+          "x": 16,
+          "y": 5,
+          "rows": [
+            ".......",
+            ".9..9..",
+            "...9...",
+            "..9..9.",
+            "......."
+          ]
+        },
+        {
+          "op": "grid",
+          "x": 13,
+          "y": 13,
+          "rows": [
+            "...9...",
+            "..9..9.",
+            ".9..9..",
+            "...9...",
+            "......."
+          ]
+        }
+      ]
+    },
+    { "name": "hit-0", "duration": 50, "ops": [{ "op": "stamp", "symbol": "hit-0", "x": 8, "y": 10 }] },
+    { "name": "hit-1", "duration": 50, "ops": [{ "op": "stamp", "symbol": "hit-1", "x": 8, "y": 10 }] },
+    { "name": "hit-2", "duration": 50, "ops": [{ "op": "stamp", "symbol": "hit-2", "x": 8, "y": 10 }] },
+    { "name": "sparkle-0", "duration": 90, "ops": [{ "op": "stamp", "symbol": "sparkle-0", "x": 12, "y": 12 }] },
+    { "name": "sparkle-1", "duration": 90, "ops": [{ "op": "stamp", "symbol": "sparkle-1", "x": 12, "y": 12 }] },
+    { "name": "sparkle-2", "duration": 90, "ops": [{ "op": "stamp", "symbol": "sparkle-2", "x": 12, "y": 12 }] },
+    { "name": "sparkle-3", "duration": 90, "ops": [{ "op": "stamp", "symbol": "sparkle-3", "x": 12, "y": 12 }] },
+    {
+      "name": "dust-0",
+      "duration": 70,
+      "ops": [
+        { "op": "stamp", "symbol": "dust-0", "x": 13, "y": 25 },
+        { "op": "stamp", "symbol": "dust-0", "x": 15, "y": 25 }
+      ]
+    },
+    {
+      "name": "dust-1",
+      "duration": 70,
+      "ops": [
+        { "op": "stamp", "symbol": "dust-1", "x": 13, "y": 25 },
+        { "op": "stamp", "symbol": "dust-1", "x": 17, "y": 25 }
+      ]
+    },
+    {
+      "name": "dust-2",
+      "duration": 70,
+      "ops": [
+        { "op": "stamp", "symbol": "dust-2", "x": 13, "y": 26 },
+        { "op": "stamp", "symbol": "dust-2", "x": 19, "y": 26 }
+      ]
+    }
+  ],
+  "animations": {
+    "leaves": {
+      "frames": ["leaves-0", "leaves-1", "leaves-2", "leaves-3", "leaves-4", "leaves-5", "leaves-6"],
+      "loop": false
+    },
+    "shards": { "frames": ["shards-0", "shards-1", "shards-2", "shards-3", "shards-4", "shards-5"], "loop": false },
+    "splash": { "frames": ["splash-0", "splash-1", "splash-2", "splash-3", "splash-4"], "loop": false },
+    "poof": { "frames": ["poof-0", "poof-1", "poof-2", "poof-3", "poof-4", "poof-5"], "loop": false },
+    "hit": { "frames": ["hit-0", "hit-1", "hit-2"], "loop": false },
+    "sparkle": { "frames": ["sparkle-0", "sparkle-1", "sparkle-2", "sparkle-3"] },
+    "dust": { "frames": ["dust-0", "dust-1", "dust-2"], "loop": false }
+  },
+  "sheet": { "columns": 8, "trim": true }
+}

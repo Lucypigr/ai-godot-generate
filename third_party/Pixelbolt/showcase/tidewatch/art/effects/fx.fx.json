@@ -1,0 +1,813 @@
+{
+  "format": "pixelforge-fx",
+  "version": 1,
+  "name": "fx",
+  "width": 32,
+  "height": 32,
+  "palette": {
+    "$ref": "../palette.json"
+  },
+  "symbols": {
+    "leaf-l0": [
+      "jl",
+      "hj"
+    ],
+    "leaf-l1": [
+      ".l",
+      "jh",
+      "g."
+    ],
+    "leaf-j0": [
+      "jj",
+      "hg"
+    ],
+    "leaf-j1": [
+      "hj",
+      ".g"
+    ],
+    "leaf-h0": [
+      "hj",
+      "g."
+    ],
+    "leaf-h1": [
+      ".h",
+      "hg"
+    ],
+    "shard-a": [
+      "kOk",
+      "kuk"
+    ],
+    "shard-b": [
+      "kkk",
+      "Ouk"
+    ],
+    "shard-c": [
+      "kOuk",
+      ".kk."
+    ],
+    "shard-d": [
+      "kO",
+      "uk"
+    ],
+    "shard-e": [
+      "kOk"
+    ],
+    "shard-f": [
+      "ku",
+      "kk"
+    ],
+    "shard-g": [
+      "Uk"
+    ],
+    "shard-h": [
+      "kuUk"
+    ],
+    "drop": [
+      "w"
+    ],
+    "spout": [
+      "w",
+      "W"
+    ],
+    "ripple-l": [
+      "W.",
+      "ww",
+      ".W"
+    ],
+    "ripple-r": [
+      ".W",
+      "ww",
+      "W."
+    ],
+    "puff-0": [
+      ".ttt.",
+      ".tRt.",
+      ".ttt."
+    ],
+    "puff-1": [
+      ".ttttt.",
+      ".trrRt.",
+      "trrRRRt",
+      ".tRRRt.",
+      ".ttttt."
+    ],
+    "puff-2": [
+      "...ttt...",
+      ".ttrrRtt.",
+      ".trrRRRt.",
+      ".trRRRRt.",
+      ".tRRRRRt.",
+      ".ttRRRtt.",
+      "...ttt..."
+    ],
+    "puff-3": [
+      "...99999...",
+      "..9888999..",
+      "..9889999..",
+      ".988999999.",
+      "..9999999..",
+      "..9999999..",
+      "...99999..."
+    ],
+    "puff-4": [
+      "...999...",
+      "..98899..",
+      ".9889999.",
+      ".9899999.",
+      ".9999999.",
+      "..99999..",
+      "...999..."
+    ],
+    "puff-5": [
+      "...9...",
+      ".99899.",
+      ".98999.",
+      ".99999.",
+      "...9..."
+    ],
+    "cloud-0": [
+      "...t...",
+      ".ttrtt.",
+      ".trRRt.",
+      ".ttRtt.",
+      "...t..."
+    ],
+    "cloud-1": [
+      "..ttttt..",
+      ".trrrRRt.",
+      ".trrRRRt.",
+      "trrRRRRRt",
+      ".tRRRRRt.",
+      ".tRRRRRt.",
+      "..ttttt.."
+    ],
+    "cloud-2": [
+      "...ttttt...",
+      "..trrrrRt..",
+      ".trrrrRRRt.",
+      ".trrrRRRRt.",
+      "trrrRRRRRRt",
+      ".trRRRRRRt.",
+      ".tRRRRRRRt.",
+      "..tRRRRRt..",
+      "...ttttt..."
+    ],
+    "cloud-3": [
+      "...9998999...",
+      "..998888999..",
+      "..988889999..",
+      ".98888999999.",
+      ".98889999999.",
+      ".98899999999.",
+      "..999999999..",
+      "..999999999..",
+      "...9999999..."
+    ],
+    "cloud-4": [
+      "....999....",
+      "..9988899..",
+      ".988889999.",
+      ".988899999.",
+      ".988999999.",
+      ".989999999.",
+      ".999999999.",
+      "..9999999..",
+      "....999...."
+    ],
+    "cloud-5": [
+      "..99899..",
+      ".9988999.",
+      ".9889999.",
+      ".9999999.",
+      "..99999.."
+    ],
+    "hit-0": [
+      "................",
+      ".......x........",
+      ".......x........",
+      "...x...x...x....",
+      "....x..W..x.....",
+      ".....xWWWx......",
+      "..xxxWW7WWxxx...",
+      ".....xWWWx......",
+      "....x..W..x.....",
+      "...x...x...x....",
+      ".......x........",
+      ".......x........"
+    ],
+    "hit-1": [
+      "................",
+      "................",
+      ".......W........",
+      "....W..x..W.....",
+      ".....x.x.x......",
+      "......x7x.......",
+      "...WxxxWxxxW....",
+      "......x7x.......",
+      ".....x.x.x......",
+      "....W..x..W.....",
+      ".......W........",
+      "................"
+    ],
+    "hit-2": [
+      "................",
+      "................",
+      "................",
+      "................",
+      ".......M........",
+      ".....M.W.M......",
+      "....M.W.W.M.....",
+      ".....M.W.M......",
+      ".......M........",
+      "................",
+      "................",
+      "................"
+    ],
+    "sparkle-0": [
+      ".......",
+      "...x...",
+      "..xWx..",
+      ".xW7Wx.",
+      "..xWx..",
+      "...x...",
+      "......."
+    ],
+    "sparkle-1": [
+      "...x...",
+      "...x...",
+      "..xWx..",
+      "xxW7Wxx",
+      "..xWx..",
+      "...x...",
+      "...x..."
+    ],
+    "sparkle-2": [
+      ".......",
+      "...W...",
+      "...x...",
+      ".Wx7xW.",
+      "...x...",
+      "...W...",
+      "......."
+    ],
+    "sparkle-3": [
+      ".......",
+      ".......",
+      "...W...",
+      "..W7W..",
+      "...W...",
+      ".......",
+      "......."
+    ],
+    "dust-0": [
+      ".RR.",
+      "RrRt",
+      ".tt."
+    ],
+    "dust-1": [
+      "R.",
+      "Rt"
+    ],
+    "dust-2": [
+      "R"
+    ]
+  },
+  "anchor": [
+    16,
+    20
+  ],
+  "effects": {
+    "leaves": {
+      "frames": 7,
+      "duration": 70,
+      "seed": 13,
+      "emitters": [
+        {
+          "name": "clippings",
+          "at": [
+            16,
+            18
+          ],
+          "area": [
+            8,
+            5
+          ],
+          "burst": 10,
+          "angle": [
+            210,
+            330
+          ],
+          "speed": [
+            2,
+            4.4
+          ],
+          "gravity": [
+            0,
+            0.6
+          ],
+          "drag": 0.02,
+          "life": 7,
+          "sway": {
+            "amplitude": [
+              1.1,
+              0
+            ],
+            "period": 5
+          },
+          "shapes": [
+            [
+              "leaf-l0",
+              "leaf-l1"
+            ],
+            [
+              "leaf-j0",
+              "leaf-j1"
+            ],
+            [
+              "leaf-h0",
+              "leaf-h1"
+            ]
+          ],
+          "play": "loop"
+        }
+      ]
+    },
+    "shards": {
+      "frames": 6,
+      "duration": 70,
+      "seed": 3,
+      "emitters": [
+        {
+          "name": "pot",
+          "at": [
+            16,
+            19
+          ],
+          "area": [
+            8,
+            6
+          ],
+          "burst": 8,
+          "angle": [
+            195,
+            345
+          ],
+          "speed": [
+            1,
+            4
+          ],
+          "gravity": [
+            0,
+            1.1
+          ],
+          "floor": 26,
+          "bounce": 0.25,
+          "shapes": [
+            [
+              "shard-a"
+            ],
+            [
+              "shard-b"
+            ],
+            [
+              "shard-c"
+            ],
+            [
+              "shard-d"
+            ],
+            [
+              "shard-e"
+            ],
+            [
+              "shard-f"
+            ],
+            [
+              "shard-g"
+            ],
+            [
+              "shard-h"
+            ]
+          ]
+        }
+      ]
+    },
+    "splash": {
+      "frames": 5,
+      "duration": 80,
+      "seed": 5,
+      "emitters": [
+        {
+          "name": "crown",
+          "at": [
+            16,
+            24
+          ],
+          "area": [
+            7,
+            1
+          ],
+          "burst": 4,
+          "angle": [
+            260,
+            280
+          ],
+          "speed": [
+            3,
+            4.2
+          ],
+          "gravity": [
+            0,
+            1
+          ],
+          "floor": 24,
+          "life": 4,
+          "shapes": [
+            "spout",
+            "drop",
+            "drop",
+            "drop"
+          ],
+          "trail": {
+            "color": "W",
+            "length": 4
+          }
+        },
+        {
+          "name": "spray",
+          "at": [
+            16,
+            18
+          ],
+          "area": [
+            8,
+            2
+          ],
+          "burst": 4,
+          "start": 1,
+          "angle": [
+            235,
+            305
+          ],
+          "speed": [
+            2.4,
+            3.4
+          ],
+          "gravity": [
+            0,
+            0.9
+          ],
+          "life": 2,
+          "shapes": [
+            "drop"
+          ]
+        },
+        {
+          "name": "ripple-left",
+          "at": [
+            10,
+            24
+          ],
+          "burst": 1,
+          "start": 2,
+          "angle": 180,
+          "speed": 2,
+          "life": 3,
+          "shapes": [
+            "ripple-l"
+          ]
+        },
+        {
+          "name": "ripple-right",
+          "at": [
+            23,
+            24
+          ],
+          "burst": 1,
+          "start": 2,
+          "angle": 0,
+          "speed": 2,
+          "life": 3,
+          "shapes": [
+            "ripple-r"
+          ]
+        }
+      ]
+    },
+    "poof": {
+      "frames": 6,
+      "duration": 70,
+      "seed": 2,
+      "emitters": [
+        {
+          "name": "core",
+          "at": [
+            16,
+            18
+          ],
+          "burst": 1,
+          "angle": 270,
+          "speed": 1.7,
+          "life": 6,
+          "shapes": [
+            "cloud-0",
+            "cloud-1",
+            "cloud-2",
+            "cloud-3",
+            "cloud-4",
+            "cloud-5"
+          ],
+          "dissolve": 0.3,
+          "pattern": [
+            [
+              0,
+              1,
+              2
+            ],
+            [
+              1,
+              2,
+              0
+            ],
+            [
+              2,
+              0,
+              1
+            ]
+          ]
+        },
+        {
+          "name": "left",
+          "at": [
+            11,
+            17
+          ],
+          "burst": 1,
+          "angle": 270,
+          "speed": 1.2,
+          "life": 6,
+          "shapes": [
+            "puff-0",
+            "puff-1",
+            "puff-2",
+            "puff-3",
+            "puff-4",
+            "puff-5"
+          ],
+          "dissolve": 0.3,
+          "pattern": [
+            [
+              0,
+              1,
+              2
+            ],
+            [
+              1,
+              2,
+              0
+            ],
+            [
+              2,
+              0,
+              1
+            ]
+          ]
+        },
+        {
+          "name": "right",
+          "at": [
+            21,
+            17
+          ],
+          "burst": 1,
+          "angle": 270,
+          "speed": 1.2,
+          "life": 6,
+          "shapes": [
+            "puff-0",
+            "puff-1",
+            "puff-2",
+            "puff-3",
+            "puff-4",
+            "puff-5"
+          ],
+          "dissolve": 0.3,
+          "pattern": [
+            [
+              0,
+              1,
+              2
+            ],
+            [
+              1,
+              2,
+              0
+            ],
+            [
+              2,
+              0,
+              1
+            ]
+          ]
+        },
+        {
+          "name": "upper-left",
+          "at": [
+            14,
+            13
+          ],
+          "burst": 1,
+          "angle": 270,
+          "speed": 1.2,
+          "life": 6,
+          "shapes": [
+            "puff-0",
+            "puff-1",
+            "puff-2",
+            "puff-3",
+            "puff-4",
+            "puff-5"
+          ],
+          "dissolve": 0.3,
+          "pattern": [
+            [
+              0,
+              1,
+              2
+            ],
+            [
+              1,
+              2,
+              0
+            ],
+            [
+              2,
+              0,
+              1
+            ]
+          ]
+        },
+        {
+          "name": "upper-right",
+          "at": [
+            19,
+            13
+          ],
+          "burst": 1,
+          "angle": 270,
+          "speed": 1.2,
+          "life": 6,
+          "shapes": [
+            "puff-0",
+            "puff-1",
+            "puff-2",
+            "puff-3",
+            "puff-4",
+            "puff-5"
+          ],
+          "dissolve": 0.3,
+          "pattern": [
+            [
+              0,
+              1,
+              2
+            ],
+            [
+              1,
+              2,
+              0
+            ],
+            [
+              2,
+              0,
+              1
+            ]
+          ]
+        },
+        {
+          "name": "lower",
+          "at": [
+            16,
+            21
+          ],
+          "burst": 1,
+          "angle": 270,
+          "speed": 1.2,
+          "life": 6,
+          "shapes": [
+            "puff-0",
+            "puff-1",
+            "puff-2",
+            "puff-3",
+            "puff-4",
+            "puff-5"
+          ],
+          "dissolve": 0.3,
+          "pattern": [
+            [
+              0,
+              1,
+              2
+            ],
+            [
+              1,
+              2,
+              0
+            ],
+            [
+              2,
+              0,
+              1
+            ]
+          ]
+        }
+      ]
+    },
+    "hit": {
+      "frames": 3,
+      "duration": 50,
+      "emitters": [
+        {
+          "at": [
+            16,
+            16
+          ],
+          "burst": 1,
+          "life": 3,
+          "shapes": [
+            "hit-0",
+            "hit-1",
+            "hit-2"
+          ],
+          "play": "once"
+        }
+      ]
+    },
+    "sparkle": {
+      "frames": 4,
+      "duration": 90,
+      "loop": true,
+      "emitters": [
+        {
+          "at": [
+            15,
+            15
+          ],
+          "burst": 1,
+          "life": 4,
+          "shapes": [
+            "sparkle-0",
+            "sparkle-1",
+            "sparkle-2",
+            "sparkle-3"
+          ],
+          "play": "once"
+        }
+      ]
+    },
+    "dust": {
+      "frames": 3,
+      "duration": 70,
+      "seed": 4,
+      "emitters": [
+        {
+          "name": "left",
+          "at": [
+            15,
+            26
+          ],
+          "burst": 1,
+          "angle": 185,
+          "speed": 1.6,
+          "drag": 0.3,
+          "life": 3,
+          "shapes": [
+            "dust-0",
+            "dust-1",
+            "dust-2"
+          ]
+        },
+        {
+          "name": "right",
+          "at": [
+            17,
+            26
+          ],
+          "burst": 1,
+          "angle": 355,
+          "speed": 1.6,
+          "drag": 0.3,
+          "life": 3,
+          "shapes": [
+            "dust-0",
+            "dust-1",
+            "dust-2"
+          ]
+        }
+      ]
+    }
+  },
+  "sheet": {
+    "columns": 8,
+    "trim": true
+  }
+}

@@ -1,0 +1,40 @@
+{
+  "version": 1,
+  "name": "palette-swatch",
+  "width": 36,
+  "height": 96,
+  "palette": {
+    "$ref": "../palette.json"
+  },
+  "frames": [
+    {
+      "name": "ramps",
+      "ops": [
+        {
+          "op": "grid",
+          "x": 0,
+          "y": 0,
+          "scale": 6,
+          "rows": [
+            "kKL...",
+            "Gghjl.",
+            "sSdD..",
+            "wWcCnN",
+            "rRtTy.",
+            "oOuU..",
+            "pPq...",
+            "aAz...",
+            "eEfF..",
+            "bBV...",
+            "mMv...",
+            "xXiI..",
+            "123...",
+            "456...",
+            "789...",
+            "_....."
+          ]
+        }
+      ]
+    }
+  ]
+}

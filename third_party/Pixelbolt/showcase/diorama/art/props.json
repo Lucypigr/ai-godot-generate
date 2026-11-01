@@ -1,0 +1,431 @@
+{
+  "version": 1,
+  "name": "props",
+  "width": 16,
+  "height": 18,
+  "palette": { "$ref": "palette.json" },
+  "anchor": [8, 16],
+  "frames": [
+    {
+      "name": "barrel",
+      "ops": [
+        {
+          "op": "grid",
+          "x": 4,
+          "y": 7,
+          "rows": [
+            ".kkkkkk.",
+            "kzzzzzzk",
+            "kzyyyyzk",
+            "kzyxxyzk",
+            "kyzzzzyk",
+            "kxyyyyxk",
+            "kGzyyzGk",
+            "kxyyyyxk",
+            "kxyzzyxk",
+            ".kkkkkk."
+          ]
+        }
+      ]
+    },
+    {
+      "name": "pot",
+      "ops": [
+        {
+          "op": "grid",
+          "x": 5,
+          "y": 10,
+          "rows": [
+            ".kkkkk.",
+            "kpkkkpk",
+            "kqpppqk",
+            "kpppqqk",
+            "kqppqqk",
+            ".kqqqk.",
+            "..kkk.."
+          ]
+        }
+      ]
+    },
+    {
+      "name": "pot-break-0",
+      "ops": [
+        {
+          "op": "grid",
+          "x": 5,
+          "y": 10,
+          "rows": [
+            ".kkkkk.",
+            "kpkkkpk",
+            "kqpkpqk",
+            "kpkpqqk",
+            "kqpkqqk",
+            ".kqqkk.",
+            "..kkk.."
+          ]
+        }
+      ]
+    },
+    {
+      "name": "pot-break-1",
+      "ops": [
+        {
+          "op": "grid",
+          "x": 5,
+          "y": 13,
+          "rows": [
+            "k.p..qk",
+            ".kq.kpk",
+            "kqpk.qk",
+            ".k.pqk."
+          ]
+        }
+      ]
+    },
+    {
+      "name": "pot-shards",
+      "ops": [
+        {
+          "op": "grid",
+          "x": 4,
+          "y": 13,
+          "rows": [
+            ".....kq..",
+            "kqk...kpk",
+            ".kpk.kqk.",
+            "q...kk..p"
+          ]
+        }
+      ]
+    },
+    {
+      "name": "urn",
+      "ops": [
+        {
+          "op": "grid",
+          "x": 5,
+          "y": 9,
+          "rows": [
+            ".kkkkk.",
+            "kekkkek",
+            "kcddcck",
+            "kddcbck",
+            "kGGGGGk",
+            "kdcccbk",
+            ".kbbbk.",
+            "..kkk.."
+          ]
+        }
+      ]
+    },
+    {
+      "name": "crate",
+      "ops": [
+        {
+          "op": "grid",
+          "x": 4,
+          "y": 8,
+          "rows": [
+            "kkkkkkkk",
+            "kzzzzzzk",
+            "kzyyyyzk",
+            "kzyyyyzk",
+            "kxxxxxxk",
+            "kyxyyxyk",
+            "kyyxxyyk",
+            "kyxyyxyk",
+            "kkkkkkkk"
+          ]
+        }
+      ]
+    },
+    {
+      "name": "pillar",
+      "ops": [
+        {
+          "op": "grid",
+          "x": 4,
+          "y": 3,
+          "rows": [
+            ".kkkkkkk.",
+            "kuvwwwvuk",
+            "kvwwwwwvk",
+            "kuvvvvvuk",
+            ".kkkkkkk.",
+            ".ksttuuk.",
+            ".ksttuuk.",
+            ".ksttuuk.",
+            ".ksttuuk.",
+            ".ksttuuk.",
+            ".ksttuuk.",
+            "kkkkkkkkk",
+            "kstttuuuk",
+            "kkkkkkkkk"
+          ]
+        }
+      ]
+    },
+    {
+      "name": "chest",
+      "ops": [
+        {
+          "op": "grid",
+          "x": 4,
+          "y": 9,
+          "rows": [
+            ".kkkkkkk.",
+            "kzyyyyyzk",
+            "kyyyyyyyk",
+            "kkkkGkkkk",
+            "kxyyGyyxk",
+            "kxyyyyyxk",
+            "kxxxxxxxk",
+            ".kkkkkkk."
+          ]
+        }
+      ]
+    },
+    {
+      "name": "chest-open",
+      "ops": [
+        {
+          "op": "grid",
+          "x": 4,
+          "y": 9,
+          "rows": [
+            ".kkkkkkk.",
+            "kxyyyyyxk",
+            "kkkkkkkkk",
+            "kGYkYGkGk",
+            "kxyyyyyxk",
+            "kxyyyyyxk",
+            "kxxxxxxxk",
+            ".kkkkkkk."
+          ]
+        }
+      ]
+    },
+    {
+      "name": "candles",
+      "ops": [
+        {
+          "op": "grid",
+          "x": 5,
+          "y": 11,
+          "rows": [
+            "..Y...",
+            "..W.Y.",
+            ".kLkW.",
+            ".kLkLk",
+            "kkLkLk",
+            "kkkkkk"
+          ]
+        }
+      ]
+    },
+    {
+      "name": "banner",
+      "ops": [
+        {
+          "op": "grid",
+          "x": 5,
+          "y": 8,
+          "rows": [
+            "kkkkkk",
+            "kRRRRk",
+            "kRGGRk",
+            "kRRRRk",
+            "kRGRRk",
+            "kRRRRk",
+            "kRRRRk",
+            "kR.kRk",
+            "k...Rk",
+            "....k."
+          ]
+        }
+      ]
+    },
+    {
+      "name": "chain",
+      "ops": [
+        {
+          "op": "grid",
+          "x": 7,
+          "y": 9,
+          "rows": [
+            ".k.",
+            "kuk",
+            ".k.",
+            "kuk",
+            ".k.",
+            "kuk",
+            ".k.",
+            ".u."
+          ]
+        }
+      ]
+    },
+    {
+      "name": "torch-0",
+      "duration": 110,
+      "ops": [
+        {
+          "op": "grid",
+          "x": 6,
+          "y": 8,
+          "rows": [
+            ".kkk.",
+            "kzGzk",
+            ".kxk.",
+            "..k.."
+          ]
+        },
+        {
+          "op": "grid",
+          "x": 6,
+          "y": 5,
+          "rows": [
+            "..Y..",
+            ".YWY.",
+            ".FYF."
+          ]
+        }
+      ]
+    },
+    {
+      "name": "torch-1",
+      "duration": 110,
+      "ops": [
+        {
+          "op": "grid",
+          "x": 6,
+          "y": 8,
+          "rows": [
+            ".kkk.",
+            "kzGzk",
+            ".kxk.",
+            "..k.."
+          ]
+        },
+        {
+          "op": "grid",
+          "x": 6,
+          "y": 5,
+          "rows": [
+            "...Y.",
+            ".YWY.",
+            ".FWF."
+          ]
+        }
+      ]
+    },
+    {
+      "name": "torch-2",
+      "duration": 110,
+      "ops": [
+        {
+          "op": "grid",
+          "x": 6,
+          "y": 8,
+          "rows": [
+            ".kkk.",
+            "kzGzk",
+            ".kxk.",
+            "..k.."
+          ]
+        },
+        {
+          "op": "grid",
+          "x": 6,
+          "y": 5,
+          "rows": [
+            ".Y...",
+            ".YWY.",
+            ".FYF."
+          ]
+        }
+      ]
+    },
+    {
+      "name": "torch-3",
+      "duration": 110,
+      "ops": [
+        {
+          "op": "grid",
+          "x": 6,
+          "y": 8,
+          "rows": [
+            ".kkk.",
+            "kzGzk",
+            ".kxk.",
+            "..k.."
+          ]
+        },
+        {
+          "op": "grid",
+          "x": 6,
+          "y": 5,
+          "rows": [
+            "..Y..",
+            ".YYF.",
+            ".FWF."
+          ]
+        }
+      ]
+    },
+    {
+      "name": "foam-0",
+      "duration": 120,
+      "ops": [
+        {
+          "op": "grid",
+          "x": 0,
+          "y": 14,
+          "rows": [
+            ".EeE.eEEe.EeE.e.",
+            "eEdeEEdEeEEdeEe.",
+            "..e..e..e..e...."
+          ]
+        }
+      ]
+    },
+    {
+      "name": "foam-1",
+      "duration": 120,
+      "ops": [
+        {
+          "op": "grid",
+          "x": 0,
+          "y": 14,
+          "rows": [
+            "E.eEe.EeE.eEe.E.",
+            "eEEdeEEEdeEEEde.",
+            ".e..e..e..e..e.."
+          ]
+        }
+      ]
+    },
+    {
+      "name": "foam-2",
+      "duration": 120,
+      "ops": [
+        {
+          "op": "grid",
+          "x": 0,
+          "y": 14,
+          "rows": [
+            ".eE.EeE.eEe.EeE.",
+            "EdeEEdeEEdEeEdEe",
+            "e..e..e..e..e..."
+          ]
+        }
+      ]
+    }
+  ],
+  "animations": {
+    "pot-break": { "frames": ["pot-break-0", "pot-break-1", "pot-shards"], "loop": false },
+    "chest-open": { "frames": ["chest", "chest-open"], "loop": false },
+    "torch": { "frames": ["torch-0", "torch-1", "torch-2", "torch-3"] },
+    "foam": { "frames": ["foam-0", "foam-1", "foam-2"] }
+  }
+}

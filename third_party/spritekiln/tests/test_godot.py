@@ -1,0 +1,103 @@
+"""Godot exporter: generated resources against goldens, and both JSON block keys."""
+
+import json
+import os
+
+import pytest
+
+import pxforge
+from spritekiln import spec as S
+from spritekiln.cli import main
+from spritekiln.errors import ExportError
+from spritekiln.godot import block, export_godot
+
+from conftest import FIXTURES, GOLDEN, stage_spec
+
+MINIMAL = os.path.join(FIXTURES, 'minimal', 'minimal.yaml')
+GODOT_FILES = ('minimal.tres', 'minimal_lit.tres', 'minimal_canvas.tres', 'minimal_emissive.tres', 'minimal.tscn')
+
+
+@pytest.fixture(scope='module')
+def rendered(tmp_path_factory):
+    """The fixture rendered twice: by `spritekiln` and by the legacy `pxforge` command."""
+    tmp = tmp_path_factory.mktemp('godot')
+    spec = stage_spec(tmp, MINIMAL)
+    main(['render', spec, '--jobs', '1', '-o', str(tmp / 'new' / 'minimal')])
+    pxforge.main(['render', spec, '--jobs', '1', '-o', str(tmp / 'legacy' / 'minimal')])
+    return tmp, spec
+
+
+def _project(path):
+    path.mkdir(parents=True)
+    (path / 'project.godot').write_text('config_version=5\n', encoding='utf-8')
+    return str(path)
+
+
+def test_legacy_command_writes_the_old_block_key(rendered):
+    tmp, _ = rendered
+    with open(tmp / 'new' / 'minimal' / 'minimal.json', encoding='utf-8') as fh:
+        new = json.load(fh)
+    with open(tmp / 'legacy' / 'minimal' / 'minimal.json', encoding='utf-8') as fh:
+        old = json.load(fh)
+    assert 'spritekiln' in new and 'pxforge' not in new
+    assert 'pxforge' in old and 'spritekiln' not in old
+    assert new['spritekiln'] == old['pxforge']
+    assert new['spritekiln']['format'] == 1
+    assert new['spritekiln']['camera']['ground_k'] == 0.6157
+
+
+@pytest.mark.parametrize(
+    'variant, addon, golden_dir',
+    [
+        ('new', 'spritekiln', 'godot'),  # KilnSprite2D, assets/spritekiln
+        ('legacy', 'pxforge', 'godot_legacy'),  # what Hunt Tower gets from `pxforge`: must not change until Phase 6
+    ],
+)
+def test_export_matches_goldens(tmp_path, rendered, update_golden, variant, addon, golden_dir):
+    tmp, spec_path = rendered
+    project = _project(tmp_path / 'game')
+    w = export_godot(S.load(spec_path), project, render_dir=str(tmp / variant / 'minimal'), addon=addon)
+    dest = 'assets/spritekiln' if addon == 'spritekiln' else 'assets/pxforge'
+    out = os.path.join(project, *dest.split('/'), 'minimal')
+    assert w['res'] == f'res://{dest}/minimal' and w['addon_installed']
+    script = 'kiln_sprite_2d.gd' if addon == 'spritekiln' else 'px_sprite_2d.gd'
+    assert os.path.exists(os.path.join(project, 'addons', addon, script))
+    for name in GODOT_FILES:
+        with open(os.path.join(out, name), encoding='utf-8') as fh:
+            text = fh.read()
+        golden = os.path.join(GOLDEN, golden_dir, name)
+        if update_golden and addon == 'spritekiln':
+            os.makedirs(os.path.dirname(golden), exist_ok=True)
+            with open(golden, 'w', encoding='utf-8', newline='\n') as fh:
+                fh.write(text)
+            continue
+        with open(golden, encoding='utf-8') as fh:
+            assert text == fh.read(), f'{name} differs from tests/golden/{golden_dir}/{name}'
+
+
+def test_block_and_errors(tmp_path):
+    assert block({'spritekiln': {'a': 1}}) == {'a': 1}
+    assert block({'pxforge': {'a': 2}}) == {'a': 2}
+    assert block({'meta': {}}) is None
+    with pytest.raises(ExportError, match='render not found'):
+        export_godot(S.load(MINIMAL), _project(tmp_path / 'g'), render_dir=str(tmp_path / 'nothing'))
+
+
+def test_cli_exports_a_render_made_with_out(tmp_path, rendered, capsys):
+    tmp, spec_path = rendered  # rendered with -o, so <spec dir>/out/minimal does not exist
+    project = _project(tmp_path / 'game')
+    with pytest.raises(SystemExit):
+        main(['godot', spec_path, '--project', project])
+    assert 'render not found' in capsys.readouterr().err
+    main(['godot', spec_path, '--project', project, '--render-dir', str(tmp / 'new' / 'minimal')])
+    assert 'res://assets/spritekiln/minimal/' in capsys.readouterr().out
+    assert os.path.exists(os.path.join(project, 'assets', 'spritekiln', 'minimal', 'minimal.tscn'))
+
+
+def test_example_ships_the_current_addon():
+    root = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+    src = os.path.join(root, 'integrations', 'godot', 'addons', 'spritekiln')
+    copy = os.path.join(root, 'examples', 'godot', 'addons', 'spritekiln')
+    for name in os.listdir(src):
+        with open(os.path.join(src, name), 'rb') as a, open(os.path.join(copy, name), 'rb') as b:
+            assert a.read() == b.read(), f'examples/godot/addons/spritekiln/{name} is stale (export --update-addon)'

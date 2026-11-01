@@ -1,0 +1,152 @@
+{
+  "version": 1,
+  "name": "shards",
+  "width": 32,
+  "height": 24,
+  "palette": { "$ref": "palette.json" },
+  "symbols": {
+    "a": ["qp"],
+    "b": [
+      "p",
+      "q"
+    ],
+    "c": ["k"],
+    "d": ["rq"]
+  },
+  "frames": [
+    {
+      "name": "burst-0",
+      "duration": 50,
+      "ops": [
+        { "op": "stamp", "symbol": "a", "x": 15, "y": 18 },
+        { "op": "stamp", "symbol": "a", "x": 15, "y": 18 },
+        { "op": "stamp", "symbol": "d", "x": 15, "y": 18 },
+        { "op": "stamp", "symbol": "d", "x": 15, "y": 18 },
+        { "op": "stamp", "symbol": "b", "x": 16, "y": 17 },
+        { "op": "stamp", "symbol": "d", "x": 15, "y": 18 },
+        { "op": "stamp", "symbol": "a", "x": 15, "y": 18 }
+      ]
+    },
+    {
+      "name": "burst-1",
+      "duration": 50,
+      "ops": [
+        { "op": "stamp", "symbol": "a", "x": 16, "y": 16 },
+        { "op": "stamp", "symbol": "a", "x": 14, "y": 18 },
+        { "op": "stamp", "symbol": "d", "x": 16, "y": 17 },
+        { "op": "stamp", "symbol": "d", "x": 17, "y": 18 },
+        { "op": "stamp", "symbol": "b", "x": 15, "y": 16 },
+        { "op": "stamp", "symbol": "d", "x": 16, "y": 18 },
+        { "op": "stamp", "symbol": "a", "x": 16, "y": 16 }
+      ]
+    },
+    {
+      "name": "burst-2",
+      "duration": 50,
+      "ops": [
+        { "op": "stamp", "symbol": "a", "x": 17, "y": 15 },
+        { "op": "stamp", "symbol": "a", "x": 12, "y": 18 },
+        { "op": "stamp", "symbol": "d", "x": 16, "y": 16 },
+        { "op": "stamp", "symbol": "d", "x": 18, "y": 18 },
+        { "op": "stamp", "symbol": "b", "x": 15, "y": 15 },
+        { "op": "stamp", "symbol": "d", "x": 17, "y": 18 },
+        { "op": "stamp", "symbol": "a", "x": 16, "y": 15 }
+      ]
+    },
+    {
+      "name": "burst-3",
+      "duration": 50,
+      "ops": [
+        { "op": "stamp", "symbol": "a", "x": 18, "y": 14 },
+        { "op": "stamp", "symbol": "a", "x": 11, "y": 19 },
+        { "op": "stamp", "symbol": "d", "x": 17, "y": 15 },
+        { "op": "stamp", "symbol": "d", "x": 20, "y": 19 },
+        { "op": "stamp", "symbol": "b", "x": 14, "y": 15 },
+        { "op": "stamp", "symbol": "d", "x": 19, "y": 18 },
+        { "op": "stamp", "symbol": "a", "x": 17, "y": 14 }
+      ]
+    },
+    {
+      "name": "burst-4",
+      "duration": 50,
+      "ops": [
+        { "op": "stamp", "symbol": "a", "x": 19, "y": 14 },
+        { "op": "stamp", "symbol": "a", "x": 10, "y": 20 },
+        { "op": "stamp", "symbol": "d", "x": 18, "y": 15 },
+        { "op": "stamp", "symbol": "d", "x": 21, "y": 20 },
+        { "op": "stamp", "symbol": "b", "x": 13, "y": 15 },
+        { "op": "stamp", "symbol": "d", "x": 20, "y": 19 },
+        { "op": "stamp", "symbol": "a", "x": 17, "y": 14 }
+      ]
+    },
+    {
+      "name": "burst-5",
+      "duration": 50,
+      "ops": [
+        { "op": "stamp", "symbol": "a", "x": 20, "y": 13 },
+        { "op": "stamp", "symbol": "a", "x": 8, "y": 21 },
+        { "op": "stamp", "symbol": "d", "x": 18, "y": 15 },
+        { "op": "stamp", "symbol": "d", "x": 23, "y": 21 },
+        { "op": "stamp", "symbol": "b", "x": 13, "y": 16 },
+        { "op": "stamp", "symbol": "d", "x": 21, "y": 20 },
+        { "op": "stamp", "symbol": "a", "x": 18, "y": 14 }
+      ]
+    },
+    {
+      "name": "burst-6",
+      "duration": 50,
+      "ops": [
+        { "op": "stamp", "symbol": "a", "x": 20, "y": 14 },
+        { "op": "stamp", "symbol": "a", "x": 7, "y": 21 },
+        { "op": "stamp", "symbol": "d", "x": 19, "y": 15 },
+        { "op": "stamp", "symbol": "d", "x": 24, "y": 21 },
+        { "op": "stamp", "symbol": "b", "x": 12, "y": 17 },
+        { "op": "stamp", "symbol": "d", "x": 22, "y": 21 },
+        { "op": "stamp", "symbol": "a", "x": 19, "y": 14 }
+      ]
+    },
+    {
+      "name": "burst-7",
+      "duration": 50,
+      "ops": [
+        { "op": "stamp", "symbol": "a", "x": 21, "y": 14 },
+        { "op": "stamp", "symbol": "a", "x": 6, "y": 21 },
+        { "op": "stamp", "symbol": "d", "x": 19, "y": 16 },
+        { "op": "stamp", "symbol": "d", "x": 26, "y": 21 },
+        { "op": "stamp", "symbol": "d", "x": 24, "y": 21 }
+      ]
+    },
+    {
+      "name": "burst-8",
+      "duration": 50,
+      "ops": [
+        { "op": "stamp", "symbol": "a", "x": 22, "y": 15 },
+        { "op": "stamp", "symbol": "d", "x": 20, "y": 17 },
+        { "op": "stamp", "symbol": "d", "x": 27, "y": 21 },
+        { "op": "stamp", "symbol": "d", "x": 25, "y": 21 }
+      ]
+    },
+    {
+      "name": "burst-9",
+      "duration": 50,
+      "ops": [{ "op": "stamp", "symbol": "a", "x": 23, "y": 17 }, { "op": "stamp", "symbol": "d", "x": 21, "y": 19 }]
+    }
+  ],
+  "animations": {
+    "burst": {
+      "frames": [
+        "burst-0",
+        "burst-1",
+        "burst-2",
+        "burst-3",
+        "burst-4",
+        "burst-5",
+        "burst-6",
+        "burst-7",
+        "burst-8",
+        "burst-9"
+      ],
+      "loop": false
+    }
+  }
+}

@@ -1,0 +1,81 @@
+class_name LayerEffect
+extends AnimatableObject
+
+var name := ""
+var shader_or_include: Resource:
+	set(value):
+		shader_or_include = value
+		if shader_or_include is Shader:
+			shader = shader_or_include
+		elif shader_or_include is ShaderInclude:
+			shader = ShaderLoader.generate_texture_blit_shader(shader_or_include)
+var shader: Shader:
+	set(value):
+		shader = value
+		_set_params_from_shader()
+var layer: BaseLayer
+var category := ""
+var enabled := true
+
+
+func _init(
+	_name := "",
+	_shader_or_include: Resource = null,
+	_category := "",
+	_params: Dictionary[String, Variant] = {}
+) -> void:
+	name = _name
+	shader_or_include = _shader_or_include
+	category = _category
+	params = _params
+
+
+func duplicate() -> LayerEffect:
+	return LayerEffect.new(name, shader_or_include, category, params.duplicate())
+
+
+func serialize() -> Dictionary:
+	return (
+		{
+			"name": name,
+			"shader_path": shader_or_include.resource_path,
+			"enabled": enabled,
+		}
+		. merged(super())
+	)
+
+
+func deserialize(dict: Dictionary) -> void:
+	if dict.has("name"):
+		name = dict["name"]
+	if dict.has("shader_path"):
+		var path: String = dict["shader_path"]
+		if not ResourceLoader.exists(path):
+			# To ensure compatibility with older pxo files.
+			if path.get_extension() == "gdshader":
+				path += "inc"
+		var shader_to_load := load(path)
+		if is_instance_valid(shader_to_load):
+			shader_or_include = shader_to_load
+	if dict.has("enabled"):
+		enabled = dict["enabled"]
+	super(dict)
+
+
+func is_param_valid(param_name: StringName) -> bool:
+	if shader == null:
+		return false
+	var uniforms := shader.get_shader_uniform_list()
+	for uniform in uniforms:
+		if param_name == (uniform["name"] as String):
+			return true
+	return false
+
+
+func _set_params_from_shader() -> void:
+	if not is_instance_valid(shader):
+		return
+	var uniforms := shader.get_shader_uniform_list()
+	for uniform in uniforms:
+		var u_name := uniform["name"] as String
+		param_properties[u_name] = uniform

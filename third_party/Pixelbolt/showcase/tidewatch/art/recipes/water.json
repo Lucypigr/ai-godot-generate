@@ -1,0 +1,665 @@
+{
+  "version": 1,
+  "name": "water",
+  "width": 16,
+  "height": 16,
+  "palette": {
+    "$ref": "../palette.json"
+  },
+  "symbols": {
+    "crest0": [
+      ".......",
+      "..ccc.."
+    ],
+    "crest1": [
+      "..ccc..",
+      ".c...c."
+    ],
+    "crest2": [
+      "..cWc..",
+      "cc...cc"
+    ],
+    "crest3": [
+      ".c...c.",
+      "......."
+    ],
+    "trough": [
+      ".nnn",
+      "nn.."
+    ],
+    "lull": [
+      "nnnn"
+    ]
+  },
+  "frames": [
+    {
+      "name": "water-a0",
+      "duration": 260,
+      "ops": [
+        {
+          "op": "rect",
+          "x": 0,
+          "y": 0,
+          "w": 16,
+          "h": 16,
+          "color": "C"
+        },
+        {
+          "op": "stamp",
+          "symbol": "trough",
+          "x": 11,
+          "y": 1
+        },
+        {
+          "op": "stamp",
+          "symbol": "lull",
+          "x": 0,
+          "y": 9
+        },
+        {
+          "op": "stamp",
+          "symbol": "lull",
+          "x": 11,
+          "y": 14
+        },
+        {
+          "op": "stamp",
+          "symbol": "crest0",
+          "x": 0,
+          "y": 2
+        },
+        {
+          "op": "stamp",
+          "symbol": "crest2",
+          "x": 8,
+          "y": 7
+        },
+        {
+          "op": "stamp",
+          "symbol": "crest1",
+          "x": 3,
+          "y": 12
+        }
+      ]
+    },
+    {
+      "name": "water-a1",
+      "duration": 260,
+      "ops": [
+        {
+          "op": "rect",
+          "x": 0,
+          "y": 0,
+          "w": 16,
+          "h": 16,
+          "color": "C"
+        },
+        {
+          "op": "stamp",
+          "symbol": "trough",
+          "x": 11,
+          "y": 1
+        },
+        {
+          "op": "stamp",
+          "symbol": "lull",
+          "x": 0,
+          "y": 9
+        },
+        {
+          "op": "stamp",
+          "symbol": "lull",
+          "x": 11,
+          "y": 14
+        },
+        {
+          "op": "stamp",
+          "symbol": "crest1",
+          "x": 0,
+          "y": 2
+        },
+        {
+          "op": "stamp",
+          "symbol": "crest3",
+          "x": 8,
+          "y": 7
+        },
+        {
+          "op": "stamp",
+          "symbol": "crest2",
+          "x": 3,
+          "y": 12
+        }
+      ]
+    },
+    {
+      "name": "water-a2",
+      "duration": 260,
+      "ops": [
+        {
+          "op": "rect",
+          "x": 0,
+          "y": 0,
+          "w": 16,
+          "h": 16,
+          "color": "C"
+        },
+        {
+          "op": "stamp",
+          "symbol": "trough",
+          "x": 11,
+          "y": 1
+        },
+        {
+          "op": "stamp",
+          "symbol": "lull",
+          "x": 0,
+          "y": 9
+        },
+        {
+          "op": "stamp",
+          "symbol": "lull",
+          "x": 11,
+          "y": 14
+        },
+        {
+          "op": "stamp",
+          "symbol": "crest2",
+          "x": 0,
+          "y": 2
+        },
+        {
+          "op": "stamp",
+          "symbol": "crest0",
+          "x": 8,
+          "y": 7
+        },
+        {
+          "op": "stamp",
+          "symbol": "crest3",
+          "x": 3,
+          "y": 12
+        }
+      ]
+    },
+    {
+      "name": "water-a3",
+      "duration": 260,
+      "ops": [
+        {
+          "op": "rect",
+          "x": 0,
+          "y": 0,
+          "w": 16,
+          "h": 16,
+          "color": "C"
+        },
+        {
+          "op": "stamp",
+          "symbol": "trough",
+          "x": 11,
+          "y": 1
+        },
+        {
+          "op": "stamp",
+          "symbol": "lull",
+          "x": 0,
+          "y": 9
+        },
+        {
+          "op": "stamp",
+          "symbol": "lull",
+          "x": 11,
+          "y": 14
+        },
+        {
+          "op": "stamp",
+          "symbol": "crest3",
+          "x": 0,
+          "y": 2
+        },
+        {
+          "op": "stamp",
+          "symbol": "crest1",
+          "x": 8,
+          "y": 7
+        },
+        {
+          "op": "stamp",
+          "symbol": "crest0",
+          "x": 3,
+          "y": 12
+        }
+      ]
+    },
+    {
+      "name": "water-b0",
+      "duration": 260,
+      "ops": [
+        {
+          "op": "rect",
+          "x": 0,
+          "y": 0,
+          "w": 16,
+          "h": 16,
+          "color": "C"
+        },
+        {
+          "op": "stamp",
+          "symbol": "lull",
+          "x": 2,
+          "y": 14
+        },
+        {
+          "op": "stamp",
+          "symbol": "trough",
+          "x": 12,
+          "y": 4
+        },
+        {
+          "op": "stamp",
+          "symbol": "lull",
+          "x": 7,
+          "y": 9
+        },
+        {
+          "op": "stamp",
+          "symbol": "crest1",
+          "x": 6,
+          "y": 1
+        },
+        {
+          "op": "stamp",
+          "symbol": "crest3",
+          "x": 1,
+          "y": 6
+        },
+        {
+          "op": "stamp",
+          "symbol": "crest0",
+          "x": 9,
+          "y": 11
+        }
+      ]
+    },
+    {
+      "name": "water-b1",
+      "duration": 260,
+      "ops": [
+        {
+          "op": "rect",
+          "x": 0,
+          "y": 0,
+          "w": 16,
+          "h": 16,
+          "color": "C"
+        },
+        {
+          "op": "stamp",
+          "symbol": "lull",
+          "x": 2,
+          "y": 14
+        },
+        {
+          "op": "stamp",
+          "symbol": "trough",
+          "x": 12,
+          "y": 4
+        },
+        {
+          "op": "stamp",
+          "symbol": "lull",
+          "x": 7,
+          "y": 9
+        },
+        {
+          "op": "stamp",
+          "symbol": "crest2",
+          "x": 6,
+          "y": 1
+        },
+        {
+          "op": "stamp",
+          "symbol": "crest0",
+          "x": 1,
+          "y": 6
+        },
+        {
+          "op": "stamp",
+          "symbol": "crest1",
+          "x": 9,
+          "y": 11
+        }
+      ]
+    },
+    {
+      "name": "water-b2",
+      "duration": 260,
+      "ops": [
+        {
+          "op": "rect",
+          "x": 0,
+          "y": 0,
+          "w": 16,
+          "h": 16,
+          "color": "C"
+        },
+        {
+          "op": "stamp",
+          "symbol": "lull",
+          "x": 2,
+          "y": 14
+        },
+        {
+          "op": "stamp",
+          "symbol": "trough",
+          "x": 12,
+          "y": 4
+        },
+        {
+          "op": "stamp",
+          "symbol": "lull",
+          "x": 7,
+          "y": 9
+        },
+        {
+          "op": "stamp",
+          "symbol": "crest3",
+          "x": 6,
+          "y": 1
+        },
+        {
+          "op": "stamp",
+          "symbol": "crest1",
+          "x": 1,
+          "y": 6
+        },
+        {
+          "op": "stamp",
+          "symbol": "crest2",
+          "x": 9,
+          "y": 11
+        }
+      ]
+    },
+    {
+      "name": "water-b3",
+      "duration": 260,
+      "ops": [
+        {
+          "op": "rect",
+          "x": 0,
+          "y": 0,
+          "w": 16,
+          "h": 16,
+          "color": "C"
+        },
+        {
+          "op": "stamp",
+          "symbol": "lull",
+          "x": 2,
+          "y": 14
+        },
+        {
+          "op": "stamp",
+          "symbol": "trough",
+          "x": 12,
+          "y": 4
+        },
+        {
+          "op": "stamp",
+          "symbol": "lull",
+          "x": 7,
+          "y": 9
+        },
+        {
+          "op": "stamp",
+          "symbol": "crest0",
+          "x": 6,
+          "y": 1
+        },
+        {
+          "op": "stamp",
+          "symbol": "crest2",
+          "x": 1,
+          "y": 6
+        },
+        {
+          "op": "stamp",
+          "symbol": "crest3",
+          "x": 9,
+          "y": 11
+        }
+      ]
+    },
+    {
+      "name": "water-c0",
+      "duration": 260,
+      "ops": [
+        {
+          "op": "rect",
+          "x": 0,
+          "y": 0,
+          "w": 16,
+          "h": 16,
+          "color": "C"
+        },
+        {
+          "op": "stamp",
+          "symbol": "lull",
+          "x": 9,
+          "y": 1
+        },
+        {
+          "op": "stamp",
+          "symbol": "trough",
+          "x": 3,
+          "y": 8
+        },
+        {
+          "op": "stamp",
+          "symbol": "lull",
+          "x": 12,
+          "y": 14
+        },
+        {
+          "op": "stamp",
+          "symbol": "crest2",
+          "x": 3,
+          "y": 3
+        },
+        {
+          "op": "stamp",
+          "symbol": "crest0",
+          "x": 9,
+          "y": 9
+        },
+        {
+          "op": "stamp",
+          "symbol": "crest3",
+          "x": 0,
+          "y": 13
+        }
+      ]
+    },
+    {
+      "name": "water-c1",
+      "duration": 260,
+      "ops": [
+        {
+          "op": "rect",
+          "x": 0,
+          "y": 0,
+          "w": 16,
+          "h": 16,
+          "color": "C"
+        },
+        {
+          "op": "stamp",
+          "symbol": "lull",
+          "x": 9,
+          "y": 1
+        },
+        {
+          "op": "stamp",
+          "symbol": "trough",
+          "x": 3,
+          "y": 8
+        },
+        {
+          "op": "stamp",
+          "symbol": "lull",
+          "x": 12,
+          "y": 14
+        },
+        {
+          "op": "stamp",
+          "symbol": "crest3",
+          "x": 3,
+          "y": 3
+        },
+        {
+          "op": "stamp",
+          "symbol": "crest1",
+          "x": 9,
+          "y": 9
+        },
+        {
+          "op": "stamp",
+          "symbol": "crest0",
+          "x": 0,
+          "y": 13
+        }
+      ]
+    },
+    {
+      "name": "water-c2",
+      "duration": 260,
+      "ops": [
+        {
+          "op": "rect",
+          "x": 0,
+          "y": 0,
+          "w": 16,
+          "h": 16,
+          "color": "C"
+        },
+        {
+          "op": "stamp",
+          "symbol": "lull",
+          "x": 9,
+          "y": 1
+        },
+        {
+          "op": "stamp",
+          "symbol": "trough",
+          "x": 3,
+          "y": 8
+        },
+        {
+          "op": "stamp",
+          "symbol": "lull",
+          "x": 12,
+          "y": 14
+        },
+        {
+          "op": "stamp",
+          "symbol": "crest0",
+          "x": 3,
+          "y": 3
+        },
+        {
+          "op": "stamp",
+          "symbol": "crest2",
+          "x": 9,
+          "y": 9
+        },
+        {
+          "op": "stamp",
+          "symbol": "crest1",
+          "x": 0,
+          "y": 13
+        }
+      ]
+    },
+    {
+      "name": "water-c3",
+      "duration": 260,
+      "ops": [
+        {
+          "op": "rect",
+          "x": 0,
+          "y": 0,
+          "w": 16,
+          "h": 16,
+          "color": "C"
+        },
+        {
+          "op": "stamp",
+          "symbol": "lull",
+          "x": 9,
+          "y": 1
+        },
+        {
+          "op": "stamp",
+          "symbol": "trough",
+          "x": 3,
+          "y": 8
+        },
+        {
+          "op": "stamp",
+          "symbol": "lull",
+          "x": 12,
+          "y": 14
+        },
+        {
+          "op": "stamp",
+          "symbol": "crest1",
+          "x": 3,
+          "y": 3
+        },
+        {
+          "op": "stamp",
+          "symbol": "crest3",
+          "x": 9,
+          "y": 9
+        },
+        {
+          "op": "stamp",
+          "symbol": "crest2",
+          "x": 0,
+          "y": 13
+        }
+      ]
+    }
+  ],
+  "animations": {
+    "shimmer-a": {
+      "frames": [
+        "water-a0",
+        "water-a1",
+        "water-a2",
+        "water-a3"
+      ]
+    },
+    "shimmer-b": {
+      "frames": [
+        "water-b0",
+        "water-b1",
+        "water-b2",
+        "water-b3"
+      ]
+    },
+    "shimmer-c": {
+      "frames": [
+        "water-c0",
+        "water-c1",
+        "water-c2",
+        "water-c3"
+      ]
+    }
+  },
+  "sheet": {
+    "columns": 4
+  }
+}

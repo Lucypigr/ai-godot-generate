@@ -1,0 +1,279 @@
+extends BaseTool
+
+const VALUE_SLIDER_V2_TSCN := preload("res://src/UI/Nodes/Sliders/ValueSliderV2.tscn")
+const VALUE_SLIDER_V3_TSCN := preload("res://src/UI/Nodes/Sliders/ValueSliderV3.tscn")
+
+const FOLDABLE_CONTAINER_GROUP_NAME := &"3DObjectPropertyNodes"
+var layer_3d: Layer3D
+var _hovering: Node3D = null:
+	set(value):
+		var selected := layer_3d.selected == _hovering
+		if not is_instance_valid(layer_3d.selected):
+			selected = false
+		layer_3d.object_hovered.emit(value, _hovering, selected)
+		_hovering = value
+var _dragging := false
+var _has_been_dragged := false
+var _prev_mouse_pos := Vector2i.ZERO
+
+
+func sprite_changed_this_frame() -> void:
+	layer_3d.project.get_current_cel().update_texture()
+	Global.canvas.sprite_changed_this_frame = true
+
+
+func _ready() -> void:
+	super._ready()
+	Global.cel_switched.connect(_cel_switched)
+	_cel_switched()
+
+
+func draw_start(pos: Vector2i) -> void:
+	var project := Global.current_project
+	if not project.get_current_cel() is Cel3D:
+		return
+	if not project.layers[project.current_layer].can_layer_be_modified():
+		return
+	var found_layer := false
+	for frame_layer in project.selected_cels:
+		if layer_3d == project.layers[frame_layer[1]]:
+			found_layer = true
+	if not found_layer:
+		return
+
+	if DisplayServer.is_touchscreen_available():
+		cursor_move(pos)
+
+	if is_instance_valid(layer_3d.selected):
+		# Needs canvas.current_pixel, because draw_start()'s position is floored
+		Global.canvas.gizmos_3d.applying_gizmos = Global.canvas.gizmos_3d.get_hovering_gizmo(
+			Global.canvas.current_pixel
+		)
+	if is_instance_valid(_hovering):
+		layer_3d.selected = _hovering
+		Global.canvas.gizmos_3d.get_points(_hovering, true)
+		_dragging = true
+		layer_3d.get_undo_data(layer_3d.selected)
+		_prev_mouse_pos = pos
+	else:  # We're not hovering
+		if is_instance_valid(layer_3d.selected):
+			# If we're not clicking on a gizmo, unselect
+			if Global.canvas.gizmos_3d.applying_gizmos == Layer3D.Gizmos.NONE:
+				layer_3d.selected = null
+			else:
+				_dragging = true
+				layer_3d.get_undo_data(layer_3d.selected)
+				_prev_mouse_pos = pos
+
+
+func draw_move(pos: Vector2i) -> void:
+	if not Global.current_project.get_current_cel() is Cel3D:
+		return
+	var camera := layer_3d.camera
+	if _dragging:
+		_has_been_dragged = true
+		var proj_mouse_pos := camera.project_position(pos, camera.position.z)
+		var proj_prev_mouse_pos := camera.project_position(_prev_mouse_pos, camera.position.z)
+		layer_3d.node_change_transform(
+			layer_3d.selected,
+			proj_mouse_pos,
+			proj_prev_mouse_pos,
+			Global.canvas.gizmos_3d.applying_gizmos
+		)
+		_prev_mouse_pos = pos
+	sprite_changed_this_frame()
+
+
+func draw_end(_position: Vector2i) -> void:
+	if not Global.current_project.get_current_cel() is Cel3D:
+		return
+	_dragging = false
+	if is_instance_valid(layer_3d.selected) and _has_been_dragged:
+		Global.canvas.gizmos_3d.applying_gizmos = Layer3D.Gizmos.NONE
+		Global.canvas.gizmos_3d.queue_redraw()
+	_has_been_dragged = false
+	sprite_changed_this_frame()
+
+
+func cursor_move(pos: Vector2i) -> void:
+	super.cursor_move(pos)
+	if not Global.current_project.get_current_cel() is Cel3D:
+		return
+	if _dragging:
+		return
+	# Hover logic
+	var currently_hovering: Node3D = Global.canvas.gizmos_3d.get_hovering_light(
+		Global.canvas.current_pixel
+	)
+	if currently_hovering == null:
+		var intersect_info := get_3d_node_at_pos(pos, layer_3d.camera)
+		if not intersect_info.is_empty():
+			currently_hovering = intersect_info[0]
+	_hovering = currently_hovering
+
+
+func _cel_switched() -> void:
+	if is_instance_valid(layer_3d):
+		if layer_3d.selected_object_changed.is_connected(_on_selected_object):
+			layer_3d.selected_object_changed.disconnect(_on_selected_object)
+			layer_3d.node_property_changed.disconnect(_object_property_changed)
+	if not Global.current_project.get_current_cel() is Cel3D:
+		layer_3d = null
+		get_child(0).visible = false  # Just to ensure that the content of the tool is hidden
+		return
+	get_child(0).visible = true
+	layer_3d = Global.current_project.layers[Global.current_project.current_layer]
+	var selected := layer_3d.selected
+	layer_3d.selected = null
+	layer_3d.selected_object_changed.connect(_on_selected_object)
+	layer_3d.node_property_changed.connect(_object_property_changed)
+	if is_instance_valid(selected):
+		layer_3d.selected = selected
+	else:
+		if is_inside_tree():
+			get_tree().call_group(FOLDABLE_CONTAINER_GROUP_NAME, &"queue_free")
+			_show_node_property_nodes()
+
+
+func _object_property_changed(object: Node, prop_name: String, frame_index: int) -> void:
+	if frame_index != layer_3d.project.current_frame:
+		return
+	var curr_value = object.get_indexed(prop_name)
+	for foldable in get_tree().get_nodes_in_group(FOLDABLE_CONTAINER_GROUP_NAME):
+		if foldable.get_meta(&"object") != object:
+			continue
+		var grid_container := foldable.get_child(0)
+		for property_editor_node in grid_container.get_children():
+			var property_node_name := prop_name.replace(":", "_").replace("/", "_")
+			if property_editor_node.name == property_node_name:
+				if property_editor_node is CheckBox:
+					property_editor_node.set_pressed_no_signal(curr_value)
+				elif property_editor_node is ValueSlider:
+					property_editor_node.set_value_no_signal_update_display(curr_value)
+				elif property_editor_node is ValueSliderV2:
+					property_editor_node.set_value_no_signal(curr_value)
+				elif property_editor_node is ValueSliderV3:
+					if prop_name == "rotation":
+						curr_value = Global.radians_to_degrees(curr_value)
+					property_editor_node.set_value_no_signal(curr_value)
+				elif property_editor_node is ColorPickerButton:
+					property_editor_node.color = curr_value
+				elif property_editor_node is LineEdit or property_editor_node is TextEdit:
+					property_editor_node.text = curr_value
+				elif property_editor_node is OptionButton:
+					if curr_value is Font:
+						var font_name: String = curr_value.get_font_name()
+						for i in property_editor_node.item_count:
+							var item_name: String = property_editor_node.get_item_text(i)
+							if font_name == item_name:
+								property_editor_node.select(i)
+								break
+					else:
+						property_editor_node.select(curr_value)
+				elif property_editor_node is HBoxContainer:
+					if curr_value is Texture2D and property_editor_node.has_node(^"ModifyButton"):
+						# Needed to ensure that the correct Image gets created when
+						# clicking on the modify button, if the image was modified by some
+						# other way, such us loading or undoing.
+						var mod_button := property_editor_node.get_node(^"ModifyButton") as Button
+						for connection in mod_button.pressed.get_connections():
+							var callable: Callable = connection.get("callable", null)
+							if callable:
+								mod_button.pressed.disconnect(callable)
+						mod_button.pressed.connect(
+							func():
+								ShaderLoader.modify_texture_resource(
+									curr_value.get_image(),
+									"",
+									Global.on_resource_proj_updated.bind(
+										layer_3d.set_value_from_node.bind(object, prop_name)
+									)
+								)
+						)
+
+
+func _on_selected_object(object: Node3D, old_object: Node3D) -> void:
+	if object == old_object:
+		return
+	if is_instance_valid(get_tree()):  # Needed to avoid crash if an object is selected during exit.
+		get_tree().call_group(FOLDABLE_CONTAINER_GROUP_NAME, &"queue_free")
+	if is_instance_valid(object):
+		_create_object_property_nodes(object)
+	else:
+		_show_node_property_nodes()
+
+
+func _show_node_property_nodes() -> void:
+	_create_object_property_nodes(layer_3d.camera, "Camera")
+	var environment := layer_3d.world_environment
+	var environment_foldable := _create_object_property_nodes(environment, "Environment")[0]
+	environment_foldable.fold()
+
+
+func _create_object_property_nodes(object: Node, title := "Node") -> Array[FoldableContainer]:
+	var containers: Array[FoldableContainer] = []
+	var foldable_container := _create_foldable_container(object, title)
+	containers.append(foldable_container)
+	var grid_container: GridContainer = foldable_container.get_child(0)
+	var property_list := Layer3D.get_object_property_list(object)
+	for prop in property_list:
+		var prop_name: String = prop["name"]
+		var class_n := prop["class_name"] as StringName
+		var curr_value = object.get_indexed(prop_name)
+		if curr_value == null:
+			if &"Texture2D" in class_n:
+				curr_value = ImageTexture.new()
+			else:
+				continue
+		var prop_name_nodepath := NodePath(prop_name)
+		var subname_count := prop_name_nodepath.get_subname_count()
+		var last_subname_index := subname_count - 1
+		var string_to_humanize := prop_name
+		if subname_count > 0:
+			string_to_humanize = prop_name_nodepath.get_subname(last_subname_index)
+			var new_title := prop_name_nodepath.get_name(0)
+			if subname_count > 1:
+				new_title = prop_name_nodepath.get_subname(0)
+			new_title = Keychain.humanize_snake_case(new_title)
+			if new_title != title:
+				var fc := _create_foldable_container(object, new_title)
+				fc.fold()
+				containers.append(fc)
+				title = new_title
+				grid_container = fc.get_child(0)
+		var humanized_name := Keychain.humanize_snake_case(string_to_humanize, true)
+		var node := (
+			Global
+			. create_node_from_variable(
+				curr_value,
+				layer_3d.set_value_from_node.bind(object, prop_name),
+				prop,
+				layer_3d.get_undo_data.bind(object),
+			)
+		)
+		if is_instance_valid(node):
+			node.name = prop_name
+			var label := Label.new()
+			label.text = humanized_name
+			label.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+			grid_container.add_child(label)
+			grid_container.add_child(node)
+
+	return containers
+
+
+func _on_object_property_line_edit_editing_toggled(toggled_on: bool, object: Node) -> void:
+	if toggled_on:
+		layer_3d.get_undo_data(object)
+
+
+func _create_foldable_container(object: Node, title: String) -> FoldableContainer:
+	var foldable_container := FoldableContainer.new()
+	foldable_container.title = title
+	foldable_container.set_meta("object", object)
+	foldable_container.add_to_group(FOLDABLE_CONTAINER_GROUP_NAME)
+	add_child(foldable_container)
+	var grid_container := GridContainer.new()
+	grid_container.columns = 2
+	foldable_container.add_child(grid_container)
+	return foldable_container

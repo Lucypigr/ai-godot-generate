@@ -1,0 +1,7 @@
+[gd_scene format=3 uid="uid://ceahf2toaq47l"]
+
+[ext_resource type="PackedScene" uid="uid://ubyatap3sylf" path="res://src/Tools/BaseDraw.tscn" id="1"]
+[ext_resource type="Script" uid="uid://ttyljg8gu4jq" path="res://src/Tools/DesignTools/LineTool.gd" id="2"]
+
+[node name="ToolOptions" unique_id=240233222 instance=ExtResource("1")]
+script = ExtResource("2")

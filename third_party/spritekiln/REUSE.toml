@@ -1,0 +1,50 @@
+# Licensing map in the REUSE format (https://reuse.software).
+# When several annotations match a file, the last one wins.
+version = 1
+
+[[annotations]]
+path = "**"
+SPDX-FileCopyrightText = "2026 Lucas Ramos"
+SPDX-License-Identifier = "MIT"
+
+# Example assets: public domain (CC0 1.0)
+[[annotations]]
+path = [
+  "specs/characters/gargula/**",
+  "specs/characters/cacador/**",
+  "specs/characters/wren/**",
+  "specs/characters/knight/**",
+  "specs/kits/**",
+  "specs/palettes/wren.yaml",
+  "specs/props/crates/**",
+  "specs/props/gas_lamp/**",
+  "specs/props/training_dummy/**",
+  "specs/templates/**",
+  "specs/palettes/gothic.yaml",
+  "specs/palettes/props.yaml",
+  "tests/golden/**",
+  "examples/*/assets/**",
+  "examples/monogame/sprites/**",
+  "integrations/unity/Samples~/*/gargula*",
+]
+SPDX-FileCopyrightText = "2026 Lucas Ramos"
+SPDX-License-Identifier = "CC0-1.0"
+
+# Showcase assets from Hunt Tower: all rights reserved, demonstration only
+[[annotations]]
+path = [
+  "specs/characters/templar/**",
+  "specs/characters/huntress/**",
+  "specs/props/mine/**",
+  "specs/palettes/templar.yaml",
+  "specs/palettes/huntress.yaml",
+  "showcase/**",
+]
+SPDX-FileCopyrightText = "2026 Lucas Ramos / PlayRPG"
+SPDX-License-Identifier = "LicenseRef-Showcase"
+
+# Demonstration characters from test projects (not Hunt Tower): all rights reserved, demonstration only
+[[annotations]]
+path = ["showcase/rin-7/**", "showcase/ranger/**", "showcase/thor/**"]
+SPDX-FileCopyrightText = "2026 Lucas Ramos"
+SPDX-License-Identifier = "LicenseRef-Showcase"

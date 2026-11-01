@@ -1,0 +1,37 @@
+{
+  "format": "pixelforge-fx",
+  "version": 1,
+  "name": "shards",
+  "width": 32,
+  "height": 24,
+  "palette": { "$ref": "palette.json" },
+  "symbols": {
+    "a": ["qp"],
+    "b": [
+      "p",
+      "q"
+    ],
+    "c": ["k"],
+    "d": ["rq"]
+  },
+  "effects": {
+    "burst": {
+      "frames": 10,
+      "duration": 50,
+      "seed": 7,
+      "emitters": [
+        {
+          "at": [16, 18],
+          "burst": 7,
+          "angle": [200, 340],
+          "speed": [1.4, 2.6],
+          "gravity": [0, 0.38],
+          "life": [7, 10],
+          "floor": 21,
+          "bounce": 0.3,
+          "shapes": [["a"], ["b"], ["c"], ["d"]]
+        }
+      ]
+    }
+  }
+}

@@ -1,0 +1,242 @@
+{
+  "version": 1,
+  "name": "fisher",
+  "width": 32,
+  "height": 32,
+  "palette": {
+    "$ref": "../palette.json"
+  },
+  "anchor": [
+    16,
+    30
+  ],
+  "frames": [
+    {
+      "name": "idle-0",
+      "duration": 800,
+      "ops": [
+        {
+          "op": "grid",
+          "x": 4,
+          "y": 8,
+          "rows": [
+            "..........kkkkkk........",
+            "........kkBBBBBBkk......",
+            ".......kBbbBBBBBBVk.....",
+            ".......kkkkkkkkkkkk.....",
+            "......kVBBBBBBBBBBVk....",
+            ".......k8ppppppp8k......",
+            ".......kpkppppkpPk......",
+            ".......k8pppPppp8k......",
+            "......k8888888888k......",
+            ".....k8878888878888k....",
+            ".....k88878888788kk.....",
+            "....kbbk8888888kbbk.....",
+            "...kbBbbkkk8kkkbbBbk....",
+            "...kbBbbbbbbbbbbbBBk....",
+            "...kqPkbbbbbbbbbkPqk....",
+            "....kkkUUUMMUUUUkkk.....",
+            ".....kOooooooooouk......",
+            ".....kOkkkkkkkkkuk......",
+            ".....kOBBk...kBBuk......",
+            ".....kOBBk...kBBuk......",
+            ".....kOkUUk.kUUkuk......",
+            ".....kOuuuuuuuuuUk......",
+            ".....kkkkkkkkkkkkk......",
+            "....______________......"
+          ]
+        },
+        {
+          "op": "grid",
+          "x": 20,
+          "y": 14,
+          "rows": [
+            "kk",
+            "uk"
+          ]
+        }
+      ]
+    },
+    {
+      "name": "puff-1",
+      "duration": 240,
+      "ops": [
+        {
+          "op": "grid",
+          "x": 4,
+          "y": 8,
+          "rows": [
+            "..........kkkkkk........",
+            "........kkBBBBBBkk......",
+            ".......kBbbBBBBBBVk.....",
+            ".......kkkkkkkkkkkk.....",
+            "......kVBBBBBBBBBBVk....",
+            ".......k8ppppppp8k......",
+            ".......kpkppppkpPk......",
+            ".......k8pppPppp8k......",
+            "......k8888888888k......",
+            ".....k8878888878888k....",
+            ".....k88878888788kk.....",
+            "....kbbk8888888kbbk.....",
+            "...kbBbbkkk8kkkbbBbk....",
+            "...kbBbbbbbbbbbbbBBk....",
+            "...kqPkbbbbbbbbbkPqk....",
+            "....kkkUUUMMUUUUkkk.....",
+            ".....kOooooooooouk......",
+            ".....kOkkkkkkkkkuk......",
+            ".....kOBBk...kBBuk......",
+            ".....kOBBk...kBBuk......",
+            ".....kOkUUk.kUUkuk......",
+            ".....kOuuuuuuuuuUk......",
+            ".....kkkkkkkkkkkkk......",
+            "....______________......"
+          ]
+        },
+        {
+          "op": "grid",
+          "x": 20,
+          "y": 14,
+          "rows": [
+            "ki",
+            "uk"
+          ]
+        },
+        {
+          "op": "grid",
+          "x": 21,
+          "y": 10,
+          "rows": [
+            ".8",
+            "8."
+          ]
+        }
+      ]
+    },
+    {
+      "name": "puff-2",
+      "duration": 260,
+      "ops": [
+        {
+          "op": "grid",
+          "x": 4,
+          "y": 8,
+          "rows": [
+            "..........kkkkkk........",
+            "........kkBBBBBBkk......",
+            ".......kBbbBBBBBBVk.....",
+            ".......kkkkkkkkkkkk.....",
+            "......kVBBBBBBBBBBVk....",
+            ".......k8ppppppp8k......",
+            ".......kpkppppkpPk......",
+            ".......k8pppPppp8k......",
+            "......k8888888888k......",
+            ".....k8878888878888k....",
+            ".....k88878888788kk.....",
+            "....kbbk8888888kbbk.....",
+            "...kbBbbkkk8kkkbbBbk....",
+            "...kbBbbbbbbbbbbbBBk....",
+            "...kqPkbbbbbbbbbkPqk....",
+            "....kkkUUUMMUUUUkkk.....",
+            ".....kOooooooooouk......",
+            ".....kOkkkkkkkkkuk......",
+            ".....kOBBk...kBBuk......",
+            ".....kOBBk...kBBuk......",
+            ".....kOkUUk.kUUkuk......",
+            ".....kOuuuuuuuuuUk......",
+            ".....kkkkkkkkkkkkk......",
+            "....______________......"
+          ]
+        },
+        {
+          "op": "grid",
+          "x": 20,
+          "y": 14,
+          "rows": [
+            "kk",
+            "uk"
+          ]
+        },
+        {
+          "op": "grid",
+          "x": 21,
+          "y": 6,
+          "rows": [
+            "..88",
+            ".8.8",
+            "88.."
+          ]
+        }
+      ]
+    },
+    {
+      "name": "puff-3",
+      "duration": 300,
+      "ops": [
+        {
+          "op": "grid",
+          "x": 4,
+          "y": 8,
+          "rows": [
+            "..........kkkkkk........",
+            "........kkBBBBBBkk......",
+            ".......kBbbBBBBBBVk.....",
+            ".......kkkkkkkkkkkk.....",
+            "......kVBBBBBBBBBBVk....",
+            ".......k8ppppppp8k......",
+            ".......kpkppppkpPk......",
+            ".......k8pppPppp8k......",
+            "......k8888888888k......",
+            ".....k8878888878888k....",
+            ".....k88878888788kk.....",
+            "....kbbk8888888kbbk.....",
+            "...kbBbbkkk8kkkbbBbk....",
+            "...kbBbbbbbbbbbbbBBk....",
+            "...kqPkbbbbbbbbbkPqk....",
+            "....kkkUUUMMUUUUkkk.....",
+            ".....kOooooooooouk......",
+            ".....kOkkkkkkkkkuk......",
+            ".....kOBBk...kBBuk......",
+            ".....kOBBk...kBBuk......",
+            ".....kOkUUk.kUUkuk......",
+            ".....kOuuuuuuuuuUk......",
+            ".....kkkkkkkkkkkkk......",
+            "....______________......"
+          ]
+        },
+        {
+          "op": "grid",
+          "x": 20,
+          "y": 14,
+          "rows": [
+            "kk",
+            "uk"
+          ]
+        },
+        {
+          "op": "grid",
+          "x": 22,
+          "y": 2,
+          "rows": [
+            ".9.",
+            "9.9",
+            ".9."
+          ]
+        }
+      ]
+    }
+  ],
+  "animations": {
+    "idle": {
+      "frames": [
+        "idle-0",
+        "idle-0",
+        "puff-1",
+        "puff-2",
+        "puff-3"
+      ]
+    }
+  },
+  "sheet": {
+    "trim": true
+  }
+}
