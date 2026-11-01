@@ -1,0 +1,100 @@
+<script lang="ts">
+	let selected = $state('');
+	let open = $state(false);
+	let dropdownEl: HTMLDivElement;
+
+	let {
+		options = [],
+		value = $bindable(''),
+		label = '',
+		placeholder = 'Select option',
+		onchange
+	}: {
+		options: string[];
+		value: string;
+		label: string;
+		placeholder?: string;
+		onchange?: () => void;
+	} = $props();
+
+	$effect(() => {
+		selected = value;
+	});
+
+	function handleSelect(option: string) {
+		selected = option;
+		value = option;
+		open = false;
+		onchange?.();
+	}
+
+	function handleToggle(e: MouseEvent) {
+		e.stopPropagation();
+		open = !open;
+	}
+
+	function handleClickOutside(e: MouseEvent) {
+		if (open && dropdownEl && !dropdownEl.contains(e.target as Node)) {
+			open = false;
+		}
+	}
+
+	$effect(() => {
+		if (open) {
+			document.addEventListener('click', handleClickOutside, true);
+			return () => document.removeEventListener('click', handleClickOutside, true);
+		}
+	});
+</script>
+
+<div class="relative w-full" bind:this={dropdownEl}>
+	{#if label}
+		<label class="label px-0" for={label}>
+			<span class="label-text text-sm font-bold">{label}</span>
+		</label>
+	{/if}
+
+	<button
+		type="button"
+		onclick={handleToggle}
+		class="relative flex h-10 w-full cursor-pointer items-center rounded-lg bg-base-200 px-4 text-left hover:bg-base-300 focus:outline-none focus:ring-2 focus:ring-primary"
+	>
+		<span class="block flex-1 truncate">
+			{selected || placeholder}
+		</span>
+		<span class="pointer-events-none flex items-center">
+			<iconify-icon icon="heroicons:chevron-down-20-solid" class="h-5 w-5 text-base-content/70"
+			></iconify-icon>
+		</span>
+	</button>
+
+	{#if open}
+		<div
+			class="absolute z-10 mt-1 max-h-60 min-w-full overflow-auto rounded-md bg-base-200 py-1 shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none"
+		>
+			{#each options as option}
+				<button
+					type="button"
+					onclick={() => handleSelect(option)}
+					class="relative flex w-full cursor-pointer select-none items-center justify-between px-4 py-2 text-left hover:bg-base-300 {selected ===
+					option
+						? 'bg-primary/10 text-primary'
+						: ''}"
+				>
+					<span class="block truncate">
+						{option}
+					</span>
+					{#if selected === option}
+						<iconify-icon icon="heroicons:check-20-solid"></iconify-icon>
+					{/if}
+				</button>
+			{/each}
+		</div>
+	{/if}
+</div>
+
+<style>
+	iconify-icon {
+		font-size: 1.25rem;
+	}
+</style>

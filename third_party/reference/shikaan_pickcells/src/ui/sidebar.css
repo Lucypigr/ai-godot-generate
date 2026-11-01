@@ -1,0 +1,136 @@
+.layout-sidebar {
+  form {
+    min-width: 320px;
+    height: 100%;
+
+    display: grid;
+    grid-auto-columns: 1fr;
+    grid-template-columns: 1fr;
+    grid-template-rows: min-content 1fr min-content;
+    gap: 0px 0px;
+    grid-template-areas:
+      "title"
+      "fields"
+      "submit";
+
+    header {
+      --top-line-size: var(--size-8);
+
+      grid-area: title;
+
+      .logo-container {
+        display: flex;
+
+        h1 {
+          line-height: var(--top-line-size);
+          padding-left: var(--size-2);
+        }
+
+        img {
+          height: var(--top-line-size);
+        }
+      }
+
+      .links {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: var(--v-spacing) var(--h-spacing);
+        font-size: small;
+
+        a:not(:last-child, :first-child) {
+          padding: 0 8px;
+        }
+
+        a:first-child {
+          padding-right: 8px;
+        }
+
+        a:last-child {
+          padding-left: 8px;
+        }
+      }
+    }
+
+    section {
+      grid-area: fields;
+      overflow-y: auto;
+
+      .field-group--2 {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 16px;
+      }
+
+      .nes-field {
+        padding: var(--v-spacing) 0;
+      }
+
+      #color {
+        width: calc(100% - 8px);
+      }
+
+      .nes-checkbox {
+        /* To align it with input fields */
+        margin-left: calc(var(--size-2) - var(--half-size));
+      }
+
+      .tool-container {
+        --item-size: var(--size-5);
+        --grid-color: var(--color-default-shadow);
+
+        display: grid;
+        grid-template-columns: repeat(5, 1fr);
+        gap: var(--half-size);
+
+        width: fit-content;
+        height: fit-content;
+
+        input {
+          cursor: inherit;
+          appearance: none;
+          width: var(--item-size);
+          height: var(--item-size);
+          display: block;
+          border: var(--half-size) solid var(--color-black);
+
+          &.border {
+            background: var(--border-bg);
+          }
+
+          &.empty {
+            background: var(--empty-bg);
+          }
+
+          &.filled {
+            background: var(--filled-bg);
+          }
+
+          &.filled-border {
+            background: var(--border-filled-bg);
+          }
+
+          &.filled-empty {
+            background: var(--empty-filled-bg);
+          }
+
+          &:checked {
+            border: var(--half-size) solid var(--color-primary-hover);
+          }
+        }
+
+      }
+
+    }
+
+    footer {
+      grid-area: submit;
+      padding-top: var(--v-spacing);
+      text-align: center;
+
+      .nes-btn {
+        padding: var(--v-spacing) var(-h-spacing);
+      }
+    }
+  }
+}

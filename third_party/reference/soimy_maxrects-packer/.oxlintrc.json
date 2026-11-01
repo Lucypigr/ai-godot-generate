@@ -1,0 +1,60 @@
+{
+  "$schema": "./node_modules/oxlint/configuration_schema.json",
+  "plugins": [
+    "typescript",
+    "import",
+    "jsdoc",
+    "vitest",
+    "unicorn",
+    "oxc",
+    "node"
+  ],
+  "categories": {
+    "correctness": "error"
+  },
+  "rules": {
+    "no-console": "warn",
+    "no-debugger": "error",
+    "no-prototype-builtins": "error",
+    "no-unused-vars": "warn",
+    "no-unneeded-ternary": "warn",
+    "jsdoc/require-property-type": "warn",
+
+    // The public API's `data` payload is deliberately untyped (IRectangle carries an index signature too)
+    "typescript/no-explicit-any": "off",
+    // An `_` prefix on protected fields is this library's convention (Rectangle._width/_dirty, ...)
+    "no-underscore-dangle": "off",
+    // The bundle targets ES5, and MaxRectsBin.repack() needs to sort rects in place
+    "unicorn/no-array-sort": "off",
+
+    // test/maxrects-bin.spec.js and test/efficiency.spec.js assert inside loops and conditionals on
+    // purpose: one assertion per rect / scenario / candidate, each carrying the input that produced it
+    "vitest/no-conditional-expect": "off",
+    // test/efficiency.spec.js keeps two comparison tables test.skip'd, un-skipped by hand when needed
+    "vitest/no-disabled-tests": "off",
+    // test/maxrects-bin.spec.js passes `expect(value, message)` to attach the replay instructions to
+    // each assertion. vitest 4's own type declaration allows it — @vitest/expect declares
+    // `<T>(actual: T, message?: string): Assertion<T>` — while this rule defaults to maxArgs: 1 and
+    // counts a non-literal second argument against that limit. (A *string literal* second argument is
+    // treated as the jest-style message and exempted, so probing this rule with a literal shows no
+    // violation — the message in that file is a variable, which does trip it.) Raising the limit keeps
+    // every other check of the rule switched on — a missing matcher still fails, and so does a third
+    // argument — unlike disabling the rule for the file.
+    "vitest/valid-expect": ["error", { "maxArgs": 2 }],
+    // The three monkey tests assert through `fillWithRandomRects` (the helper holds the overlap and
+    // out-of-bounds assertions for every rect it packs), which the rule cannot see into, so the
+    // assertion-name list has to name the helper too — it replaces the default `["expect"]`, it does
+    // not extend it. `test.skip` is not inspected, which is why test/efficiency.spec.js's two table
+    // dumps do not need an entry here.
+    "vitest/expect-expect": ["error", { "assertFunctionNames": ["expect", "fillWithRandomRects"] }]
+  },
+  "overrides": [
+    {
+      "files": ["test/**/*.js"],
+      "env": {
+        "vitest": true,
+        "node": true
+      }
+    }
+  ]
+}

@@ -1,0 +1,89 @@
+.mask-container {
+  width: 100%;
+  display: grid;
+  place-items: center;
+  height: 100%;
+  overflow: hidden;
+
+  .mask {
+    --rows: 12;
+    --cols: 12;
+    --zoom: 1;
+    --control-size: calc(24px * var(--zoom));
+    --grid-color: var(--color-default-shadow);
+
+    display: grid;
+    grid-template-rows: repeat(var(--rows), var(--control-size));
+    grid-template-columns: repeat(var(--cols), var(--control-size));
+    gap: 2px;
+    background-color: var(--grid-color);
+    width: fit-content;
+    height: fit-content;
+    border: var(--half-size) solid var(--grid-color);
+
+    .cell {
+      height: var(--control-size);
+      width: var(--control-size);
+
+      &.cell-0 {
+        background: var(--empty-bg);
+      }
+
+      &.cell-1 {
+        background: var(--border-bg);
+      }
+
+      &.cell-2 {
+        background: var(--filled-bg);
+      }
+
+      &.cell-3 {
+        background: var(--border-filled-bg);
+      }
+
+      &.cell-4 {
+        background: var(--empty-filled-bg);
+      }
+
+      &.cell-disabled {
+        background: var(--grid-color);
+      }
+    }
+  }
+
+  .controls {
+    --control-size: var(--size-5);
+
+    position: absolute;
+    top: var(--half-size);
+    right: var(--spacing);
+    width: var(--control-size);
+
+    & button {
+      margin-top: var(--size);
+      height: var(--control-size);
+      width: var(--control-size);
+
+      background-size: 24px;
+      background-repeat: no-repeat;
+      background-position-x: calc(50% - 1px);
+      background-position-y: calc(50% - 1px);
+
+      &#download {
+        background-image: url('/download.png');
+      }
+
+      &#clear {
+        background-image: url('/new.png');
+      }
+
+      &#zoom-out {
+        background-image: url('/zoomout.png');
+      }
+
+      &#zoom-in {
+        background-image: url('/zoomin.png');
+      }
+    }
+  }
+}

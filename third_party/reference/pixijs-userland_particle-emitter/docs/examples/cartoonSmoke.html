@@ -1,0 +1,140 @@
+<!DOCTYPE html>
+<html class="no-js">
+	<head>
+		<meta charset="utf-8">
+		<meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+		<title>Cartoon Smoke</title>
+		<meta name="description" content="smoke explosion">
+		<link rel="stylesheet" href="css/main.css">
+
+		<!-- Required dependencies -->
+		<script src="libs/pixi.js/dist/pixi.js"></script>
+		<script src="../dist/particle-emitter.js"></script>
+
+		<!-- Example scaffolding -->
+		<script src="js/ParticleExample.js"></script>
+
+	</head>
+	<body>
+		<div id="framerate"></div>
+		<div id="instructions">Click Anywhere</div>
+		<canvas id="stage" width="400" height="400"></canvas>
+		<script>
+
+			// See js/ParticleExample.js for actual setup
+			new ParticleExample(
+				// The image to use
+				["images/CartoonSmoke.png"],
+
+				// Emitter configuration, edit this to change the look
+				// of the emitter
+				{
+					"lifetime": {
+						"min": 0.4,
+						"max": 0.7
+					},
+					"frequency": 0.001,
+					"emitterLifetime": 0.2,
+					"maxParticles": 100,
+					"addAtBack": true,
+					"pos": {
+						"x": 0,
+						"y": 0
+					},
+					"behaviors": [
+						{
+							"type": "alpha",
+							"config": {
+								"alpha": {
+									"list": [
+										{
+											"time": 0,
+											"value": 0.74
+										},
+										{
+											"time": 1,
+											"value": 0
+										}
+									]
+								}
+							}
+						},
+						{
+							"type": "moveSpeed",
+							"config": {
+								"speed": {
+									"list": [
+										{
+											"time": 0,
+											"value": 700
+										},
+										{
+											"time": 1,
+											"value": 50
+										}
+									]
+								}
+							}
+						},
+						{
+							"type": "scale",
+							"config": {
+								"scale": {
+									"list": [
+										{
+											"time": 0,
+											"value": 0.1
+										},
+										{
+											"time": 1,
+											"value": 1.2
+										}
+									]
+								},
+								"minMult": 1
+							}
+						},
+						{
+							"type": "color",
+							"config": {
+								"color": {
+									"list": [
+										{
+											"time": 0,
+											"value": "eb8b58"
+										},
+										{
+											"time": 1,
+											"value": "575757"
+										}
+									]
+								}
+							}
+						},
+						{
+							"type": "rotation",
+							"config": {
+								"accel": 0,
+								"minSpeed": 0,
+								"maxSpeed": 200,
+								"minStart": 0,
+								"maxStart": 360
+							}
+						},
+						{
+							"type": "textureRandom",
+							"config": {
+								"textures": [
+									"images/CartoonSmoke.png"
+								]
+							}
+						},
+						{
+							"type": "spawnPoint",
+							"config": {}
+						}
+					]
+				});
+		</script>
+	</body>
+</html>

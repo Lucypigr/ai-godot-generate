@@ -1,0 +1,141 @@
+<!DOCTYPE html>
+<html class="no-js">
+	<head>
+		<meta charset="utf-8">
+		<meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+		<title>Fountain</title>
+		<meta name="description" content="sparks emitter">
+		<link rel="stylesheet" href="css/main.css">
+
+		<!-- Required dependencies -->
+		<script src="libs/pixi.js/dist/pixi.js"></script>
+		<script src="../dist/particle-emitter.js"></script>
+
+		<!-- Example scaffolding -->
+		<script src="js/ParticleExample.js"></script>
+
+	</head>
+	<body>
+		<div id="framerate"></div>
+		<div id="instructions">Click Anywhere</div>
+		<canvas id="stage" width="400" height="400"></canvas>
+		<script>
+
+			// See js/ParticleExample.js for actual setup
+			new ParticleExample(
+				// The image to use
+				["images/Sparks.png"],
+
+				// Emitter configuration, edit this to change the look
+				// of the emitter
+				{
+					"lifetime": {
+						"min": 0.25,
+						"max": 0.5
+					},
+					"frequency": 0.001,
+					"emitterLifetime": 0,
+					"maxParticles": 1000,
+					"addAtBack": false,
+					"pos": {
+						"x": 0,
+						"y": 0
+					},
+					"behaviors": [
+						{
+							"type": "alpha",
+							"config": {
+								"alpha": {
+									"list": [
+										{
+											"time": 0,
+											"value": 1
+										},
+										{
+											"time": 1,
+											"value": 0.31
+										}
+									]
+								}
+							}
+						},
+						{
+							"type": "moveAcceleration",
+							"config": {
+								"accel": {
+									"x": 0,
+									"y": 2000
+								},
+								"minStart": 600,
+								"maxStart": 600,
+								"rotate": true
+							}
+						},
+						{
+							"type": "scale",
+							"config": {
+								"scale": {
+									"list": [
+										{
+											"time": 0,
+											"value": 0.5
+										},
+										{
+											"time": 1,
+											"value": 1
+										}
+									]
+								},
+								"minMult": 1
+							}
+						},
+						{
+							"type": "color",
+							"config": {
+								"color": {
+									"list": [
+										{
+											"time": 0,
+											"value": "ffffff"
+										},
+										{
+											"time": 1,
+											"value": "9ff3ff"
+										}
+									]
+								}
+							}
+						},
+						{
+							"type": "rotationStatic",
+							"config": {
+								"min": 260,
+								"max": 280
+							}
+						},
+						{
+							"type": "textureRandom",
+							"config": {
+								"textures": [
+									"images/Sparks.png"
+								]
+							}
+						},
+						{
+							"type": "spawnShape",
+							"config": {
+								"type": "torus",
+								"data": {
+									"x": 0,
+									"y": 0,
+									"radius": 0,
+									"innerRadius": 0,
+									"affectRotation": false
+								}
+							}
+						}
+					]
+				});
+		</script>
+	</body>
+</html>

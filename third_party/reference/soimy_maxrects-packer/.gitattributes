@@ -1,0 +1,11 @@
+# Store and check out everything as LF, so mixed CRLF/LF never causes diff noise or tool differences
+* text=auto eol=lf
+
+# Binary assets must never be line-ending converted
+*.png binary
+*.ico binary
+*.jpg binary
+*.jpeg binary
+*.gif binary
+*.woff binary
+*.woff2 binary

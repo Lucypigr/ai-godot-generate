@@ -1,0 +1,872 @@
+import { beforeEach, describe, expect, test } from "vitest";
+import { MaxRectsPacker, PACKING_LOGIC } from "../src/maxrects-packer";
+import { OversizedElementBin } from "../src/oversized-element-bin";
+import { Rectangle } from "../src/geom/Rectangle";
+
+const opt = {
+    smart: true,
+    pot: false,
+    square: false,
+    allowRotation: false,
+    tag: false,
+    exclusiveTag: true
+};
+
+let packer;
+beforeEach(() => {
+    packer = new MaxRectsPacker(1024, 1024, 0, opt);
+});
+
+describe("constructor", () => {
+    test("rejects explicitly non-finite numeric padding", () => {
+        for (const padding of [NaN, Infinity, -Infinity]) {
+            expect(() => new MaxRectsPacker(512, 512, padding)).toThrow("padding must not be NaN or Infinity");
+        }
+        expect(() => new MaxRectsPacker(512, 512, NaN)).toThrow("MaxRectsPacker:");
+    });
+
+    test("still packs with a padding that is a finite number", () => {
+        for (const padding of [undefined, 0, 1, 1.5, -1]) {
+            const packer = new MaxRectsPacker(512, 512, padding);
+            expect(packer.padding).toBe(padding === undefined ? 0 : padding);
+            packer.add({ width: 100, height: 100 });
+            expect(packer.bins).toHaveLength(1);
+            expect(packer.bins[0].rects).toHaveLength(1);
+        }
+    });
+
+    test("preserves JavaScript padding values and their arithmetic", () => {
+        for (const padding of [null, true, false, [], { valueOf: () => 2 }, Object(2)]) {
+            const packer = new MaxRectsPacker(512, 512, padding);
+            const rect = { width: 100, height: 100 };
+            expect(packer.padding).toBe(padding);
+            expect(packer.add(rect)).toBe(rect);
+            expect(packer.bins).toHaveLength(1);
+            expect(packer.bins[0].padding).toBe(padding);
+            expect([packer.bins[0].width, packer.bins[0].height, rect.x, rect.y]).toEqual([128, 128, 0, 0]);
+        }
+        for (const padding of ["2", [2]]) {
+            const packer = new MaxRectsPacker(512, 512, padding);
+            const rect = { width: 100, height: 100 };
+            expect(packer.padding).toBe(padding);
+            expect(packer.add(rect)).toBe(rect);
+            expect(packer.bins).toHaveLength(1);
+            expect(packer.bins[0]).toBeInstanceOf(OversizedElementBin);
+            expect(packer.bins[0].rects).toEqual([rect]);
+            expect(rect.oversized).toBe(true);
+        }
+    });
+
+    test("reports a rect oversized when padding coerces to an invalid size", () => {
+        for (const padding of [{ padding: 1 }, {}, "invalid", { valueOf: () => NaN }]) {
+            const packer = new MaxRectsPacker(512, 512, padding);
+            const rect = { width: 100, height: 100 };
+            expect(packer.padding).toBe(padding);
+            expect(packer.add(rect)).toBe(rect);
+            expect(packer.bins).toHaveLength(1);
+            expect(packer.bins[0]).toBeInstanceOf(OversizedElementBin);
+            expect(packer.bins[0].rects).toEqual([rect]);
+            expect(rect.oversized).toBe(true);
+            packer.padding = 0;
+            expect(packer.add({ width: 100, height: 100 }).oversized).not.toBe(true);
+            expect(packer.bins).toHaveLength(2);
+        }
+    });
+});
+
+describe("#add", () => {
+    test("adds first element correctly", () => {
+        const rect = packer.add(1000, 1000, { num: 1 });
+        expect(rect).toBeInstanceOf(Rectangle);
+        expect(rect).toBe(packer.bins[0].rects[0]);
+        expect(rect.data.num).toBe(1);
+    });
+
+    test("returns the caller's rect object", () => {
+        for (const rect of [{ width: 100, height: 100 }, new Rectangle(100, 100)]) {
+            expect(packer.add(rect)).toBe(rect);
+            expect(packer.bins[0].rects[packer.bins[0].rects.length - 1]).toBe(rect);
+        }
+    });
+
+    test("creates additional bin if element doesn't fit in existing bin", () => {
+        packer.add(1000, 1000, { num: 1 });
+        packer.add(1000, 1000, { num: 2 });
+        expect(packer.bins.length).toBe(2);
+        expect(packer.bins[1].rects[0].data.num).toBe(2);
+    });
+
+    test("adds to existing bins if possible", () => {
+        packer.add(1000, 1000, { num: 1 });
+        packer.add(1000, 1000, { num: 2 });
+        packer.add(10, 10, { num: 3 });
+        packer.add(10, 10, { num: 4 });
+        expect(packer.bins.length).toBe(2);
+    });
+
+    test("adds to new bins after next() is called", () => {
+        packer.add(1000, 1000, { num: 1 });
+        packer.add(1000, 1000, { num: 2 });
+        packer.next();
+        packer.add(10, 10, { num: 3 });
+        packer.add(10, 10, { num: 4 });
+        expect(packer.bins.length).toBe(3);
+        expect(packer.bins[packer.bins.length - 1].rects.length).toBe(2);
+    });
+
+    test("adds to bins with tag matching on", () => {
+        packer.options.tag = true;
+        packer.add(1000, 1000, { num: 1 });
+        packer.add(10, 10, { num: 2 });
+        packer.add(1000, 1000, { num: 3, tag: "one" });
+        packer.add(1000, 1000, { num: 4, tag: "one" });
+        packer.add(10, 10, { num: 5, tag: "one" });
+        packer.add(10, 10, { num: 6, tag: "one" });
+        packer.add(10, 10, { num: 7, tag: "two" });
+        packer.next();
+        packer.add(10, 10, { num: 8, tag: "two" });
+        expect(packer.bins.length).toBe(5);
+        expect(packer.bins[0].rects.length).toBe(2);
+        expect(packer.bins[0].tag).toBeUndefined();
+        expect(packer.bins[1].rects.length).toBe(3);
+        expect(packer.bins[1].tag).toBe("one");
+        expect(packer.bins[2].rects.length).toBe(1);
+        expect(packer.bins[2].tag).toBe("one");
+        expect(packer.bins[packer.bins.length - 1].rects.length).toBe(1);
+        expect(packer.bins[packer.bins.length - 1].tag).toBe("two");
+    });
+
+    test("adds to bins with tag matching disable", () => {
+        packer.options.tag = false;
+        packer.add(1000, 1000, { num: 1 });
+        packer.add(10, 10, { num: 2 });
+        packer.add(1000, 1000, { num: 3, tag: "one" });
+        packer.add(10, 10, { num: 4, tag: "two" });
+        packer.next();
+        packer.add(10, 10, { num: 8, tag: "two" });
+        expect(packer.bins.length).toBe(3);
+        expect(packer.bins[0].tag).toBeUndefined();
+        expect(packer.bins[1].tag).toBeUndefined();
+        expect(packer.bins[packer.bins.length - 1].rects.length).toBe(1);
+        expect(packer.bins[packer.bins.length - 1].tag).toBeUndefined();
+    });
+
+    test("adds an undefined data argument as an untagged bin instead of throwing", () => {
+        // Regression for #91: this overload read `rect.data.tag` unguarded, so an explicit
+        // `undefined` threw `TypeError: Cannot read properties of undefined (reading 'tag')` while
+        // the rect overload guarded the same read and packed into one untagged bin.
+        packer.options.tag = true;
+        expect(() => packer.add(1000, 1000, undefined)).not.toThrow();
+        expect(packer.bins.length).toBe(1);
+        expect(packer.bins[0].rects.length).toBe(1);
+        expect(packer.bins[0].tag).toBeUndefined();
+    });
+
+    test("packs an undefined data argument exactly like an empty object", () => {
+        const withUndefined = new MaxRectsPacker(1024, 1024, 0, { ...opt, tag: true });
+        const withEmptyObject = new MaxRectsPacker(1024, 1024, 0, { ...opt, tag: true });
+        for (const [width, height] of [
+            [1000, 1000],
+            [10, 10],
+            [500, 500],
+            [1000, 1000]
+        ]) {
+            withUndefined.add(width, height, undefined);
+            withEmptyObject.add(width, height, {});
+        }
+        expect(withUndefined.bins.length).toBe(withEmptyObject.bins.length);
+        withUndefined.bins.forEach((bin, index) => {
+            expect(bin.tag).toBe(withEmptyObject.bins[index].tag);
+            expect(bin.rects.map((rect) => [rect.x, rect.y, rect.width, rect.height])).toEqual(
+                withEmptyObject.bins[index].rects.map((rect) => [rect.x, rect.y, rect.width, rect.height])
+            );
+        });
+    });
+
+    test("adds to bins with non-exclusive tag matching", () => {
+        packer.options = {
+            ...packer.options,
+            tag: true,
+            exclusiveTag: false
+        };
+        let input = [
+            { width: 512, height: 512, data: {} },
+            { width: 512, height: 512, data: { tag: "one" } },
+            { width: 512, height: 512, data: { tag: "two" } },
+            { width: 512, height: 512, data: { tag: "two" } },
+            { width: 512, height: 512, data: { tag: "two" } },
+            // Will break into its own bin
+            { width: 600, height: 600, data: { tag: "two" } },
+            { width: 512, height: 512, data: { tag: "two" } },
+            { width: 512, height: 512, data: { tag: "one" } },
+            { width: 512, height: 512, data: {} }
+        ];
+        packer.addArray(input);
+        expect(packer.bins.length).toBe(3);
+        expect(packer.bins[0].tag).toBeUndefined();
+        expect(packer.bins[1].tag).toBeUndefined();
+        expect(packer.bins[2].tag).toBeUndefined();
+        expect(packer.bins[0].rects.length).toBe(4);
+        expect(packer.bins[1].rects.length).toBe(4);
+        expect(packer.bins[2].rects.length).toBe(1);
+        expect(packer.bins[0].rects[0].data.tag).toBe("one");
+        expect(packer.bins[0].rects[1].data.tag).toBe("one");
+        expect(packer.bins[0].rects[2].data.tag).toBe("two");
+        expect(packer.bins[0].rects[3].data.tag).toBe("two");
+        expect(packer.bins[1].rects[0].data.tag).toBe("two");
+        expect(packer.bins[1].rects[1].data.tag).toBe("two");
+        expect(packer.bins[1].rects[2].data.tag).toBeUndefined();
+        expect(packer.bins[1].rects[3].data.tag).toBeUndefined();
+        expect(packer.bins[2].rects[0].data.tag).toBe("two");
+    });
+
+    test("groups by a tag on the rect itself, not only by rect.data.tag", () => {
+        // Same scenario as "adds to bins with non-exclusive tag matching" above, but the tags live on
+        // the rect instead of in rect.data. The geometry matters: one rect is too big to join its
+        // group, so the grouping decides which rects share a bin. With three same-size rects that all
+        // fit anywhere, the assertions would pass even with grouping bypassed.
+        packer = new MaxRectsPacker(1024, 1024, 0, { ...opt, tag: true, exclusiveTag: false });
+        packer.addArray([
+            { width: 512, height: 512 },
+            { width: 512, height: 512, tag: "one" },
+            { width: 512, height: 512, tag: "two" },
+            { width: 512, height: 512, tag: "two" },
+            { width: 512, height: 512, tag: "two" },
+            // Will break into its own bin
+            { width: 600, height: 600, tag: "two" },
+            { width: 512, height: 512, tag: "two" },
+            { width: 512, height: 512, tag: "one" },
+            { width: 512, height: 512 }
+        ]);
+
+        expect(packer.bins).toHaveLength(3);
+        expect(packer.bins[0].rects).toHaveLength(4);
+        expect(packer.bins[1].rects).toHaveLength(4);
+        expect(packer.bins[2].rects).toHaveLength(1);
+        expect(packer.bins[0].rects.map((rect) => rect.tag)).toEqual(["one", "one", "two", "two"]);
+        expect(packer.bins[1].rects.map((rect) => rect.tag)).toEqual(["two", "two", undefined, undefined]);
+        expect(packer.bins[2].rects[0].tag).toBe("two");
+    });
+
+    test("allows oversized elements to be added", () => {
+        packer.add(1000, 1000, { num: 1 });
+        packer.add(2000, 2000, { num: 2 });
+        expect(packer.bins.length).toBe(2);
+        expect(packer.bins[1].rects[0].width).toBe(2000);
+        expect(packer.bins[1].rects[0].oversized).toBe(true);
+    });
+
+    test("checks oversized elements rotation and adds rotated", () => {
+        const packer = new MaxRectsPacker(512, 1024, 0, { ...opt, allowRotation: true });
+        packer.add(640, 256, { num: 1 });
+        expect(packer.bins.length).toBe(1);
+        expect(packer.bins[0].rects[0].width).toBe(256);
+        expect(packer.bins[0].rects[0].height).toBe(640);
+        expect(packer.bins[0].rects[0].oversized).toBe(false);
+    });
+
+    test("refuses a rect no square bin can hold", () => {
+        // `square` rounds every bin up to a square, capped by maxWidth — 1024 here — so the rotated
+        // footprint of a 2048x55 rect (55x2048) never fits one. The bin used to take the rect anyway
+        // and report a 0x0 or 1024x1024 size for it; it has to be reported as oversized instead.
+        const packer = new MaxRectsPacker(1024, 2048, 1, {
+            ...opt,
+            smart: true,
+            pot: true,
+            square: true,
+            allowRotation: true
+        });
+        const rect = packer.add({ width: 2048, height: 55 });
+        const built = packer.add(2048, 55, { num: 2 });
+
+        expect(packer.bins).toHaveLength(2);
+        expect(packer.bins[0].rects).toContain(rect);
+        expect(rect.oversized).toBe(true);
+        // The (width, height, data) overload has to resolve it the same way.
+        expect(packer.bins[1].rects).toContain(built);
+        expect(built.oversized).toBe(true);
+    });
+
+    test("checks oversized elements and skip rotation when set to false", () => {
+        const packer = new MaxRectsPacker(512, 1024, 0, { ...opt, allowRotation: false });
+        packer.add(640, 256, { num: 1 });
+        expect(packer.bins.length).toBe(1);
+        expect(packer.bins[0].rects[0].width).toBe(640);
+        expect(packer.bins[0].rects[0].oversized).toBe(true);
+    });
+    test("throws on wrong parameters", () => {
+        expect(() => packer.add(42)).toThrow("MacrectsPacker.add(): Wrong parameters");
+    });
+});
+
+describe("#sort", () => {
+    test("does not mutate input array", () => {
+        let input = [
+            { width: 1, height: 1 },
+            { width: 2, height: 2 }
+        ];
+        packer.sort(input);
+        expect(input[0].width).toBe(1);
+    });
+
+    test("works correctly by area", () => {
+        let input = [
+            { width: 1, height: 1 },
+            { width: 3, height: 1 },
+            { width: 2, height: 2 }
+        ];
+        let output = packer.sort(input, PACKING_LOGIC.MAX_AREA);
+        expect(output[0].width).toBe(2);
+        expect(output[1].width).toBe(3);
+        expect(output[2].width).toBe(1);
+    });
+
+    test("works correctly by edge", () => {
+        let input = [
+            { width: 1, height: 1 },
+            { width: 3, height: 1 },
+            { width: 2, height: 2 }
+        ];
+        let output = packer.sort(input, PACKING_LOGIC.MAX_EDGE);
+        expect(output[0].width).toBe(3);
+        expect(output[1].width).toBe(2);
+        expect(output[2].width).toBe(1);
+    });
+    test("breaks equal sort values by hash, highest first", () => {
+        const sorted = packer.sort(
+            [
+                { width: 512, height: 512, hash: "1" },
+                { width: 512, height: 512, hash: "3" },
+                { width: 512, height: 512, hash: "2" }
+            ],
+            PACKING_LOGIC.MAX_EDGE
+        );
+        expect(sorted.map((rect) => rect.hash)).toEqual(["3", "2", "1"]);
+    });
+});
+
+describe("#addArray", () => {
+    test("adds multiple elements to bins", () => {
+        let input = [
+            { width: 1000, height: 1000, data: { num: 1 } },
+            { width: 1000, height: 1000, data: { num: 2 } }
+        ];
+        expect(packer.addArray(input)).toBeUndefined();
+        expect(packer.bins.length).toBe(2);
+    });
+
+    test("adds the big rects first", () => {
+        let input = [
+            { width: 600, height: 20, data: { num: 1 } },
+            { width: 600, height: 20, data: { num: 2 } },
+            { width: 1000, height: 1000, data: { num: 3 } },
+            { width: 1000, height: 1000, data: { num: 4 } }
+        ];
+        packer.addArray(input);
+        expect(packer.bins.length).toBe(2);
+    });
+
+    test("adds the big rects & big hash first", () => {
+        let input = [
+            { width: 600, height: 20, data: { num: 1 }, hash: "aaa" },
+            { width: 600, height: 20, data: { num: 2 }, hash: "bbb" },
+            { width: 1000, height: 1000, data: { num: 3 }, hash: "ccc" },
+            { width: 1000, height: 1000, data: { num: 4 }, hash: "ddd" }
+        ];
+        packer.addArray(input);
+        expect(packer.bins.length).toBe(2);
+        expect(packer.bins[0].rects[0].hash).toBe("ddd");
+        expect(packer.bins[0].rects[1].hash).toBe("bbb");
+    });
+
+    test("add empty array", () => {
+        expect(packer.addArray([])).toBeUndefined();
+        expect(packer.bins.length).toBe(0);
+    });
+
+    test("add one element array", () => {
+        let input = [{ width: 600, height: 20, data: { num: 1 }, hash: "aaa" }];
+        packer.addArray(input); // test null array error
+        expect(packer.bins.length).toBe(1);
+    });
+
+    test("add empty array in non-exclusive tag mode", () => {
+        packer = new MaxRectsPacker(1024, 1024, 0, { ...opt, tag: true, exclusiveTag: false });
+        expect(packer.addArray([])).toBeUndefined();
+        expect(packer.bins).toHaveLength(0);
+    });
+
+    test("keeps one tag group together in non-exclusive tag mode", () => {
+        packer = new MaxRectsPacker(1024, 1024, 0, { ...opt, tag: true, exclusiveTag: false });
+        expect(
+            packer.addArray([
+                { width: 256, height: 256, data: { tag: "one" } },
+                { width: 256, height: 256, data: { tag: "one" } }
+            ])
+        ).toBeUndefined();
+        expect(packer.bins).toHaveLength(1);
+        expect(packer.bins[0].rects).toHaveLength(2);
+    });
+
+    test("keeps a rect no square bin can hold in non-exclusive tag mode", () => {
+        // The tag grouping path opens bins of its own, so it has to report a refused rect as oversized
+        // exactly like `add()` does — otherwise the rect disappears between the two APIs.
+        packer = new MaxRectsPacker(1024, 2048, 0, {
+            ...opt,
+            tag: true,
+            exclusiveTag: false,
+            smart: true,
+            pot: true,
+            square: true,
+            allowRotation: true
+        });
+        packer.addArray([{ width: 2048, height: 55, tag: "one" }]);
+
+        expect(packer.rects).toHaveLength(1);
+        expect(packer.rects[0].oversized).toBe(true);
+    });
+
+    test("does not let an uncopyable bin abort the tag grouping", () => {
+        // Grouping probes a candidate bin by copying it, and `clone()` now throws rather than returning
+        // an incomplete copy. An uncopyable bin — here one holding a rect class whose state no shallow
+        // copy can reach — must count as "this group does not fit it", so the search reaches the next
+        // bin instead of failing the whole call.
+        class PrivateRect {
+            #width;
+            #height;
+            constructor(width, height) {
+                this.#width = width;
+                this.#height = height;
+            }
+            get width() {
+                return this.#width;
+            }
+            set width(value) {
+                this.#width = value;
+            }
+            get height() {
+                return this.#height;
+            }
+            set height(value) {
+                this.#height = value;
+            }
+        }
+        packer = new MaxRectsPacker(1024, 1024, 0, { ...opt, tag: true, exclusiveTag: false });
+        packer.add(new PrivateRect(900, 900));
+        packer.add(new Rectangle(200, 200)); // opens the second bin
+        expect(packer.bins).toHaveLength(2);
+        expect(() => packer.bins[0].clone()).toThrow("give its class a clone() method");
+
+        expect(() =>
+            packer.addArray([
+                { width: 300, height: 300, data: { tag: "one" } },
+                { width: 300, height: 300, data: { tag: "one" } }
+            ])
+        ).not.toThrow();
+
+        expect(packer.bins).toHaveLength(2);
+        expect(packer.bins[0].rects).toHaveLength(1);
+        expect(packer.bins[1].rects).toHaveLength(3);
+    });
+});
+
+describe("tag metadata", () => {
+    test("non-exclusive add preserves the caller's tagged rect and payload without adding fields", () => {
+        const data = Object.freeze({ tag: "hud", asset: Object.freeze({ id: "sprite" }) });
+        const rect = Object.seal({ width: 32, height: 32, x: -1, y: -1, rot: false, tag: "rect-label", data });
+        const keys = Object.keys(rect);
+        const source = new MaxRectsPacker(128, 128, 0, { tag: true, exclusiveTag: false });
+
+        expect(source.add(rect)).toBe(rect);
+        expect(source.bins[0].rects[0]).toBe(rect);
+        expect(rect.data).toBe(data);
+        expect(rect.data).toEqual({ tag: "hud", asset: { id: "sprite" } });
+        expect(rect.tag).toBe("rect-label");
+        expect(Object.keys(rect)).toEqual(keys);
+        expect([rect.x, rect.y]).toEqual([0, 0]);
+        expect(source.bins[0].tag).toBeUndefined();
+        expect(source.save()[0].rects).toEqual([]);
+        expect(rect.data).toBe(data);
+        expect(rect.tag).toBe("rect-label");
+    });
+
+    test("non-exclusive numeric add keeps the supplied payload on its internal rect", () => {
+        const data = Object.freeze({ tag: "hud", asset: Object.freeze({ id: "sprite" }) });
+        const source = new MaxRectsPacker(128, 128, 0, { tag: true, exclusiveTag: false });
+        const rect = source.add(32, 32, data);
+
+        expect(source.bins[0].rects[0]).toBe(rect);
+        expect(rect.data).toBe(data);
+        expect(rect.data).toEqual({ tag: "hud", asset: { id: "sprite" } });
+        expect(rect).not.toHaveProperty("tag");
+        expect(source.bins[0].tag).toBeUndefined();
+    });
+
+    const entryPoints = [
+        ["rect.data.tag", (packer, tag) => packer.add({ width: 32, height: 32, data: { tag } })],
+        ["rect.tag", (packer, tag) => packer.add({ width: 32, height: 32, tag })],
+        ["dimensions overload", (packer, tag) => packer.add(32, 32, { tag })],
+        ["addArray", (packer, tag) => packer.addArray([{ width: 32, height: 32, data: { tag } }])]
+    ];
+
+    test.each(entryPoints)("%s leaves non-exclusive bins unlabelled across save/load", (_name, add) => {
+        const options = { ...opt, tag: true, exclusiveTag: false };
+        const source = new MaxRectsPacker(128, 128, 0, options);
+        add(source, "one");
+        add(source, "two");
+
+        expect(source.bins).toHaveLength(1);
+        expect(source.bins[0].tag).toBeUndefined();
+        expect(source.bins[0].rects.map((rect) => rect.data?.tag ?? rect.tag)).toEqual(["one", "two"]);
+        expect(source.bins[0].rects.map((rect) => [rect.x, rect.y])).toEqual([
+            [0, 0],
+            [32, 0]
+        ]);
+        const saved = source.save();
+        expect(saved[0]).not.toHaveProperty("tag");
+        const restored = new MaxRectsPacker(128, 128, 0, options);
+        restored.load(saved);
+        expect(restored.bins[0].tag).toBeUndefined();
+        expect(restored.save()).toEqual(saved);
+    });
+
+    test.each(entryPoints)("%s keeps the default exclusive labels and tag gate", (_name, add) => {
+        const source = new MaxRectsPacker(128, 128, 0, { tag: true });
+        add(source, "one");
+        add(source, "two");
+        add(source, "one");
+
+        expect(source.bins.map((bin) => bin.tag)).toEqual(["one", "two"]);
+        expect(source.bins.map((bin) => bin.rects.length)).toEqual([2, 1]);
+        expect(source.save().map((bin) => bin.tag)).toEqual(["one", "two"]);
+    });
+
+    test("preserves explicit and restored non-exclusive bin labels when adding more rects", () => {
+        const options = { ...opt, tag: true, exclusiveTag: false };
+        const source = new MaxRectsPacker(128, 128, 0, options);
+        source.add(32, 32, { tag: "one" });
+        source.bins[0].tag = "atlas";
+        source.add({ width: 32, height: 32, tag: "two" });
+        expect(source.bins[0].tag).toBe("atlas");
+        const saved = source.save();
+        expect(saved[0].tag).toBe("atlas");
+
+        const restored = new MaxRectsPacker(128, 128, 0, options);
+        restored.load(saved);
+        expect(restored.save()).toEqual(saved);
+        restored.add(16, 16, { tag: "three" });
+        restored.addArray([{ width: 16, height: 16, tag: "four" }]);
+        expect(restored.bins).toHaveLength(1);
+        expect(restored.bins[0].tag).toBe("atlas");
+        expect(restored.bins[0].rects.map((rect) => rect.data?.tag ?? rect.tag)).toEqual(["three", "four"]);
+        expect(restored.save()[0].tag).toBe("atlas");
+    });
+});
+
+describe("#save & load", () => {
+    test("Load old bins and continue packing", () => {
+        packer.options.tag = true;
+        let input = [
+            { width: 512, height: 512, data: { num: 1 } },
+            { width: 512, height: 512, data: { num: 2 }, tag: "one" },
+            { width: 512, height: 512, data: { num: 3 }, tag: "one" },
+            { width: 512, height: 512, data: { num: 4 } }
+        ];
+        packer.addArray(input);
+        expect(packer.bins.length).toBe(2);
+        expect(packer.bins[0].rects.length).toBe(2);
+        expect(packer.bins[1].rects.length).toBe(2);
+        let bins = packer.save();
+        expect(bins[0].rects.length).toBe(0);
+        expect(bins[1].tag).toBe("one");
+        packer.load(bins);
+        packer.addArray(input);
+        expect(packer.bins.length).toBe(2);
+        expect(packer.bins[0].rects.length).toBe(2);
+        expect(packer.bins[1].rects.length).toBe(2);
+        expect(packer.bins[1].tag).toBe("one");
+    });
+    test("save keeps the free space and load restores it", () => {
+        // 256 then 512 grows the bin to 768x512 and leaves free space behind. A single rect would not:
+        // with smart sizing the bin shrinks to exactly that rect and freeRects ends up empty.
+        const makeInput = () => [
+            { width: 256, height: 256, data: { num: 1 } },
+            { width: 512, height: 512, data: { num: 2 } },
+            { width: 128, height: 128, data: { num: 3 } }
+        ];
+        const [first, second, third] = makeInput();
+        packer.add(first);
+        packer.add(second);
+        const saved = packer.save();
+
+        expect(saved[0].rects).toHaveLength(0); // placed rects are never serialized
+        expect(saved[0].freeRects.length).toBeGreaterThan(0);
+        for (const freeRect of saved[0].freeRects) {
+            expect(Object.keys(freeRect).sort()).toEqual(["height", "width", "x", "y"]);
+        }
+
+        // a packer that never saved must place the next rect in exactly the same spot
+        const control = new MaxRectsPacker(1024, 1024, 0, opt);
+        for (const rect of makeInput()) control.add(rect);
+
+        const restored = new MaxRectsPacker(1024, 1024, 0, opt);
+        restored.load(saved);
+        expect(restored.bins).toHaveLength(1);
+        expect(restored.bins[0].width).toBe(packer.bins[0].width);
+        expect(restored.bins[0].height).toBe(packer.bins[0].height);
+        expect(restored.bins[0].freeRects).toHaveLength(saved[0].freeRects.length);
+        expect(restored.bins[0].freeRects[0]).toBeInstanceOf(Rectangle);
+
+        restored.add(third);
+        expect(restored.bins).toHaveLength(1);
+        expect(restored.bins[0].rects).toHaveLength(1);
+        expect(restored.bins[0].rects[0].x).toBe(control.bins[0].rects[2].x);
+        expect(restored.bins[0].rects[0].y).toBe(control.bins[0].rects[2].y);
+    });
+
+    test("load turns a bin bigger than the packer into an oversized bin", () => {
+        packer.load([
+            {
+                width: 2048,
+                height: 2048,
+                maxWidth: 2048,
+                maxHeight: 2048,
+                freeRects: [],
+                rects: []
+                // no options: an entry that carries none keeps the placeholder's own defaults
+            }
+        ]);
+        expect(packer.bins[0]).toBeInstanceOf(OversizedElementBin);
+        expect(packer.bins[0].width).toBe(2048);
+        expect(packer.bins[0].height).toBe(2048);
+        expect(packer.bins[0].options).toEqual({ smart: false, pot: false, square: false });
+    });
+
+    test("load replaces the bin at its index even when the entry is oversized", () => {
+        // The packer already holds a bin, so the oversized entry used to be pushed to the end, where the
+        // next entry wrote over it: the round trip silently lost that bin.
+        packer.add(256, 256, { num: 0 });
+
+        packer.load([
+            {
+                width: 2048,
+                height: 2048,
+                maxWidth: 2048,
+                maxHeight: 2048,
+                freeRects: [],
+                rects: [],
+                options: {}
+            },
+            {
+                width: 512,
+                height: 512,
+                maxWidth: 512,
+                maxHeight: 512,
+                freeRects: [],
+                rects: [],
+                options: {}
+            }
+        ]);
+
+        expect(packer.bins).toHaveLength(2);
+        expect(packer.bins[0]).toBeInstanceOf(OversizedElementBin);
+        expect(packer.bins[0].width).toBe(2048);
+        expect(packer.bins[0].height).toBe(2048);
+        expect(packer.bins[1]).not.toBeInstanceOf(OversizedElementBin);
+        expect(packer.bins[1].width).toBe(512);
+    });
+
+    test("load carries the saved options and tag onto an oversized placeholder", () => {
+        const options = { ...opt, allowRotation: true, logic: PACKING_LOGIC.MAX_AREA };
+        packer.load([
+            {
+                width: 2048,
+                height: 2048,
+                maxWidth: 2048,
+                maxHeight: 2048,
+                freeRects: [],
+                rects: [],
+                options,
+                tag: "big"
+            }
+        ]);
+
+        const placeholder = packer.bins[0];
+        expect(placeholder).toBeInstanceOf(OversizedElementBin);
+        expect(placeholder.tag).toBe("big");
+        expect(placeholder.options).toEqual(options);
+    });
+
+    test("load keeps the saved maxima, so an oversized entry stays oversized after a round trip", () => {
+        // A smart bin saves the size it currently occupies — 128×128 after one 100×100 rect — next to the
+        // maxima it was allowed to grow to. Dropping the maxima here would make the next save() describe
+        // an entry the same packer loads back as a normal bin.
+        const source = new MaxRectsPacker(2048, 512, 0);
+        source.addArray([{ width: 100, height: 100 }]);
+        const [saved] = source.save();
+        expect(saved.width).toBeLessThan(saved.maxWidth); // the case the placeholder has to keep apart
+
+        packer.load([saved]);
+        expect(packer.bins[0]).toBeInstanceOf(OversizedElementBin);
+        expect(packer.bins[0].width).toBe(saved.width);
+        expect(packer.bins[0].height).toBe(saved.height);
+        expect(packer.bins[0].maxWidth).toBe(2048);
+        expect(packer.bins[0].maxHeight).toBe(512);
+
+        // one more cycle through a packer of the same size keeps the entry oversized
+        const reloaded = new MaxRectsPacker(1024, 1024, 0, opt);
+        reloaded.load(packer.save());
+        expect(reloaded.bins[0]).toBeInstanceOf(OversizedElementBin);
+        expect(reloaded.bins[0].maxWidth).toBe(2048);
+    });
+
+    test("load keeps the saved free space of an oversized entry, so a smaller packer carries it through", () => {
+        // A smart bin saves the free space it has left — two 28-wide strips around the placed rect —
+        // next to maxima the smaller packer below cannot hold.
+        const large = new MaxRectsPacker(2048, 512, 0);
+        large.addArray([{ width: 100, height: 100 }]);
+        const [saved] = large.save();
+        expect(saved.freeRects.length).toBeGreaterThan(0);
+
+        const small = new MaxRectsPacker(1024, 1024, 0);
+        small.load([saved]);
+        expect(small.bins[0]).toBeInstanceOf(OversizedElementBin);
+
+        // the snapshot that came out of the smaller packer still describes the same free space
+        const [throughSmall] = small.save();
+        expect(throughSmall.rects).toHaveLength(0); // placed rects stay out of persistence
+        expect(throughSmall.freeRects).toEqual(saved.freeRects);
+        expect(small.bins[0].freeRects[0]).toBeInstanceOf(Rectangle); // copied, not aliased
+
+        // and a packer that can hold the original limits restores it as a normal bin
+        const largeAgain = new MaxRectsPacker(2048, 512, 0);
+        largeAgain.load([throughSmall]);
+        expect(largeAgain.bins[0]).not.toBeInstanceOf(OversizedElementBin);
+        expect(largeAgain.bins[0].freeRects).toHaveLength(saved.freeRects.length);
+
+        // which places the next rect where a packer that never saved would
+        const control = new MaxRectsPacker(2048, 512, 0);
+        control.addArray([{ width: 100, height: 100 }]);
+        largeAgain.add(20, 20, { num: 2 });
+        control.add(20, 20, { num: 2 });
+        expect(largeAgain.bins).toHaveLength(1);
+        expect(largeAgain.bins[0].rects[0].x).toBe(control.bins[0].rects[1].x);
+        expect(largeAgain.bins[0].rects[0].y).toBe(control.bins[0].rects[1].y);
+    });
+});
+
+describe("misc functionalities", () => {
+    test("deep repack leaves a clean packer untouched", () => {
+        packer.add(256, 256);
+        const bin = packer.bins[0];
+        for (const each of packer.bins) each.setDirty(false);
+        expect(packer.dirty).toBe(false);
+
+        packer.repack(false);
+
+        // a real deep repack resets and rebuilds the bins, so keeping the same instance proves the
+        // early return was taken
+        expect(packer.bins[0]).toBe(bin);
+        expect(packer.rects).toHaveLength(1);
+    });
+
+    test("currentBinIndex follows next()", () => {
+        expect(packer.currentBinIndex).toBe(0);
+        packer.add(256, 256);
+        expect(packer.currentBinIndex).toBe(0);
+        packer.next();
+        expect(packer.currentBinIndex).toBe(1);
+    });
+    test("passes padding through", () => {
+        packer = new MaxRectsPacker(1024, 1024, 4, opt);
+        packer.add(500, 500, { num: 1 });
+        packer.add(500, 500, { num: 1 });
+        packer.add(500, 500, { num: 1 });
+        expect(packer.bins[0].width).toBe(1004);
+    });
+
+    test("get bins dirty status", () => {
+        packer = new MaxRectsPacker(1024, 1024, 4, opt);
+        packer.add(508, 508, { num: 1 });
+        let tester1 = packer.add(new Rectangle(508, 508));
+        let tester2 = packer.add(508, 508, { num: 3 });
+        expect(packer.dirty).toBe(true);
+        for (let bin of packer.bins) bin.setDirty(false);
+        expect(packer.dirty).toBe(false);
+        tester1.height = 512;
+        expect(packer.dirty).toBe(true);
+        for (let bin of packer.bins) bin.setDirty(false);
+        tester2.height = 512;
+        expect(packer.dirty).toBe(true);
+    });
+
+    test("quick repack & deep repack", () => {
+        packer = new MaxRectsPacker(1024, 1024, 0, {
+            ...opt,
+            tag: true
+        });
+        let rect = packer.add(1024, 512, { hash: "6" });
+        packer.add(512, 512, { hash: "5" });
+        packer.add(512, 512, { hash: "4" });
+        packer.add(512, 512, { hash: "3" });
+        packer.add({ width: 512, height: 512, data: { hash: "2", tag: "one" } });
+        packer.add({ width: 512, height: 512, data: { hash: "1" }, tag: "one" });
+        expect(packer.bins.length).toBe(3);
+        for (let bin of packer.bins) bin.setDirty(false); // clean dirty status
+        rect.width = 512; // shrink width
+        packer.repack(); // quick repack
+        expect(packer.bins.length).toBe(3);
+        packer.repack(false); // deep repack
+        expect(packer.bins.length).toBe(2);
+        rect.height = 1024; // enlarge height
+        rect.tag = "one";
+        packer.repack(); // quick repack
+        expect(packer.bins.length).toBe(3);
+        expect(packer.bins[2].tag).toBe("one");
+        packer.repack(false); // deep repack
+        expect(packer.bins.length).toBe(2);
+    });
+
+    test("Packer allow rotation", () => {
+        packer = new MaxRectsPacker(500, 400, 1, {
+            ...opt,
+            smart: false,
+            allowRotation: true
+        });
+        packer.add(398, 98);
+        packer.add(398, 98);
+        packer.add(398, 98);
+        let x = packer.add(398, 98);
+        expect(x.rot).toBe(true);
+    });
+
+    test("Per rectangle allow rotation", () => {
+        packer = new MaxRectsPacker(500, 400, 1, {
+            ...opt,
+            smart: false,
+            allowRotation: true
+        });
+        packer.add(448, 98);
+        packer.add(448, 98);
+        packer.add(448, 98);
+        packer.add(448, 98);
+        // false overriding
+        let x = packer.add(398, 48, { allowRotation: false });
+        expect(packer.bins.length).toBe(2);
+        expect(x.rot).toBe(false);
+
+        packer = new MaxRectsPacker(500, 400, 1, {
+            ...opt,
+            smart: false,
+            allowRotation: false
+        });
+        packer.add(448, 98);
+        packer.add(448, 98);
+        packer.add(448, 98);
+        packer.add(448, 98);
+        // true overriding
+        x = packer.add(398, 48, { allowRotation: true });
+        expect(packer.bins.length).toBe(1);
+        expect(x.rot).toBe(true);
+    });
+});

@@ -1,0 +1,96 @@
+# Rotation and tags
+
+## 90° rotation
+
+With `allowRotation: true` the packer scores both orientations of a rect and may place it rotated when
+that fits better. A rect that ends up rotated carries `rot: true`, and its `width`/`height` describe the
+footprint it actually occupies — for a `Rectangle` instance the `rot` setter swaps them, and for a plain
+`{ width, height }` object the packer swaps them itself, because such an object has no setter to do it.
+
+Rotating is a decision, not a given: both orientations are scored and the better score wins, so a rect
+that already fits unrotated can still come back rotated. `rot` means "placed in this orientation", not
+"rotation was required".
+
+<!-- docs-example: rotation -->
+```js
+import { MaxRectsPacker } from "maxrects-packer";
+
+// The rect only fits the bin rotated: 1000 wide would exceed maxWidth, 300 wide does not.
+const packer = new MaxRectsPacker(512, 1024, 0, { allowRotation: true });
+const rect = { width: 1000, height: 300 };
+packer.addArray([rect]);                          // `addArray()` returns nothing; it fills your objects
+
+console.log(rect.rot, rect.width, rect.height);   // true 300 1000 — the footprint in the bin
+```
+
+If you need the original dimensions back, keep them: rotation happens in place, on your object, and the
+packer adds no field of its own to it — a rect you sealed still packs.
+
+### Per-rect rotation is much narrower than it looks
+
+A per-rect flag is reachable through a `Rectangle` — and only through one, and only for placement:
+
+- `MaxRectsBin.place()` honours a per-rect `allowRotation` when the rect object itself carries an own
+  `_allowRotation` property. A `Rectangle` instance does, because its `data` setter maintains that
+  field, so `add(width, height, { allowRotation: true })` rotates that one rect inside a packer built
+  with `allowRotation: false`. The spec named "Per rectangle allow rotation" pins exactly that. A plain
+  `{ width, height, allowRotation: true }` object carries no such property, so the field does nothing
+  there.
+- `MaxRectsPacker.add()` decides whether a rect is oversized from the packer's `allowRotation` alone,
+  so a rect that only fits *rotated and oversized* is reported
+  [oversized](./packing.md#oversized-rects) whatever the per-rect flag says. It overrides placement,
+  not that check.
+
+So: on plain objects, set the option on the packer; for one rect, pass it through a `Rectangle`.
+
+## Tag-based grouping
+
+<!-- docs-example: tags -->
+```js
+import { MaxRectsPacker } from "maxrects-packer";
+
+const packer = new MaxRectsPacker(1024, 1024, 0, { tag: true });
+packer.addArray([
+    { width: 100, height: 100, data: { tag: "hud" } },
+    { width: 120, height: 80, data: { tag: "hud" } },
+    { width: 200, height: 200, data: { tag: "world" } }
+]);
+```
+
+The tag is read from `rect.data.tag`, falling back to a `tag` property on the rect itself — either
+works, and a truthy `data.tag` wins when both are set. Falsy rect tags use the fallback or count as
+untagged. Bin labels follow the same truthy rule during exclusive placement comparisons, while their
+original values remain intact for saving. An explicit empty bin label therefore still accepts
+untagged/empty-tag rects into its restored free space. With `tag: true`:
+
+- with `exclusiveTag: true` (the default) a tagged rect only enters a bin with the same tag, and a bin
+  that has no tag refuses tagged rects, so one tag can never share a bin with another. A group too large
+  for one bin opens more bins with the same tag;
+- with `exclusiveTag: false` the packer instead tries to fit a tag group into an existing bin
+  alongside other groups, and only opens a new bin when none of them has room. That probe copies the
+  candidate bin, so it never disturbs the placements you already have.
+
+In non-exclusive mode, neither `add()` overload nor `addArray()` automatically assigns `bin.tag`.
+Read the tags you care about from `bin.rects[i].data.tag` (or `rect.tag`). An explicit bin label, or one
+restored by `load()`, is preserved as metadata and does not constrain non-exclusive placement.
+Bins are library-owned; this label lasts for that bin and is not carried into rebuilt bins by a full
+repack. Store durable group identifiers on rects instead.
+
+`add(rect)` keeps the caller's object, its `tag` and its `data` payload. Tags are read without moving,
+rewriting or removing them, even when `rect.tag` and `rect.data.tag` differ. The numeric
+`add(width, height, data)` overload keeps the supplied payload on the `Rectangle` it constructs.
+Grouping adds no metadata fields to the rect or its payload. Placement fields and rotated dimensions
+still change in place as described above.
+
+### Migrating non-exclusive bin labels in 3.0.0
+
+Previously, `add()` labelled a new non-exclusive bin with its first rect's tag, while `addArray()` left
+new bins unlabelled. From 3.0.0 both paths leave them unlabelled, so `save()` no longer emits that
+automatic `tag` field. Consumers that used it to identify a group must read the rect tags instead;
+if you need an atlas label in saved state, assign `bin.tag` explicitly. Existing saved labels still
+round-trip through `load()` and `save()`.
+
+Free-space snapshots contain no placed rects, so reading rect tags requires keeping those rects or
+[persisting them explicitly](./persistence.md#what-is-stored). An explicit bin label belongs to that
+bin: a full `repack(false)` rebuilds bins and does not carry their labels over. Assign labels after
+the final packing or full repack when exporting an atlas.

@@ -1,0 +1,112 @@
+{
+  "$schema": "https://biomejs.dev/schemas/2.4.10/schema.json",
+  "vcs": {
+    "enabled": true,
+    "clientKind": "git",
+    "useIgnoreFile": true,
+    "root": "."
+  },
+  "files": {
+    "ignoreUnknown": true
+  },
+  "formatter": {
+    "enabled": true,
+    "indentStyle": "space",
+    "indentWidth": 2,
+    "lineWidth": 80,
+    "lineEnding": "lf"
+  },
+  "linter": {
+    "enabled": true,
+    "rules": {
+      "recommended": false,
+      "correctness": {
+        "noUndeclaredVariables": "error",
+        "noInvalidUseBeforeDeclaration": "error",
+        "noUnusedVariables": "warn"
+      },
+      "complexity": {
+        "useLiteralKeys": "error"
+      },
+      "style": {
+        "useBlockStatements": "error"
+      },
+      "suspicious": {
+        "noWith": "error"
+      }
+    }
+  },
+  "javascript": {
+    "formatter": {
+      "quoteStyle": "double",
+      "semicolons": "always",
+      "trailingCommas": "none",
+      "arrowParentheses": "always"
+    },
+    "globals": [
+      "$",
+      "jQuery",
+      "pskl",
+      "Events",
+      "Constants",
+      "module",
+      "require",
+      "console",
+      "Promise",
+      "describe",
+      "xdescribe",
+      "fdescribe",
+      "it",
+      "xit",
+      "fit",
+      "beforeEach",
+      "afterEach",
+      "beforeAll",
+      "afterAll",
+      "expect",
+      "fail",
+      "pending",
+      "spyOn",
+      "spyOnProperty",
+      "jasmine"
+    ]
+  },
+  "css": {
+    "formatter": {
+      "enabled": true
+    },
+    "linter": {
+      "enabled": true
+    }
+  },
+  "html": {
+    "formatter": {
+      "enabled": true
+    }
+  },
+  "assist": {
+    "enabled": false
+  },
+  "overrides": [
+    {
+      // Vendor/third-party files — legacy CSS syntax causes parse errors
+      "includes": ["src/js/lib/**", "src/css/bootstrap/**", "src/css/spectrum/**"],
+      "linter": {
+        "enabled": false
+      },
+      "formatter": {
+        "enabled": false
+      }
+    },
+    {
+      // Excluded due to @@include template directives
+      "includes": ["src/index.html"],
+      "linter": {
+        "enabled": false
+      },
+      "formatter": {
+        "enabled": false
+      }
+    }
+  ]
+}

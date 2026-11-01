@@ -1,0 +1,97 @@
+name: Release
+
+on:
+  push:
+    tags:
+      - 'v*'
+  workflow_dispatch:
+
+jobs:
+  release:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v7
+
+    - name: Setup Node.js
+      uses: actions/setup-node@v7
+      with:
+        node-version: '22'
+        cache: 'npm'
+
+    - name: Install dependencies
+      run: npm ci
+
+    - name: Build project
+      run: npm run build:clean
+
+    - name: Get tag version
+      id: get_version
+      env:
+        TAG: ${{ github.ref_name }}
+      run: |
+        VERSION="${TAG#v}"
+        echo "version=${VERSION}" >> "$GITHUB_OUTPUT"
+        # A semver prerelease carries a hyphen (`3.0.0-rc.1`), and `gh release create` publishes a
+        # normal release unless it is told otherwise. The flag is decided here and passed to the next
+        # step through the environment, so the tag stays data rather than script text.
+        if [[ "$VERSION" == *-* ]]; then
+          echo "prerelease=true" >> "$GITHUB_OUTPUT"
+        else
+          echo "prerelease=false" >> "$GITHUB_OUTPUT"
+        fi
+
+    # Everything this step reads arrives through `env:`, never through `${{ }}` in the script body.
+    # An expression is substituted into the script *text* before bash parses it, so a value carrying
+    # `$(...)` or a backtick would run as a command — and a tag name may legally contain both, while
+    # CHANGELOG.md is built from commit subjects. Values in the environment are data, not source.
+    # The notes leave this step as a file: the `<<EOF` output format preserves text as written, so the
+    # `%0A` percent-encoding this step used to apply reached `gh` literally instead of decoding.
+    - name: Extract changelog
+      env:
+        VERSION: ${{ steps.get_version.outputs.version }}
+      run: |
+        # CHANGELOG.md writes minor releases as `## [` and patches as `### [`, so both forms have to
+        # match: requiring `### [` alone finds no minor release, and lets a patch run past the minor
+        # heading below it into older sections.
+        VERSION_LINE=$(grep -nE "^#{2,3} \[" CHANGELOG.md | grep -F "[$VERSION]" | head -1 | cut -d: -f1)
+        if [ -n "$VERSION_LINE" ]; then
+          # Find the next version line
+          NEXT_VERSION_LINE=$(tail -n +$((VERSION_LINE + 1)) CHANGELOG.md | grep -nE "^#{2,3} \[" | head -1 | cut -d: -f1)
+          if [ -n "$NEXT_VERSION_LINE" ]; then
+            # Extract lines between current version and next version
+            sed -n "$((VERSION_LINE + 1)),$((VERSION_LINE + NEXT_VERSION_LINE - 1))p" CHANGELOG.md > release-notes.md
+          else
+            # This is the last version, extract to end of file
+            sed -n "$((VERSION_LINE + 1)),\$p" CHANGELOG.md > release-notes.md
+          fi
+        else
+          echo "No changelog found for version $VERSION" > release-notes.md
+        fi
+
+    - name: Create release
+      run: |
+        ARGS=(--title "Release $GITHUB_REF_NAME" --notes-file release-notes.md --generate-notes)
+        if [ "$PRERELEASE" = "true" ]; then
+          ARGS+=(--prerelease)
+        fi
+        gh release create "$GITHUB_REF_NAME" "${ARGS[@]}"
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        PRERELEASE: ${{ steps.get_version.outputs.prerelease }}
+
+    - name: Upload release assets
+      run: |
+        gh release upload "$GITHUB_REF_NAME" ./dist/maxrects-packer.js ./dist/maxrects-packer.min.js ./dist/maxrects-packer.mjs ./dist/maxrects-packer.cjs
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+    - name: Upload dist directory as zip
+      run: |
+        cd dist
+        zip -r ../dist.zip .
+        cd ..
+        gh release upload "$GITHUB_REF_NAME" ./dist.zip
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
